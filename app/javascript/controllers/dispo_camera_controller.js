@@ -138,6 +138,7 @@ export default class extends Controller {
       await this.videoTarget.play();
       this.track = this.stream.getVideoTracks()[0];
       this.cameraReady = true;
+      this.applyMirror();
       this.setupTorchSupport();
       this.hidePermissionGate();
       this.updateShutterState();
@@ -186,12 +187,18 @@ export default class extends Controller {
       await this.videoTarget.play();
       this.track = this.stream.getVideoTracks()[0];
       this.cameraReady = true;
+      this.applyMirror();
       this.setupTorchSupport();
       this.updateShutterState();
     } catch (error) {
       this.facingMode = prevFacing;
       this.setStatus("Could not switch camera.");
     }
+  }
+
+  applyMirror() {
+    if (!this.hasVideoTarget) return;
+    this.videoTarget.classList.toggle("dispo-viewfinder--mirrored", this.facingMode === "user");
   }
 
   async checkFlipSupport() {
@@ -233,19 +240,19 @@ export default class extends Controller {
     if (!this.flashButtonTarget) return;
 
     if (!this.cameraReady) {
-      this.flashButtonTarget.textContent = "Flash: Off";
+      this.flashButtonTarget.textContent = "Off";
       this.flashButtonTarget.disabled = true;
       return;
     }
 
     if (!this.torchSupported) {
-      this.flashButtonTarget.textContent = "Flash: Unsupported";
+      this.flashButtonTarget.textContent = "";
       this.flashButtonTarget.disabled = true;
       return;
     }
 
     this.flashButtonTarget.disabled = false;
-    this.flashButtonTarget.textContent = this.flashEnabled ? "Flash: On" : "Flash: Off";
+    this.flashButtonTarget.textContent = this.flashEnabled ? "On" : "Off";
   }
 
   captureFrame() {
@@ -261,6 +268,12 @@ export default class extends Controller {
       this.canvasTarget.width = width;
       this.canvasTarget.height = height;
       const context = this.canvasTarget.getContext("2d");
+
+      if (this.facingMode === "user") {
+        context.translate(width, 0);
+        context.scale(-1, 1);
+      }
+
       context.drawImage(this.videoTarget, 0, 0, width, height);
       this.canvasTarget.toBlob(
         (blob) => {
