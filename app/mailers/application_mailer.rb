@@ -1,13 +1,27 @@
 class ApplicationMailer < ActionMailer::Base
   DIVIDER_IMAGE = "divider-leaf.png".freeze
 
-  default from: ENV.fetch("SMTP_USERNAME", "noreply@wedly.com")
+  default from: -> { default_from_address }
   layout "mailer"
   helper ApplicationHelper
   helper WeddingHelper
   before_action :attach_inline_assets
 
   private
+
+  def default_from_address
+    email_address_with_name(
+      ENV.fetch("SMTP_USERNAME", "noreply@wedly.com"),
+      sender_display_name
+    )
+  end
+
+  def sender_display_name
+    couple = Wedding.current.couple
+    "#{couple['partner1']} and #{couple['partner2']}'s Wedding"
+  rescue StandardError
+    "Wedding"
+  end
 
   # Inline (CID) attachment so the botanical divider renders across clients that
   # strip inline SVG (Gmail, Outlook), unlike an embedded <svg> or data URI.

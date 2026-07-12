@@ -61,6 +61,16 @@
       </div>
     </div>
 
+    <%# Song Request %>
+    <div class="mt-8">
+      <label for="rsvps_<%= guest.id %>_song_request" class="rsvp-label">
+        Song Request
+      </label>
+      <%= rsvp_f.text_field :song_request,
+          class: "rsvp-input",
+          placeholder: "A song to get you on the dance floor" %>
+    </div>
+
     <%# Notes %>
     <div class="mt-8">
       <label for="rsvps_<%= guest.id %>_notes" class="rsvp-label">

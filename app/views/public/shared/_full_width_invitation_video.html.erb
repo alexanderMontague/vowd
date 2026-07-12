@@ -1,10 +1,11 @@
 <% skip_video = local_assigns.fetch(:skip_video) { params["skip_video"].present? } %>
 
 <% video_src = local_assigns.fetch(:video_src) { asset_path("britt-alex-envelope-open.mp4") } %>
+<% poster_src = local_assigns.fetch(:poster_src) { asset_path("britt-alex-envelope-open-poster.jpg") } %>
 <% controllers = ["invitation-video", local_assigns[:extra_controllers]].compact.join(" ") %>
 <% data_attrs = { controller: controllers, invitation_video_skip_video_value: skip_video }
      .deep_merge(local_assigns.fetch(:data, {})) %>
 <%= tag.div(class: "relative min-h-screen bg-gradient-to-b from-stone-50 via-amber-50/30 to-stone-100", data: data_attrs) do %>
-  <%= render "public/shared/invitation_video_stage", video_src: video_src %>
+  <%= render "public/shared/invitation_video_stage", video_src: video_src, poster_src: poster_src %>
   <%= yield %>
 <% end %>

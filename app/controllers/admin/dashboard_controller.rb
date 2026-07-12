@@ -8,9 +8,20 @@ module Admin
                           .where.not(status: "pending")
                           .order(updated_at: :desc)
                           .limit(10)
+      @guest_shoutouts = guest_shoutouts
     end
 
     private
+
+    def guest_shoutouts
+      return RSVP.none unless current_wedding
+
+      RSVP.includes(:guest)
+          .where(guests: { wedding_id: current_wedding.id })
+          .where("song_request IS NOT NULL AND song_request != '' OR notes IS NOT NULL AND notes != ''")
+          .references(:guest)
+          .order(updated_at: :desc)
+    end
 
     def calculate_stats
       return default_stats unless current_wedding

@@ -77,7 +77,7 @@ module Admin
     def generate_csv(guests)
       CSV.generate(headers: true) do |csv|
         csv << ["First Name", "Last Name", "Email", "Phone", "Household", "RSVP Status", "Meal Choice",
-                "Dietary Restrictions"]
+                "Dietary Restrictions", "Song Request", "Message to the Couple"]
 
         guests.each do |guest|
           csv << [
@@ -88,7 +88,9 @@ module Admin
             guest.household.display_name,
             guest.rsvp&.status,
             guest.rsvp&.meal_choice,
-            guest.rsvp&.dietary_restrictions
+            guest.rsvp&.dietary_restrictions,
+            guest.rsvp&.song_request,
+            guest.rsvp&.notes
           ]
         end
       end

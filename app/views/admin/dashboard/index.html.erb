@@ -94,3 +94,29 @@
     <p>No RSVPs yet.</p>
   <% end %>
 </div>
+
+<div class="card">
+  <h2>Song Requests & Messages</h2>
+  <% if @guest_shoutouts.any? %>
+    <table>
+      <thead>
+        <tr>
+          <th>Guest</th>
+          <th>Song Request</th>
+          <th>Message to the Couple</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @guest_shoutouts.each do |rsvp| %>
+          <tr>
+            <td><%= rsvp.guest.full_name %></td>
+            <td><%= rsvp.song_request.presence || "—" %></td>
+            <td><%= rsvp.notes.presence || "—" %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% else %>
+    <p>No song requests or messages yet.</p>
+  <% end %>
+</div>

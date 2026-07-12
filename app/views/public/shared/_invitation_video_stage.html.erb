@@ -1,13 +1,19 @@
 <% video_src = local_assigns.fetch(:video_src) %>
+<% poster_src = local_assigns.fetch(:poster_src) %>
 <div class="invitation-video-stage fixed inset-0 z-[200] overflow-hidden bg-black"
      data-invitation-video-target="videoStage"
      role="dialog"
      aria-label="Wedding invitation video">
-  <%= video_tag video_src,
+  <%= image_tag poster_src,
         class: "absolute inset-0 h-full w-full object-cover",
+        alt: "",
+        aria: { hidden: true } %>
+  <%= video_tag video_src,
+        class: "absolute inset-0 h-full w-full object-cover opacity-0 transition-opacity duration-300",
+        poster: poster_src,
         data: { invitation_video_target: "video" },
         playsinline: true,
-        preload: "metadata" %>
+        preload: "auto" %>
   <div class="pointer-events-none absolute inset-0 z-10 bg-white opacity-0 transition-opacity duration-700 ease-out"
        data-invitation-video-target="whiteCurtain"
        aria-hidden="true"></div>
@@ -17,7 +23,8 @@
     <div class="pointer-events-none absolute inset-x-0 bottom-0 flex justify-center px-4 pb-[max(2rem,calc(0.5rem+env(safe-area-inset-bottom,0px)))] pt-3">
       <button type="button"
               class="pointer-events-auto cursor-pointer border border-white/40 bg-transparent px-8 py-3 text-sm font-light tracking-[0.35em] text-stone-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-200/60">
-        Click to open
+        <span class="sm:hidden">Tap to open</span>
+        <span class="hidden sm:inline">Click to open</span>
       </button>
     </div>
   </div>

@@ -9,6 +9,7 @@ class RSVPService
           status: attributes[:status],
           meal_choice: attributes[:status] == "accepted" ? attributes[:meal_choice] : nil,
           dietary_restrictions: attributes[:dietary_restrictions],
+          song_request: attributes[:song_request],
           notes: attributes[:notes]
         )
       end

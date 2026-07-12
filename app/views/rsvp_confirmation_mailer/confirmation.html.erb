@@ -7,15 +7,15 @@
    } %>
 
 <div style="text-align:center;">
-  <p class="sans" style="margin:0; font-family:'Montserrat',Helvetica,Arial,sans-serif; font-size:11px; font-weight:400; letter-spacing:0.28em; text-transform:uppercase; color:#C89B7B;">
+  <p class="sans" style="margin:0; font-family:-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif; font-size:11px; font-weight:400; letter-spacing:0.28em; text-transform:uppercase; color:#C89B7B;">
     Thank you
   </p>
 
-  <p class="mono" style="margin:16px 0 0; font-family:'Cormorant Garamond',Georgia,serif; font-size:36px; font-weight:400; line-height:1.15; color:#292524;">
+  <p class="mono" style="margin:16px 0 0; font-family:Georgia,'Times New Roman',serif; font-size:36px; font-weight:400; line-height:1.15; color:#292524;">
     Your RSVP is confirmed
   </p>
 
-  <p class="sans" style="margin:16px auto 0; max-width:380px; font-family:'Montserrat',Helvetica,Arial,sans-serif; font-size:15px; font-weight:300; line-height:1.9; color:#57534e;">
+  <p class="sans" style="margin:16px auto 0; max-width:380px; font-family:-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif; font-size:15px; font-weight:300; line-height:1.9; color:#57534e;">
     We&rsquo;ve received your response &mdash; here&rsquo;s what we have on file for your party.
   </p>
 </div>
@@ -28,17 +28,17 @@
         <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
           <tr>
             <td style="vertical-align:top;">
-              <div class="mono" style="font-family:'Cormorant Garamond',Georgia,serif; font-size:21px; font-weight:500; color:#292524;">
+              <div class="mono" style="font-family:Georgia,'Times New Roman',serif; font-size:21px; font-weight:500; color:#292524;">
                 <%= guest.full_name %>
               </div>
               <% if guest.rsvp&.meal_choice.present? %>
-                <div class="sans" style="font-family:'Montserrat',Helvetica,Arial,sans-serif; font-size:11px; font-weight:300; letter-spacing:0.12em; text-transform:uppercase; color:#a8a29e; padding-top:5px;">
+                <div class="sans" style="font-family:-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif; font-size:11px; font-weight:300; letter-spacing:0.12em; text-transform:uppercase; color:#a8a29e; padding-top:5px;">
                   <%= guest.rsvp.meal_choice %>
                 </div>
               <% end %>
             </td>
             <td align="right" style="vertical-align:top; text-align:right;">
-              <div class="sans" style="font-family:'Montserrat',Helvetica,Arial,sans-serif; font-size:11px; font-weight:500; letter-spacing:0.14em; text-transform:uppercase; color:<%= label_color %>;">
+              <div class="sans" style="font-family:-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif; font-size:11px; font-weight:500; letter-spacing:0.14em; text-transform:uppercase; color:<%= label_color %>;">
                 <%= label %>
               </div>
             </td>
@@ -49,12 +49,12 @@
   <% end %>
 </table>
 
-<p class="sans" style="margin:28px 0 32px; text-align:center; font-family:'Montserrat',Helvetica,Arial,sans-serif; font-size:15px; font-weight:300; line-height:1.9; color:#57534e;">
+<p class="sans" style="margin:28px 0 32px; text-align:center; font-family:-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif; font-size:15px; font-weight:300; line-height:1.9; color:#57534e;">
   Need to make a change? You may update your response any time before the big day.
 </p>
 
 <%= render "mailer_shared/button", url: @rsvp_url, label: "Update RSVP" %>
 
-<p class="mono" style="margin:32px 0 0; text-align:center; font-family:'Cormorant Garamond',Georgia,serif; font-style:italic; font-size:18px; font-weight:400; color:#78716c;">
+<p class="mono" style="margin:32px 0 0; text-align:center; font-family:Georgia,'Times New Roman',serif; font-style:italic; font-size:18px; font-weight:400; color:#78716c;">
   We can&rsquo;t wait to celebrate with you.
 </p>

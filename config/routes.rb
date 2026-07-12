@@ -8,6 +8,7 @@ Rails.application.routes.draw do
   end
 
   get "/save-the-date", to: "public/save_the_dates#show", as: :public_save_the_date
+  post "/save-the-date", to: "public/save_the_dates#signup", as: :public_save_the_date_signup
   get "/calendar.ics", to: "public/save_the_dates#calendar", as: :public_calendar_ics
   get "/faq", to: "public/faqs#show", as: :public_faq
   get "/gallery", to: "public/photos#show", as: :public_gallery
@@ -33,6 +34,12 @@ Rails.application.routes.draw do
       end
     end
     resources :households
+    resources :save_the_date_signups, only: %i[index destroy] do
+      member do
+        patch :match
+        delete :unmatch
+      end
+    end
     resources :invitations, only: %i[index create] do
       collection do
         get :physical

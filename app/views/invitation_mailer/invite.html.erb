@@ -1,41 +1,41 @@
 <div style="text-align:center;">
-  <p class="mono display-xl" style="margin:0; font-family:'Cormorant Garamond',Georgia,serif; font-size:52px; font-weight:400; line-height:1.05; letter-spacing:0.01em; color:#292524;">
+  <p class="mono display-xl" style="margin:0; font-family:Georgia,'Times New Roman',serif; font-size:52px; font-weight:400; line-height:1.05; letter-spacing:0.01em; color:#292524;">
     <%= @wedding.title %>
   </p>
 
-  <p class="sans" style="margin:18px 0 0; font-family:'Montserrat',Helvetica,Arial,sans-serif; font-size:11px; font-weight:300; letter-spacing:0.24em; text-transform:uppercase; color:#a8a29e;">
+  <p class="sans" style="margin:18px 0 0; font-family:-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif; font-size:11px; font-weight:300; letter-spacing:0.24em; text-transform:uppercase; color:#a8a29e;">
     request the honour of your presence
   </p>
 
   <% if @wedding.date %>
-    <p class="mono" style="margin:24px 0 0; font-family:'Cormorant Garamond',Georgia,serif; font-size:22px; font-weight:400; letter-spacing:0.02em; color:#57534e;">
+    <p class="mono" style="margin:24px 0 0; font-family:Georgia,'Times New Roman',serif; font-size:22px; font-weight:400; letter-spacing:0.02em; color:#57534e;">
       <%= format_date_elegant(@wedding.date) %>
     </p>
   <% end %>
 
   <% if @wedding.venue.present? %>
-    <p class="sans" style="margin:6px 0 0; font-family:'Montserrat',Helvetica,Arial,sans-serif; font-size:12px; font-weight:300; letter-spacing:0.12em; color:#78716c;">
+    <p class="sans" style="margin:6px 0 0; font-family:-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif; font-size:12px; font-weight:300; letter-spacing:0.12em; color:#78716c;">
       <%= full_venue_name(@wedding.venue) %>
     </p>
   <% end %>
 </div>
 
-<p class="sans" style="margin:0; font-family:'Montserrat',Helvetica,Arial,sans-serif; font-size:15px; font-weight:400; line-height:1.8; color:#44403c;">
+<p class="sans" style="margin:0; font-family:-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif; font-size:15px; font-weight:400; line-height:1.8; color:#44403c;">
   Dear <%= @guest.first_name %>,
 </p>
 
-<p class="sans" style="margin:18px 0 0; font-family:'Montserrat',Helvetica,Arial,sans-serif; font-size:15px; font-weight:300; line-height:1.9; color:#57534e;">
+<p class="sans" style="margin:18px 0 0; font-family:-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif; font-size:15px; font-weight:300; line-height:1.9; color:#57534e;">
   We are delighted to invite you to celebrate our special day with us. Your presence
   would mean the world to us, and we would be honoured to share this moment with you.
 </p>
 
-<p class="sans" style="margin:18px 0 32px; font-family:'Montserrat',Helvetica,Arial,sans-serif; font-size:15px; font-weight:300; line-height:1.9; color:#57534e;">
+<p class="sans" style="margin:18px 0 32px; font-family:-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif; font-size:15px; font-weight:300; line-height:1.9; color:#57534e;">
   Kindly let us know whether you are able to join us by responding below.
 </p>
 
 <%= render "mailer_shared/button", url: @rsvp_url, label: "RSVP" %>
 
-<p class="sans" style="margin:24px 0 0; text-align:center; font-family:'Montserrat',Helvetica,Arial,sans-serif; font-size:11px; font-weight:300; letter-spacing:0.04em; color:#a8a29e;">
+<p class="sans" style="margin:24px 0 0; text-align:center; font-family:-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif; font-size:11px; font-weight:300; letter-spacing:0.04em; color:#a8a29e;">
   Or copy this link into your browser:<br>
   <a href="<%= @rsvp_url %>" style="color:#A07658; text-decoration:none; word-break:break-all;"><%= @rsvp_url %></a>
 </p>

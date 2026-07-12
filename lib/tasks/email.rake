@@ -1,3 +1,5 @@
+# bin/rails 'email:test[me@alexmontague.ca]'
+
 namespace :email do
   desc "Send a sample of every transactional email to a recipient. Usage: bin/rails 'email:test[you@example.com]'"
   task :test, [:recipient] => :environment do |_task, args|
@@ -15,8 +17,12 @@ namespace :email do
 
     deliveries = {
       "invitation" => -> { InvitationMailer.invite(accepted_guest) },
-      "reminder" => -> { WeddingReminderMailer.reminder(guest: accepted_guest, wedding:, subject: "Sample reminder: #{wedding.title}") },
-      "rsvp_confirmation" => -> { RSVPConfirmationMailer.confirmation(guests: [accepted_guest, declined_guest], wedding:) }
+      "reminder" => lambda {
+        WeddingReminderMailer.reminder(guest: accepted_guest, wedding:, subject: "Sample reminder: #{wedding.title}")
+      },
+      "rsvp_confirmation" => lambda {
+        RSVPConfirmationMailer.confirmation(guests: [accepted_guest, declined_guest], wedding:)
+      }
     }
 
     deliveries.each do |name, build_mail|

@@ -8,15 +8,15 @@
     <meta name="supported-color-schemes" content="light only">
     <title><%= @wedding&.title %></title>
     <style>
-      @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Montserrat:wght@200;300;400;500&display=swap');
-
+      <%# Web-safe fonts only, so rendering is identical across every mail client %>
+      <%# (Apple Mail, Gmail, Outlook, Yahoo) with no dependency on remote web fonts. %>
       body { margin: 0; padding: 0; width: 100% !important; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; background-color: #FAF9F7; }
       table { border-collapse: collapse; }
       img { border: 0; line-height: 100%; outline: none; text-decoration: none; }
       a { color: #A07658; }
 
-      .mono { font-family: 'Cormorant Garamond', Georgia, 'Times New Roman', serif; }
-      .sans { font-family: 'Montserrat', -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif; }
+      .mono { font-family: Georgia, 'Times New Roman', serif; }
+      .sans { font-family: -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; }
 
       @media only screen and (max-width: 620px) {
         .card-pad { padding-left: 28px !important; padding-right: 28px !important; }
@@ -38,7 +38,7 @@
             <tr>
               <td align="center" class="card-pad" style="padding: 44px 56px 0;">
                 <% if @wedding&.couple&.dig("initials").present? %>
-                  <div class="mono" style="font-family:'Cormorant Garamond',Georgia,serif; font-size:17px; font-weight:500; letter-spacing:0.16em; color:#C89B7B; text-transform:uppercase;">
+                  <div class="mono" style="font-family:Georgia,'Times New Roman',serif; font-size:17px; font-weight:500; letter-spacing:0.16em; color:#C89B7B; text-transform:uppercase;">
                     <%= @wedding.couple["initials"] %>
                   </div>
                 <% end %>
@@ -47,7 +47,7 @@
 
             <!-- Content -->
             <tr>
-              <td class="card-pad sans" style="padding: 16px 56px 8px; font-family:'Montserrat',-apple-system,'Segoe UI',Helvetica,Arial,sans-serif; color:#57534e;">
+              <td class="card-pad sans" style="padding: 16px 56px 8px; font-family:-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif; color:#57534e;">
                 <%= yield %>
               </td>
             </tr>
@@ -57,10 +57,10 @@
               <td class="card-pad" style="padding: 8px 56px 48px;">
                 <%= render "mailer_shared/divider" %>
                 <div align="center" style="text-align:center;">
-                  <div class="mono" style="font-family:'Cormorant Garamond',Georgia,serif; font-size:22px; font-weight:400; letter-spacing:0.04em; color:#292524;">
+                  <div class="mono" style="font-family:Georgia,'Times New Roman',serif; font-size:22px; font-weight:400; letter-spacing:0.04em; color:#292524;">
                     <%= @wedding&.title %>
                   </div>
-                  <div class="sans" style="font-family:'Montserrat',Helvetica,Arial,sans-serif; font-size:11px; font-weight:300; letter-spacing:0.22em; text-transform:uppercase; color:#a8a29e; padding-top:10px;">
+                  <div class="sans" style="font-family:-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif; font-size:11px; font-weight:300; letter-spacing:0.22em; text-transform:uppercase; color:#a8a29e; padding-top:10px;">
                     <% if @wedding&.date %><%= format_date(@wedding.date) %><% end %>
                     <% if @wedding&.venue.present? %>&nbsp;&middot;&nbsp;<%= @wedding.venue["city"] %><% end %>
                   </div>

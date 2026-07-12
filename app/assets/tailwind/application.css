@@ -461,11 +461,11 @@
   }
 
   .rsvp-submit {
-    @apply w-full bg-stone-800 text-white py-5 hover:bg-stone-900 transition-colors text-xs tracking-[0.2em] uppercase font-light shadow-lg cursor-pointer border-none;
+    @apply w-10 bg-stone-800 text-white py-5 hover:bg-stone-900 transition-colors text-xs tracking-[0.2em] uppercase font-light shadow-lg cursor-pointer border-none;
   }
 
   .btn-wedding-primary {
-    @apply inline-block px-12 py-4 bg-stone-800 text-white text-xs uppercase tracking-[0.2em] font-light no-underline transition-colors hover:bg-stone-900;
+    @apply inline-block px-12 py-4 bg-stone-800 text-white text-xs uppercase tracking-[0.2em] font-light no-underline transition-colors hover:bg-stone-900 cursor-pointer;
   }
 
   /* --------------------------------------------------------------------------
@@ -662,6 +662,10 @@
 
   .actions {
     @apply flex gap-2 flex-wrap;
+  }
+
+  .table-uniform-rows tbody td {
+    @apply h-16 align-middle whitespace-nowrap;
   }
 
   /* --------------------------------------------------------------------------

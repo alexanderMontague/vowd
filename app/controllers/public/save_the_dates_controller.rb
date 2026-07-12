@@ -5,6 +5,20 @@ module Public
     def show
     end
 
+    def signup
+      result = SaveTheDateSignupService.submit!(
+        wedding: current_wedding,
+        signup_params: signup_params
+      )
+
+      if result[:success]
+        redirect_to public_save_the_date_path(skip_video: 1),
+                    notice: "Thank you — we've got your details!"
+      else
+        redirect_to public_save_the_date_path(skip_video: 1), alert: result[:error]
+      end
+    end
+
     def calendar
       return head :not_found unless current_wedding&.date
 
@@ -35,8 +49,12 @@ module Public
 
     private
 
+    def signup_params
+      params.require(:save_the_date_signup).permit(:name, :email, :phone_number)
+    end
+
     def save_the_date_mode_allowed?
-      action_name.in?(%w[show calendar])
+      action_name.in?(%w[show signup calendar])
     end
 
     def generate_ics(title:, description:, location:, start_time:, end_time:)

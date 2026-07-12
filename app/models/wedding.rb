@@ -25,6 +25,10 @@ class Wedding < FrozenRecord::Base
     Household.where(wedding_id: id)
   end
 
+  def save_the_date_signups
+    SaveTheDateSignup.where(wedding_id: id)
+  end
+
   def events
     Event.where(wedding_id: id)
   end

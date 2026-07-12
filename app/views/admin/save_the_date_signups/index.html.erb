@@ -1,0 +1,88 @@
+<div class="card">
+  <div class="flex justify-between items-center mb-8">
+    <div>
+      <h1>Save the Date Signups</h1>
+      <p class="text-sm text-neutral-500 mt-1">
+        Contact details collected from the save the date page.
+      </p>
+    </div>
+  </div>
+
+  <%= form_with url: admin_save_the_date_signups_path, method: :get, class: "filter-form",
+                data: { controller: "form-auto-submit" } do |f| %>
+    <div class="form-group mb-0 min-w-[180px]">
+      <%= f.label :status, "Filter" %>
+      <%= f.select :status,
+                   [["All", ""], ["Matched", "matched"], ["Unmatched", "unmatched"]],
+                   { selected: params[:status] },
+                   { class: "form-control", data: { action: "change->form-auto-submit#submit" } } %>
+    </div>
+  <% end %>
+
+  <% if @signups.any? %>
+    <div class="table-container">
+    <table class="table-uniform-rows">
+      <thead>
+        <tr>
+          <th>Contact</th>
+          <th>Phone</th>
+          <th>Status</th>
+          <th>Matched Guest</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @signups.each do |signup| %>
+          <tr>
+            <td>
+              <% if signup.name.present? %>
+                <div class="font-medium"><%= signup.name %></div>
+              <% end %>
+              <div class="text-sm text-neutral-500"><%= signup.email %></div>
+            </td>
+            <td><%= signup.phone_number.presence || "—" %></td>
+            <td>
+              <% if signup.matched? %>
+                <span class="badge badge-success">Matched</span>
+              <% else %>
+                <span class="badge badge-warning">Unmatched</span>
+              <% end %>
+            </td>
+            <td>
+              <% if signup.matched? %>
+                <%= signup.guest.full_name %>
+                <span class="text-neutral-400 text-sm">
+                  (<%= signup.guest.household.display_name %>)
+                </span>
+              <% else %>
+                <span class="text-neutral-400">—</span>
+              <% end %>
+            </td>
+            <td>
+              <div class="flex items-center gap-2 flex-nowrap whitespace-nowrap">
+                <% if signup.matched? %>
+                  <%= button_to "Unmatch", unmatch_admin_save_the_date_signup_path(signup),
+                                method: :delete, class: "btn btn-secondary btn-sm" %>
+                <% else %>
+                  <%= form_with url: match_admin_save_the_date_signup_path(signup), method: :patch,
+                                class: "flex items-center gap-2" do |f| %>
+                    <%= f.select :guest_id,
+                                 @guests.map { |g| ["#{g.full_name} — #{g.household.display_name}", g.id] },
+                                 { include_blank: "Match to guest…" },
+                                 { class: "form-control w-[160px] shrink-0" } %>
+                    <%= f.submit "Match", class: "btn btn-primary btn-sm" %>
+                  <% end %>
+                <% end %>
+                <%= button_to "Delete", admin_save_the_date_signup_path(signup), method: :delete,
+                              data: { turbo_confirm: "Remove this signup?" }, class: "btn btn-danger btn-sm" %>
+              </div>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+    </div>
+  <% else %>
+    <p>No signups yet.</p>
+  <% end %>
+</div>

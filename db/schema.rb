@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_06_26_010000) do
+ActiveRecord::Schema[7.1].define(version: 2026_07_11_150000) do
   create_table "admin_users", force: :cascade do |t|
     t.string "email", null: false
     t.string "password_digest", null: false
@@ -104,8 +104,22 @@ ActiveRecord::Schema[7.1].define(version: 2026_06_26_010000) do
     t.text "notes"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.text "song_request"
     t.index ["guest_id", "status"], name: "index_rsvps_on_guest_id_and_status"
     t.index ["guest_id"], name: "index_rsvps_on_guest_id"
+  end
+
+  create_table "save_the_date_signups", force: :cascade do |t|
+    t.string "wedding_id", null: false
+    t.integer "guest_id"
+    t.string "name"
+    t.string "email", null: false
+    t.string "phone_number"
+    t.datetime "matched_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["guest_id"], name: "index_save_the_date_signups_on_guest_id"
+    t.index ["wedding_id", "email"], name: "index_save_the_date_signups_on_wedding_id_and_email"
   end
 
   create_table "wedding_metadata", id: :string, force: :cascade do |t|
@@ -122,4 +136,5 @@ ActiveRecord::Schema[7.1].define(version: 2026_06_26_010000) do
   add_foreign_key "invitations", "guests"
   add_foreign_key "notification_deliveries", "guests"
   add_foreign_key "rsvps", "guests"
+  add_foreign_key "save_the_date_signups", "guests"
 end

@@ -46,7 +46,13 @@ export default class extends Controller {
       "pointer-events-none",
       "invisible",
     );
+    this.revealVideo();
     this.videoTarget.play().catch(() => {});
+  }
+
+  revealVideo() {
+    this.videoTarget.classList.remove("opacity-0");
+    this.videoTarget.classList.add("opacity-100");
   }
 
   onEnded() {

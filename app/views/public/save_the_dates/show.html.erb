@@ -6,6 +6,12 @@
           eyebrow: "Save the Date",
           title: current_wedding.title %>
 
+      <% if flash[:notice].present? || flash[:alert].present? %>
+        <div data-controller="scroll-to-top">
+          <%= render "public/shared/flash_messages" %>
+        </div>
+      <% end %>
+
       <div class="space-y-10 text-center">
         <p class="mx-auto max-w-md font-light leading-relaxed text-stone-600">
           We are delighted to announce our wedding and would be honored to have you celebrate with us on this special day.
@@ -68,6 +74,50 @@
           <p class="text-xs font-light text-stone-400">
             Formal invitation to follow
           </p>
+        </div>
+
+        <div class="mx-auto max-w-md space-y-8 border-t border-primary/20 pt-10">
+          <div class="space-y-2 text-center">
+            <p class="invitation-eyebrow">Stay in Touch</p>
+            <p class="mx-auto max-w-sm font-light leading-relaxed text-stone-600">
+              Leave your details and we'll make sure your formal invitation reaches you.
+            </p>
+          </div>
+
+          <%= form_with url: public_save_the_date_signup_path,
+                        scope: :save_the_date_signup,
+                        method: :post,
+                        data: { turbo: false },
+                        class: "space-y-6 text-left" do |f| %>
+            <div>
+              <%= f.label :name, "Name", class: "rsvp-label" %>
+              <%= f.text_field :name,
+                  class: "rsvp-input",
+                  placeholder: "Your name",
+                  autocomplete: "name" %>
+            </div>
+
+            <div>
+              <%= f.label :email, "Email", class: "rsvp-label" %>
+              <%= f.email_field :email,
+                  required: true,
+                  class: "rsvp-input",
+                  placeholder: "you@example.com",
+                  autocomplete: "email" %>
+            </div>
+
+            <div>
+              <%= f.label :phone_number, "Phone (optional)", class: "rsvp-label" %>
+              <%= f.telephone_field :phone_number,
+                  class: "rsvp-input",
+                  placeholder: "(555) 555-5555",
+                  autocomplete: "tel" %>
+            </div>
+
+            <div class="pt-2 flex justify-center">
+              <%= f.submit "Share My Details", class: "btn-wedding-primary" %>
+            </div>
+          <% end %>
         </div>
       </div>
     <% end %>
