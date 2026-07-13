@@ -3,7 +3,7 @@ module DisposableCamera
   # the concrete adapter (local disk vs S3-compatible bucket) is chosen from config.
   class StorageClient
     class << self
-      delegate :upload!, :delete!, :delete_objects!, :public_url_for, to: :adapter
+      delegate :upload!, :delete!, :delete_objects!, :public_url_for, :download_url_for, :download_object, to: :adapter
 
       def adapter
         @adapter ||= build_adapter

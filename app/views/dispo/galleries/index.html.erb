@@ -1,22 +1,41 @@
 <% content_for :body_class, "dispo-body--gallery" %>
 
-<main class="dispo-gallery" data-controller="dispo-lightbox">
+<main class="dispo-gallery"
+      data-controller="dispo-lightbox photo-style"
+      data-photo-style-current-value="<%= current_wedding.dispo_photo_style %>"
+      data-photo-style="<%= current_wedding.dispo_photo_style %>">
   <header class="dispo-gallery__header">
     <h1>Disposable Camera Gallery</h1>
+
+    <% unless @photos.empty? %>
+      <div class="dispo-style-toggle" role="group" aria-label="Photo style">
+        <% [["retro", "Retro"], ["bw", "B&W"], ["original", "Original"]].each do |value, label| %>
+          <button type="button"
+                  class="dispo-style-toggle__option"
+                  data-photo-style-target="option"
+                  data-action="photo-style#select"
+                  data-photo-style-option-param="<%= value %>"
+                  data-style-option="<%= value %>">
+            <%= label %>
+          </button>
+        <% end %>
+      </div>
+    <% end %>
   </header>
 
   <% if @photos.empty? %>
     <p class="dispo-gallery__empty">No photos yet. Be the first to take one.</p>
   <% else %>
+    <% download_prefix = current_wedding.last_name.to_s.parameterize %>
     <section class="dispo-gallery__grid">
       <% @photos.each do |photo| %>
         <article class="dispo-gallery__item"
+                 data-dispo-lightbox-item
+                 data-dispo-lightbox-url="<%= DisposableCamera::StorageClient.download_url_for(photo.object_key, filename: photo.download_filename(prefix: download_prefix)) %>"
+                 data-dispo-lightbox-raw="<%= dispo_photo_raw_path(photo) %>"
+                 data-dispo-lightbox-filename="<%= photo.download_filename(prefix: download_prefix) %>"
                  data-action="click->dispo-lightbox#open">
-          <img
-            src="<%= DisposableCamera::StorageClient.public_url_for(photo.object_key) %>"
-            alt="Disposable camera guest photo"
-            loading="lazy"
-          >
+          <%= render "dispo/shared/photo", photo: photo %>
           <p>
             <%= photo.captured_at.in_time_zone(current_wedding.timezone).strftime("%b %-d, %Y %l:%M %p") %>
           </p>
@@ -46,12 +65,37 @@
   <div class="dispo-lightbox"
        data-dispo-lightbox-target="overlay"
        data-action="click->dispo-lightbox#closeOnBackdrop">
+    <div class="dispo-lightbox__toolbar">
+      <a class="dispo-lightbox__action"
+         data-dispo-lightbox-target="download"
+         data-action="dispo-lightbox#download"
+         href="#"
+         download
+         aria-label="Download photo">
+        <span aria-hidden="true">↓</span>
+      </a>
+      <button type="button"
+              class="dispo-lightbox__action dispo-lightbox__close"
+              data-action="click->dispo-lightbox#close"
+              aria-label="Close">
+        <span aria-hidden="true">✕</span>
+      </button>
+    </div>
+
     <button type="button"
-            class="dispo-lightbox__close"
-            data-action="click->dispo-lightbox#close"
-            aria-label="Close">
-      ✕
+            class="dispo-lightbox__nav dispo-lightbox__nav--prev"
+            data-action="click->dispo-lightbox#prev"
+            aria-label="Previous photo">
+      <span aria-hidden="true">‹</span>
     </button>
-    <img class="dispo-lightbox__img" data-dispo-lightbox-target="image" src="" alt="">
+
+    <div class="dispo-lightbox__stage" data-dispo-lightbox-target="stage"></div>
+
+    <button type="button"
+            class="dispo-lightbox__nav dispo-lightbox__nav--next"
+            data-action="click->dispo-lightbox#next"
+            aria-label="Next photo">
+      <span aria-hidden="true">›</span>
+    </button>
   </div>
 </main>

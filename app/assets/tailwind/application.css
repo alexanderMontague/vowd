@@ -1525,10 +1525,16 @@
     box-shadow: 0 25px 80px rgba(0, 0, 0, 0.8);
   }
 
-  .dispo-lightbox__close {
+  .dispo-lightbox__toolbar {
     position: absolute;
     top: 1.25rem;
     right: 1.25rem;
+    display: flex;
+    gap: 0.6rem;
+    z-index: 2;
+  }
+
+  .dispo-lightbox__action {
     width: 2.5rem;
     height: 2.5rem;
     border-radius: 50%;
@@ -1537,6 +1543,7 @@
     color: #f8f3e5;
     font-size: 1.25rem;
     line-height: 1;
+    text-decoration: none;
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -1544,8 +1551,197 @@
     transition: background 0.15s ease;
   }
 
-  .dispo-lightbox__close:hover {
+  .dispo-lightbox__action:hover {
     background: rgba(255, 255, 255, 0.22);
+  }
+
+  .dispo-lightbox__nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #f8f3e5;
+    font-size: 1.9rem;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+    transition: background 0.15s ease;
+  }
+
+  .dispo-lightbox__nav:hover {
+    background: rgba(255, 255, 255, 0.22);
+  }
+
+  .dispo-lightbox__nav--prev {
+    left: 1rem;
+  }
+
+  .dispo-lightbox__nav--next {
+    right: 1rem;
+  }
+
+  .dispo-lightbox__stage {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    max-width: 100%;
+    max-height: 90dvh;
+  }
+
+  /* ---- Gallery style toggle ---- */
+  .dispo-style-toggle {
+    display: inline-flex;
+    gap: 0.15rem;
+    padding: 0.2rem;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 999px;
+  }
+
+  .dispo-style-toggle__option {
+    appearance: none;
+    border: 0;
+    background: transparent;
+    color: #d2c7a8;
+    font-size: 0.72rem;
+    letter-spacing: 0.04em;
+    padding: 0.35rem 0.85rem;
+    border-radius: 999px;
+    cursor: pointer;
+    transition:
+      background 0.15s ease,
+      color 0.15s ease;
+  }
+
+  .dispo-style-toggle__option:hover {
+    color: #f8f3e5;
+  }
+
+  .dispo-style-toggle__option.is-active {
+    background: #f8f3e5;
+    color: #1a1a1a;
+  }
+
+  /* ==========================================================================
+     Retro Photo — front-end-only layered filter
+     The original image is never modified. Layers are composited on top and the
+     colour grade is applied via CSS `filter`; per-photo variation comes from the
+     retro-photo controller's `--rp-*` custom properties. Which layers show is
+     driven by an ancestor `[data-photo-style]` scope.
+     ========================================================================== */
+  .retro-photo {
+    display: block;
+    margin: 0;
+  }
+
+  .retro-photo__frame {
+    position: relative;
+    overflow: hidden;
+    border-radius: inherit;
+    transform: rotate(var(--rp-tilt, 0deg));
+  }
+
+  .retro-photo__img {
+    display: block;
+    width: 100%;
+    height: auto;
+    transition: filter 0.3s ease;
+  }
+
+  .retro-photo--square .retro-photo__img {
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+  }
+
+  .retro-photo__grain,
+  .retro-photo__leak,
+  .retro-photo__vignette {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .retro-photo__grain {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-size: 160px 160px;
+    background-position: var(--rp-grain-x, 0%) var(--rp-grain-y, 0%);
+    mix-blend-mode: overlay;
+  }
+
+  .retro-photo__leak {
+    background:
+      radial-gradient(
+        circle at var(--rp-leak-x, 85%) var(--rp-leak-y, 12%),
+        hsla(calc(30deg + var(--rp-leak-hue, 0deg)), 92%, 62%, var(--rp-leak-opacity, 0.35)) 0%,
+        hsla(calc(8deg + var(--rp-leak-hue, 0deg)), 88%, 55%, calc(var(--rp-leak-opacity, 0.35) * 0.55)) 28%,
+        transparent 62%
+      );
+    mix-blend-mode: screen;
+  }
+
+  .retro-photo__vignette {
+    background: radial-gradient(
+      ellipse at center,
+      transparent 52%,
+      rgba(0, 0, 0, var(--rp-vignette, 0.45)) 100%
+    );
+  }
+
+  /* Retro treatment */
+  [data-photo-style="retro"] .retro-photo__img {
+    filter: sepia(var(--rp-sepia, 0.38)) contrast(var(--rp-contrast, 1.1))
+      saturate(var(--rp-saturate, 1.15)) brightness(var(--rp-brightness, 1));
+  }
+
+  [data-photo-style="retro"] .retro-photo__grain {
+    opacity: var(--rp-grain-opacity, 0.18);
+  }
+
+  [data-photo-style="retro"] .retro-photo__leak,
+  [data-photo-style="retro"] .retro-photo__vignette {
+    opacity: 1;
+  }
+
+  /* Black & white treatment */
+  [data-photo-style="bw"] .retro-photo__img {
+    filter: grayscale(1) contrast(calc(var(--rp-contrast, 1.1) + 0.05))
+      brightness(var(--rp-brightness, 1));
+  }
+
+  [data-photo-style="bw"] .retro-photo__grain {
+    opacity: calc(var(--rp-grain-opacity, 0.18) * 1.25);
+  }
+
+  [data-photo-style="bw"] .retro-photo__vignette {
+    opacity: 1;
+  }
+
+  /* Enlarged view keeps proportions instead of the square crop */
+  .dispo-lightbox .retro-photo--square .retro-photo__img {
+    aspect-ratio: auto;
+    width: auto;
+    height: auto;
+    max-width: 100%;
+    max-height: 90dvh;
+    object-fit: contain;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .retro-photo__img,
+    .retro-photo__grain,
+    .retro-photo__leak,
+    .retro-photo__vignette {
+      transition: none;
+    }
   }
 }
 

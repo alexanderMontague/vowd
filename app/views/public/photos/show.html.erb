@@ -46,35 +46,23 @@
             Photos will appear here after the wedding.
           </p>
         <% else %>
-          <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"
+               data-photo-style="<%= current_wedding.dispo_photo_style %>">
             <% @dispo_photos.each do |photo| %>
-              <div class="gallery-item animate-on-scroll" data-scroll-animate-target="item">
-                <%= image_tag DisposableCamera::StorageClient.public_url_for(photo.object_key),
-                    alt: "Disposable camera photo",
-                    loading: "lazy" %>
+              <div class="animate-on-scroll" data-scroll-animate-target="item">
+                <%= render "dispo/shared/photo", photo: photo %>
               </div>
             <% end %>
           </div>
 
-          <% if @dispo_total_pages > 1 %>
-            <div class="mt-16 flex flex-col items-center gap-4">
+          <div class="mt-16 flex flex-col items-center gap-4">
+            <% if @dispo_has_more %>
               <p class="text-xs tracking-[0.15em] uppercase text-stone-400 font-light">
-                Page <%= @dispo_page %> of <%= @dispo_total_pages %> &middot; <%= pluralize(@dispo_total, "photo") %>
+                Showing <%= @dispo_photos.size %> of <%= pluralize(@dispo_total, "photo") %>
               </p>
-              <div class="flex items-center gap-4">
-                <% if @dispo_has_prev_page %>
-                  <%= link_to "← Previous",
-                      public_gallery_path(page: @dispo_page - 1, anchor: "dispo-photos"),
-                      class: "btn-wedding-primary" %>
-                <% end %>
-                <% if @dispo_has_next_page %>
-                  <%= link_to "Next →",
-                      public_gallery_path(page: @dispo_page + 1, anchor: "dispo-photos"),
-                      class: "btn-wedding-primary" %>
-                <% end %>
-              </div>
-            </div>
-          <% end %>
+            <% end %>
+            <%= link_to "View the Full Gallery →", dispo_gallery_path, class: "btn-wedding-primary" %>
+          </div>
         <% end %>
       </div>
     </section>

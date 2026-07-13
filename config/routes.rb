@@ -5,6 +5,7 @@ Rails.application.routes.draw do
     get "/", to: "cameras#show", as: :dispo_camera
     post "/upload", to: "cameras#create", as: :dispo_upload
     get "/gallery", to: "galleries#index", as: :dispo_gallery
+    get "/gallery/:id/raw", to: "galleries#raw", as: :dispo_photo_raw
   end
 
   get "/save-the-date", to: "public/save_the_dates#show", as: :public_save_the_date

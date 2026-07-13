@@ -45,7 +45,29 @@ module DisposableCamera
         )
       end
 
+      # Presigns a URL that forces the browser to download the object as an
+      # attachment. Works cross-origin because the disposition is baked into the
+      # signed response, so no bytes are proxied through the app.
+      def download_url_for(object_key, filename: nil)
+        presigner.presigned_url(
+          :get_object,
+          bucket: bucket,
+          key: object_key,
+          expires_in: PRESIGNED_URL_EXPIRES_IN,
+          response_content_disposition: content_disposition(filename)
+        )
+      end
+
+      def download_object(object_key)
+        client.get_object(bucket: bucket, key: object_key).body
+      end
+
       private
+
+      def content_disposition(filename)
+        sanitized = filename.to_s.gsub(/["\r\n]/, "").presence
+        sanitized ? %(attachment; filename="#{sanitized}") : "attachment"
+      end
 
       def client
         @client ||= Aws::S3::Client.new(**Configuration.aws_client_config)

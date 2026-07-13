@@ -1,0 +1,25 @@
+<%#
+  Renders a single disposable camera photo with its layered retro treatment.
+  The original image is served untouched; the grain / light-leak / vignette layers
+  and colour grade are applied purely on the front end. Per-photo variation is set
+  by the retro-photo controller; which layers are visible is scoped by an ancestor
+  `data-photo-style` attribute.
+
+  Locals:
+    photo  - a DisposablePhoto
+    square - crop to a square tile (default true); false keeps natural proportions
+%>
+<% square = local_assigns.fetch(:square, true) %>
+<figure class="retro-photo <%= "retro-photo--square" if square %>"
+        data-controller="retro-photo"
+        data-retro-photo-seed-value="<%= photo.id %>">
+  <div class="retro-photo__frame">
+    <img class="retro-photo__img"
+         src="<%= DisposableCamera::StorageClient.public_url_for(photo.object_key) %>"
+         alt="Disposable camera guest photo"
+         loading="lazy">
+    <span class="retro-photo__grain" aria-hidden="true"></span>
+    <span class="retro-photo__leak" aria-hidden="true"></span>
+    <span class="retro-photo__vignette" aria-hidden="true"></span>
+  </div>
+</figure>

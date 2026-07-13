@@ -18,6 +18,16 @@ module DisposableCamera
       def public_url_for(object_key)
         raise NotImplementedError, "#{self.class}#public_url_for is not implemented"
       end
+
+      def download_url_for(object_key, filename: nil)
+        raise NotImplementedError, "#{self.class}#download_url_for is not implemented"
+      end
+
+      # Returns an IO of the object's raw bytes. Used to serve the image
+      # same-origin so the browser can composite and export it via canvas.
+      def download_object(object_key)
+        raise NotImplementedError, "#{self.class}#download_object is not implemented"
+      end
     end
   end
 end

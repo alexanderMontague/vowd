@@ -14,6 +14,13 @@ class DisposablePhoto < ApplicationRecord
 
   after_destroy_commit :delete_remote_asset
 
+  # Suggested filename for downloads, e.g. "montague-20260710-231500.jpg".
+  def download_filename(prefix:)
+    extension = File.extname(object_key.to_s).presence || ".jpg"
+    timestamp = (captured_at || created_at)&.strftime("%Y%m%d-%H%M%S")
+    [prefix.presence, timestamp].compact.join("-") + extension
+  end
+
   private
 
   def delete_remote_asset

@@ -48,6 +48,31 @@
       </div>
     <% end %>
 
+    <div class="card mb-6">
+      <h2 class="text-xs font-semibold uppercase tracking-widest text-neutral-400 mb-5">
+        Disposable Camera
+      </h2>
+
+      <div class="py-5 first:pt-0 last:pb-0 flex items-start gap-6">
+        <div class="flex-1 min-w-0">
+          <div class="flex items-center gap-2 mb-1">
+            <span class="font-medium text-neutral-800 text-sm">Photo Display Style</span>
+          </div>
+          <p class="text-sm text-muted mb-2">
+            The default treatment applied to guest camera photos on the gallery and public page.
+            Originals are always stored untouched; the filter is rendered on the front end only.
+          </p>
+        </div>
+
+        <div class="shrink-0 w-40">
+          <%= f.select :dispo_photo_style,
+              [["Retro", "retro"], ["Black & White", "bw"], ["Original", "original"]],
+              { selected: current_wedding.dispo_photo_style },
+              class: "form-control text-sm" %>
+        </div>
+      </div>
+    </div>
+
     <div class="flex items-center gap-3">
       <%= f.submit "Save Settings", class: "btn btn-primary" %>
       <p class="text-xs text-muted">Changes take effect immediately.</p>

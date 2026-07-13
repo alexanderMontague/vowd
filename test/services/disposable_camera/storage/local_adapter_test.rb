@@ -26,6 +26,26 @@ module DisposableCamera
         )
       end
 
+      test "download url matches the display url since files are served same-origin" do
+        object_key = "test/wedding/photos/example.jpg"
+
+        assert_equal(
+          @adapter.public_url_for(object_key),
+          @adapter.download_url_for(object_key, filename: "anything.jpg")
+        )
+      end
+
+      test "download_object returns a readable io of the stored bytes" do
+        object_key = "test/#{SecureRandom.hex(8)}/photos/example.jpg"
+        @adapter.upload!(io: StringIO.new("photo-bytes"), object_key: object_key, content_type: "image/jpeg")
+
+        io = @adapter.download_object(object_key)
+
+        assert_equal "photo-bytes", io.read
+      ensure
+        io&.close
+      end
+
       test "deletes a stored object" do
         object_key = "test/#{SecureRandom.hex(8)}/photos/example.jpg"
         @adapter.upload!(io: StringIO.new("x"), object_key: object_key, content_type: "image/jpeg")

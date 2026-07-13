@@ -1,6 +1,12 @@
 class Wedding < FrozenRecord::Base
   self.base_path = "db/"
 
+  # Front-end display treatments for disposable camera photos. The original
+  # upload is never modified; these only drive a layered filter rendered client-side.
+  PHOTO_STYLES = %w[original retro bw].freeze
+  DEFAULT_PHOTO_STYLE = "retro".freeze
+  PHOTO_STYLE_METADATA_KEY = "dispo_photo_style".freeze
+
   class << self
     def current
       @current ||= first_or_error!
@@ -67,6 +73,13 @@ class Wedding < FrozenRecord::Base
 
   def dispo_gallery_visible?
     feature_flag("dispo_gallery_on_main_page")
+  end
+
+  # Admin-selected default display treatment for disposable camera photos.
+  # Falls back to the configured default when unset or invalid.
+  def dispo_photo_style
+    value = metadata.find_by(key: PHOTO_STYLE_METADATA_KEY)&.value
+    PHOTO_STYLES.include?(value) ? value : DEFAULT_PHOTO_STYLE
   end
 
   def date

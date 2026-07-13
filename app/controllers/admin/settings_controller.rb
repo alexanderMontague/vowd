@@ -9,21 +9,8 @@ module Admin
 
     def update
       WeddingMetadata.transaction do
-        flag_params.each do |key, value|
-          next unless WeddingFeatureFlags.find(key)
-
-          record = WeddingMetadata.find_or_initialize_by(
-            wedding_id: current_wedding.id,
-            key: key
-          )
-
-          if value.blank?
-            record.destroy if record.persisted?
-          else
-            record.value = value
-            record.save!
-          end
-        end
+        persist_feature_flags
+        persist_photo_style
       end
 
       redirect_to admin_settings_path, notice: "Settings updated."
@@ -33,6 +20,36 @@ module Admin
     end
 
     private
+
+    def persist_feature_flags
+      flag_params.each do |key, value|
+        next unless WeddingFeatureFlags.find(key)
+
+        record = WeddingMetadata.find_or_initialize_by(
+          wedding_id: current_wedding.id,
+          key: key
+        )
+
+        if value.blank?
+          record.destroy if record.persisted?
+        else
+          record.value = value
+          record.save!
+        end
+      end
+    end
+
+    def persist_photo_style
+      style = params[:dispo_photo_style].to_s
+      return unless Wedding::PHOTO_STYLES.include?(style)
+
+      record = WeddingMetadata.find_or_initialize_by(
+        wedding_id: current_wedding.id,
+        key: Wedding::PHOTO_STYLE_METADATA_KEY
+      )
+      record.value = style
+      record.save!
+    end
 
     def flag_params
       params.require(:flags).permit(WeddingFeatureFlags.keys).to_h

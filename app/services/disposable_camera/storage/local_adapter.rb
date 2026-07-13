@@ -26,6 +26,16 @@ module DisposableCamera
         "/#{PUBLIC_SUBPATH}/#{object_key}"
       end
 
+      # Served same-origin, so the anchor's `download` attribute handles the
+      # attachment behaviour; the URL itself is identical to the display URL.
+      def download_url_for(object_key, filename: nil)
+        public_url_for(object_key)
+      end
+
+      def download_object(object_key)
+        File.open(absolute_path_for(object_key), "rb")
+      end
+
       private
 
       def absolute_path_for(object_key)
