@@ -35,4 +35,11 @@ Rails.application.configure do
   config.active_support.disallowed_deprecation_warnings = []
   config.active_record.migration_error = :page_load
   config.active_record.verbose_query_logs = true
+
+  # Multi-tenant hosts: apex + subdomains of APP_BASE_DOMAIN (e.g. vowd.localhost).
+  base = ENV.fetch("APP_BASE_DOMAIN", "vowd.localhost").to_s.split(":").first
+  config.hosts << base
+  config.hosts << ".#{base}"
+  config.hosts << "localhost"
+  config.hosts << /.*\.localhost/
 end

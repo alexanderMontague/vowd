@@ -14,7 +14,7 @@ export default class extends Controller {
   }
 
   applyVariation() {
-    const seed = this.seedValue || this.element.id || "wedly-photo";
+    const seed = this.seedValue || this.element.id || "vowd-photo";
     const random = this.buildRandom(this.hashSeed(seed));
     const between = (min, max) => min + (max - min) * random();
 

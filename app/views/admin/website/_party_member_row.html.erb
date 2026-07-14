@@ -1,0 +1,36 @@
+<%
+  index = local_assigns.fetch(:index)
+  member = local_assigns.fetch(:member, {})
+  group = local_assigns.fetch(:group)
+%>
+<div class="admin-nested-row" data-nested-form-target="item">
+  <div class="flex justify-between items-start mb-3">
+    <p class="text-sm font-medium text-neutral-700">Person</p>
+    <button type="button" class="text-sm text-danger" data-action="nested-form#remove">Remove</button>
+  </div>
+
+  <div class="grid gap-0 md:grid-cols-2 md:gap-x-6">
+    <div class="form-group">
+      <label>Name</label>
+      <input type="text" name="wedding[wedding_party][<%= group %>][<%= index %>][name]" value="<%= member["name"] %>" class="form-control">
+    </div>
+    <div class="form-group">
+      <label>Role</label>
+      <input type="text" name="wedding[wedding_party][<%= group %>][<%= index %>][role]" value="<%= member["role"] %>" class="form-control" placeholder="Maid of Honor">
+    </div>
+    <div class="form-group md:col-span-2">
+      <label>Relation</label>
+      <input type="text" name="wedding[wedding_party][<%= group %>][<%= index %>][relation]" value="<%= member["relation"] %>" class="form-control" placeholder="Sister of the bride">
+    </div>
+  </div>
+
+  <div class="form-group mb-0">
+    <label>Photo</label>
+    <%= render "admin/website/asset_upload",
+        purpose: "party",
+        object_key_name: "wedding[wedding_party][#{group}][#{index}][object_key]",
+        object_key: member["object_key"],
+        image_url_name: "wedding[wedding_party][#{group}][#{index}][image_url]",
+        image_url: member["image_url"] %>
+  </div>
+</div>

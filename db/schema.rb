@@ -10,14 +10,16 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_07_11_150000) do
+ActiveRecord::Schema[7.1].define(version: 2026_07_13_180000) do
   create_table "admin_users", force: :cascade do |t|
     t.string "email", null: false
     t.string "password_digest", null: false
     t.string "name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "wedding_id", null: false
     t.index ["email"], name: "index_admin_users_on_email", unique: true
+    t.index ["wedding_id"], name: "index_admin_users_on_wedding_id", unique: true
   end
 
   create_table "disposable_photos", id: :string, force: :cascade do |t|
@@ -131,6 +133,37 @@ ActiveRecord::Schema[7.1].define(version: 2026_07_11_150000) do
     t.index ["wedding_id"], name: "index_wedding_metadata_on_wedding_id"
   end
 
+  create_table "weddings", id: :string, force: :cascade do |t|
+    t.string "title", null: false
+    t.string "partner1"
+    t.string "partner2"
+    t.string "initials"
+    t.string "last_name"
+    t.date "date"
+    t.string "ceremony_time"
+    t.integer "wedding_duration_hours", default: 12, null: false
+    t.string "venue_name"
+    t.string "venue_city"
+    t.string "venue_region"
+    t.date "rsvp_deadline"
+    t.string "timezone", default: "America/Toronto", null: false
+    t.json "meal_options", default: [], null: false
+    t.json "story", default: {}, null: false
+    t.json "hero", default: {}, null: false
+    t.json "gallery", default: {}, null: false
+    t.json "rsvp_copy", default: {}, null: false
+    t.json "faq", default: {}, null: false
+    t.json "wedding_party", default: {}, null: false
+    t.json "photos_page", default: {}, null: false
+    t.json "notifications", default: {}, null: false
+    t.string "custom_domain"
+    t.datetime "custom_domain_verified_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["custom_domain"], name: "index_weddings_on_custom_domain", unique: true
+  end
+
+  add_foreign_key "admin_users", "weddings"
   add_foreign_key "disposable_photos", "guests"
   add_foreign_key "guests", "households"
   add_foreign_key "invitations", "guests"

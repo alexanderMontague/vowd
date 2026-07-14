@@ -1,0 +1,20 @@
+<%
+  index = local_assigns.fetch(:index)
+  question = local_assigns.fetch(:question, {})
+%>
+<div class="admin-nested-row" data-nested-form-target="item">
+  <div class="flex justify-between items-start mb-3">
+    <p class="text-sm font-medium text-neutral-700">Question</p>
+    <button type="button" class="text-sm text-danger" data-action="nested-form#remove">Remove</button>
+  </div>
+
+  <div class="form-group">
+    <label>Question</label>
+    <input type="text" name="wedding[faq][questions][<%= index %>][question]" value="<%= question["question"] %>" class="form-control">
+  </div>
+
+  <div class="form-group mb-0">
+    <label>Answer</label>
+    <textarea name="wedding[faq][questions][<%= index %>][answer]" class="form-control" rows="3"><%= question["answer"] %></textarea>
+  </div>
+</div>

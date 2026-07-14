@@ -35,4 +35,7 @@ Rails.application.configure do
   config.i18n.fallbacks = true
   config.active_support.report_deprecations = false
   config.active_record.dump_schema_after_migration = false
+
+  # Custom domains are dynamic; TLS/proxy is handled outside the app.
+  config.hosts.clear
 end

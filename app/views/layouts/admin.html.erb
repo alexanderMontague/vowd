@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Admin - Wedly</title>
+    <title>Admin - Vowd</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <%= favicon_link_tag '/favicon.png', type: 'image/png' %>
     <%= csrf_meta_tags %>
@@ -10,25 +10,48 @@
     <%= javascript_importmap_tags %>
   </head>
 
-  <body class="font-sans m-0 bg-bg-admin">
+  <body class="font-sans m-0 bg-neutral-50">
     <div class="admin-shell">
       <aside class="admin-side-nav print:hidden">
         <div>
-          <%= link_to "Wedly Admin", admin_root_path, class: "admin-side-nav-brand" %>
+          <%= link_to "Vowd", current_wedding&.configured? ? admin_root_path : admin_website_path, class: "admin-side-nav-brand" %>
+          <% if current_wedding %>
+            <p class="admin-side-nav-meta"><%= current_wedding.title %></p>
+          <% end %>
         </div>
 
         <nav class="admin-side-nav-links">
-          <%= admin_nav_link("Dashboard", admin_root_path, exact: true) %>
-          <%= admin_nav_link("Events", admin_events_path, active_prefixes: [admin_events_path]) %>
-          <%= admin_nav_link("Guests", admin_guests_path, active_prefixes: [admin_guests_path]) %>
-          <%= admin_nav_link("Households", admin_households_path, active_prefixes: [admin_households_path]) %>
-          <%= admin_nav_link("Save the Date", admin_save_the_date_signups_path, active_prefixes: [admin_save_the_date_signups_path]) %>
-          <%= admin_nav_link("Invitations", admin_invitations_path, active_prefixes: [admin_invitations_path]) %>
-          <%= admin_nav_link("Disposable Photos", admin_disposable_photos_path, active_prefixes: [admin_disposable_photos_path]) %>
-          <%= admin_nav_link("Settings", admin_settings_path, exact: true) %>
+          <%= admin_nav_link("Wedding", admin_website_path, exact: true) %>
+
+          <% if current_wedding&.configured? %>
+            <%= admin_nav_link("Dashboard", admin_root_path, exact: true) %>
+
+            <%= admin_nav_section("Guests") %>
+            <%= admin_nav_link(
+                  "Guests",
+                  admin_guests_path,
+                  active_prefixes: [
+                    admin_guests_path,
+                    admin_households_path,
+                    admin_invitations_path,
+                    admin_save_the_date_signups_path
+                  ]
+                ) %>
+
+            <%= admin_nav_section("Day of") %>
+            <%= admin_nav_link("Events", admin_events_path, active_prefixes: [admin_events_path]) %>
+            <%= admin_nav_link("Photos", admin_disposable_photos_path, active_prefixes: [admin_disposable_photos_path]) %>
+
+            <%= admin_nav_section("System") %>
+            <%= admin_nav_link("Feature flags", admin_settings_path, exact: true) %>
+          <% else %>
+            <p class="admin-side-nav-hint">
+              Add partners and a wedding date to unlock guests, invitations, and day-of tools.
+            </p>
+          <% end %>
         </nav>
 
-        <%= button_to "Logout", admin_logout_path, method: :delete, class: "btn btn-sm btn-danger w-full mt-4" %>
+        <%= button_to "Log out", admin_logout_path, method: :delete, class: "btn btn-sm btn-danger w-full mt-8" %>
       </aside>
 
       <main class="admin-main">

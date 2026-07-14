@@ -5,12 +5,12 @@ default: &default
 
 development:
   <<: *default
-  database: db/wedly_development.sqlite3
+  database: db/vowd_development.sqlite3
 
 test:
   <<: *default
-  database: db/wedly_test.sqlite3
+  database: db/vowd_test.sqlite3
 
 production:
   <<: *default
-  database: db/wedly_production.sqlite3
+  database: db/vowd_production.sqlite3

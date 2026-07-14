@@ -232,15 +232,16 @@
   }
 
   .stat-card {
-    @apply bg-bg-card p-6 rounded-card shadow-card;
+    @apply bg-bg-card p-6 rounded-card shadow-card border border-border/80;
   }
 
   .stat-value {
-    @apply text-3xl font-bold text-secondary;
+    @apply text-3xl font-semibold text-secondary tracking-tight;
+    font-family: var(--font-display);
   }
 
   .stat-label {
-    @apply text-neutral-500 mt-2 text-sm;
+    @apply text-neutral-500 mt-2 text-xs uppercase tracking-[0.14em];
   }
 
   /* --------------------------------------------------------------------------
@@ -687,31 +688,139 @@
   }
 
   .admin-shell {
-    @apply min-h-screen lg:grid lg:grid-cols-[16rem_minmax(0,1fr)];
+    @apply min-h-screen lg:grid lg:grid-cols-[15.5rem_minmax(0,1fr)] bg-neutral-50;
   }
 
   .admin-side-nav {
-    @apply bg-secondary text-white px-4 py-5 lg:px-5 lg:py-6;
+    @apply bg-secondary text-white px-4 py-6 lg:px-5 lg:py-8 lg:sticky lg:top-0 lg:h-screen lg:overflow-y-auto;
   }
 
   .admin-side-nav-brand {
-    @apply text-white no-underline text-2xl font-bold;
+    @apply text-white no-underline text-2xl tracking-wide;
+    font-family: var(--font-display);
+  }
+
+  .admin-side-nav-meta {
+    @apply mt-2 text-xs font-light tracking-wide text-white/55;
   }
 
   .admin-side-nav-links {
-    @apply mt-6 grid gap-2;
+    @apply mt-8 grid gap-0.5;
+  }
+
+  .admin-side-nav-section {
+    @apply mt-5 mb-1 px-3 text-[0.65rem] font-semibold uppercase tracking-[0.14em] text-white/35;
+  }
+
+  .admin-side-nav-hint {
+    @apply mt-4 px-3 text-xs leading-relaxed text-white/45;
   }
 
   .admin-side-nav-link {
-    @apply text-white no-underline px-4 py-2 rounded-md transition-colors hover:bg-white/10;
+    @apply text-white/80 no-underline px-3 py-2 rounded-md text-sm transition-colors hover:bg-white/10 hover:text-white;
   }
 
   .admin-side-nav-link-active {
-    @apply bg-white/20;
+    @apply bg-white/15 text-white font-medium;
+    box-shadow: inset 3px 0 0 var(--color-primary);
   }
 
   .admin-main {
-    @apply max-w-container w-full mx-auto my-8 px-4 print:max-w-none print:mx-0 print:my-0 print:p-0;
+    @apply max-w-container w-full mx-auto my-8 px-4 sm:px-6 lg:px-8 print:max-w-none print:mx-0 print:my-0 print:p-0;
+  }
+
+  .admin-page-header {
+    @apply mb-8;
+  }
+
+  .admin-page-header h1 {
+    @apply m-0 text-3xl text-secondary;
+    font-family: var(--font-display);
+  }
+
+  .admin-page-header p {
+    @apply mt-2 mb-0 text-stone-600 font-light;
+  }
+
+  .admin-setup-checklist-title {
+    @apply m-0 mb-3 text-xs font-semibold uppercase tracking-widest text-neutral-400;
+  }
+
+  .admin-setup-checklist-items {
+    @apply m-0 p-0 list-none grid gap-2;
+  }
+
+  .admin-setup-checklist-items li {
+    @apply relative pl-6 text-sm text-neutral-600;
+  }
+
+  .admin-setup-checklist-items li::before {
+    content: "";
+    @apply absolute left-0 top-1.5 size-3 rounded-full border border-neutral-300;
+  }
+
+  .admin-setup-checklist-items li.is-done {
+    @apply text-neutral-800;
+  }
+
+  .admin-setup-checklist-items li.is-done::before {
+    @apply border-primary bg-primary;
+  }
+
+  .admin-editor {
+    @apply grid gap-6 lg:grid-cols-[12rem_minmax(0,1fr)] lg:gap-8;
+  }
+
+  .admin-editor-nav {
+    @apply flex flex-wrap gap-1 lg:flex-col lg:sticky lg:top-6 lg:self-start;
+  }
+
+  .admin-editor-nav-label {
+    @apply w-full mt-3 mb-1 px-2 text-[0.65rem] font-semibold uppercase tracking-[0.14em] text-neutral-400 first:mt-0;
+  }
+
+  .admin-editor-nav-link {
+    @apply px-3 py-2 text-sm text-left rounded-md border border-transparent text-neutral-600 transition-colors hover:bg-neutral-100;
+  }
+
+  .admin-editor-nav-link.admin-tab-active {
+    @apply bg-secondary text-white border-secondary hover:bg-secondary;
+  }
+
+  .admin-editor-panel-title {
+    @apply m-0 mb-1 text-xs font-semibold uppercase tracking-widest text-neutral-400;
+  }
+
+  .admin-editor-panel-copy {
+    @apply mt-0 mb-5 text-sm text-stone-500;
+  }
+
+  .admin-nested-row {
+    @apply rounded-md border border-border bg-neutral-50/60 p-4;
+  }
+
+  .admin-asset-preview {
+    @apply size-20 shrink-0 rounded-md object-cover border border-border bg-neutral-100;
+  }
+
+  .admin-hub-nav {
+    @apply flex flex-wrap gap-1 mb-6 border-b border-border pb-3;
+  }
+
+  .admin-hub-nav-link {
+    @apply px-3 py-2 text-sm rounded-md text-neutral-600 no-underline transition-colors hover:bg-neutral-100;
+  }
+
+  .admin-hub-nav-link-active {
+    @apply bg-secondary text-white hover:bg-secondary;
+  }
+
+  .admin-tab {
+    @apply px-3 py-1.5 text-sm rounded-md border border-border bg-white text-neutral-600 transition-colors hover:bg-neutral-50;
+  }
+
+  .admin-tab-active {
+    @apply bg-secondary text-white border-secondary hover:bg-secondary;
   }
 
   .admin-photo-controls {
@@ -1818,4 +1927,45 @@
 @keyframes dispo-led-blink {
   0%, 82%, 100% { opacity: 1; }
   88% { opacity: 0.25; }
+}
+
+.platform-fade-up {
+  opacity: 0;
+  animation: fade-in-up 0.9s ease-out forwards;
+}
+
+.platform-delay-1 {
+  animation-delay: 0.15s;
+}
+
+.platform-delay-2 {
+  animation-delay: 0.3s;
+}
+
+.platform-delay-3 {
+  animation-delay: 0.45s;
+}
+
+.platform-feature img {
+  box-shadow: var(--shadow-card);
+}
+
+.platform-browser {
+  @apply overflow-hidden rounded-xl border border-stone-200 bg-white shadow-card;
+}
+
+.platform-browser-chrome {
+  @apply flex items-center gap-2 border-b border-stone-200 bg-stone-100 px-3 py-2.5;
+}
+
+.platform-browser-dot {
+  @apply h-2.5 w-2.5 rounded-full bg-stone-300;
+}
+
+.platform-browser-url {
+  @apply ml-2 truncate rounded-md bg-white px-3 py-1 text-xs text-stone-500 border border-stone-200;
+}
+
+.platform-browser img {
+  @apply block w-full;
 }

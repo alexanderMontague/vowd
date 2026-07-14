@@ -61,11 +61,11 @@ module Public
       <<~ICS
         BEGIN:VCALENDAR
         VERSION:2.0
-        PRODID:-//Wedly//Wedding Invitation//EN
+        PRODID:-//Vowd//Wedding Invitation//EN
         CALSCALE:GREGORIAN
         METHOD:PUBLISH
         BEGIN:VEVENT
-        UID:#{SecureRandom.uuid}@wedly.com
+        UID:#{SecureRandom.uuid}@vowd.site
         DTSTAMP:#{Time.current.utc.strftime('%Y%m%dT%H%M%SZ')}
         DTSTART:#{start_time.utc.strftime('%Y%m%dT%H%M%SZ')}
         DTEND:#{end_time.utc.strftime('%Y%m%dT%H%M%SZ')}

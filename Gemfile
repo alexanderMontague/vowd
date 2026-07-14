@@ -5,7 +5,7 @@ ruby "3.2.0"
 
 gem "bcrypt", "~> 3.1.7"
 gem "bootsnap", require: false
-gem "frozen_record"
+gem "dotenv-rails"
 gem "rqrcode"
 gem "aws-sdk-s3"
 gem "importmap-rails"

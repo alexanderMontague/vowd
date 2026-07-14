@@ -1,0 +1,13 @@
+<%
+  guests_active = request.path == admin_guests_path || request.path.start_with?("/admin/guests/") || request.path.start_with?("/admin/households")
+  invitations_active = request.path.start_with?("/admin/invitations")
+  save_the_date_active = request.path.start_with?("/admin/save_the_date_signups")
+%>
+<nav class="admin-hub-nav print:hidden" aria-label="Guests sections">
+  <%= link_to "List", admin_guests_path,
+      class: class_names("admin-hub-nav-link", "admin-hub-nav-link-active" => guests_active) %>
+  <%= link_to "Invitations", admin_invitations_path,
+      class: class_names("admin-hub-nav-link", "admin-hub-nav-link-active" => invitations_active) %>
+  <%= link_to "Save the Date", admin_save_the_date_signups_path,
+      class: class_names("admin-hub-nav-link", "admin-hub-nav-link-active" => save_the_date_active) %>
+</nav>

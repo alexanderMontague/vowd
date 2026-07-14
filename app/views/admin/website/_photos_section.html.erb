@@ -1,0 +1,40 @@
+<%
+  index = local_assigns.fetch(:index)
+  section = local_assigns.fetch(:section, {})
+  images = Array(section["images"])
+  images = [{}] if images.empty?
+%>
+<div class="admin-nested-row" data-nested-form-target="item" data-controller="nested-form">
+  <div class="flex justify-between items-start mb-3">
+    <p class="text-sm font-medium text-neutral-700">Section</p>
+    <button type="button" class="text-sm text-danger" data-action="nested-form#remove">Remove section</button>
+  </div>
+
+  <div class="form-group">
+    <label>Section title</label>
+    <input type="text" name="wedding[photos_page][sections][<%= index %>][title]" value="<%= section["title"] %>" class="form-control">
+  </div>
+
+  <div class="flex justify-between items-center mb-3">
+    <p class="text-xs font-semibold uppercase tracking-widest text-neutral-400">Images</p>
+    <button type="button" class="btn btn-sm btn-secondary" data-action="nested-form#add">Add image</button>
+  </div>
+
+  <div class="grid gap-3" data-nested-form-target="container">
+    <% images.each_with_index do |image, image_index| %>
+      <%= render "admin/website/image_row",
+          index: image_index,
+          image: image,
+          purpose: "photos",
+          prefix: "wedding[photos_page][sections][#{index}][images]" %>
+    <% end %>
+  </div>
+
+  <template data-nested-form-target="template">
+    <%= render "admin/website/image_row",
+        index: "NEW_INDEX",
+        image: {},
+        purpose: "photos",
+        prefix: "wedding[photos_page][sections][#{index}][images]" %>
+  </template>
+</div>

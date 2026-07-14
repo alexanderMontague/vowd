@@ -1,4 +1,4 @@
-# Wedly — agent & contributor guide
+# Vowd — agent & contributor guide
 
 Conventions for this Rails app. Prefer matching existing patterns over introducing new stacks or style islands.
 
@@ -11,29 +11,33 @@ Conventions for this Rails app. Prefer matching existing patterns over introduci
 
 ## Wedding configuration (read this first)
 
-- **`db/weddings.yml`** is the source of truth for site copy, dates, venue, RSVP options, etc.
-- **`Wedding`** is a **FrozenRecord** model (`app/models/wedding.rb`) backed by that YAML — not a row in PostgreSQL/SQLite for core wedding identity.
-- **`Wedding.current`** is used across the app; **`WeddingConcern`** exposes **`current_wedding`** to controllers and views. Admin and public flows assume a single configured wedding unless you extend the model.
+- **`Wedding`** is an **ActiveRecord** model (`app/models/wedding.rb`). The string primary key is the site **slug** (subdomain). Site copy and settings live in typed columns plus JSON fields (`story`, `hero`, `faq`, etc.).
+- **`TenantResolver`** + **`AppHost`** resolve the tenant from the request host: `{slug}.{APP_BASE_DOMAIN}` or a wedding’s `custom_domain`. Apex `APP_BASE_DOMAIN` is the platform (marketing, signup, login).
+- **`WeddingConcern`** exposes request-scoped **`current_wedding`** (never a process-global memo). One **`AdminUser`** owns exactly one wedding (`admin_users.wedding_id`).
+- Edit guest-facing content in admin **Website**; feature flags remain under admin **Settings**.
 
 ## Application structure
 
 ### Controller namespaces
 
-- **`Public::`** — guest-facing site (save the date, RSVP, root).
-- **`Admin::`** — staff UI; inherits **`Admin::BaseController`** (auth + `WeddingConcern`, **`layout "admin"`**).
-- **`Dispo::`** — disposable camera experience under the `/dispo` scope in `config/routes.rb`.
+- **`Platform::`** — marketing landing, signup, and login on the apex host.
+- **`Public::`** — guest-facing wedding site (save the date, RSVP, root) on a wedding host.
+- **`Admin::`** — staff UI on a wedding host; inherits **`Admin::BaseController`** (auth + ownership + `WeddingConcern`, **`layout "admin"`**).
+- **`Dispo::`** — disposable camera experience under the `/dispo` scope on a wedding host.
 
 Keep new features in the namespace that matches their audience and routing.
 
 ### Concerns and cross-cutting behavior
 
 - Reuse **`WeddingConcern`** for anything that needs `current_wedding`.
-- Follow existing auth patterns (e.g. admin session flow) instead of ad hoc checks in views.
+- Resolve hosts via **`AppHost`** / **`TenantResolver`** — do not hardcode product domains.
+- Follow existing auth patterns (platform signup/login + wedding-host admin session) instead of ad hoc checks in views.
+- Admin actions must enforce `current_admin.wedding_id == current_wedding.id`.
 
 ### Models
 
 - Generators are configured for **UUID primary keys** (`config/application.rb`). Models that need explicit UUID assignment use concerns such as **`UuidPrimaryKey`** where applicable.
-- **Scope data by `wedding_id`** (and similar) so admin and public actions never leak across tenants if multi-wedding support is added later.
+- **Scope data by `wedding_id`** (and similar) so admin and public actions never leak across tenants.
 
 ### Services and jobs
 
@@ -111,4 +115,4 @@ Keep new features in the namespace that matches their audience and routing.
 
 ---
 
-*This file describes how Wedly is built today. If you change a global convention (e.g. JS bundler, CSS pipeline), update this document in the same change.*
+*This file describes how Vowd is built today. If you change a global convention (e.g. JS bundler, CSS pipeline), update this document in the same change.*

@@ -4,7 +4,7 @@ class RSVPServiceTest < ActiveSupport::TestCase
   include ActiveJob::TestHelper
 
   setup do
-    @wedding = Wedding.current
+    @wedding = create_wedding
     @household = Household.create!(wedding_id: @wedding.id, name: "Test Household")
     @accepting_guest = Guest.create!(
       wedding_id: @wedding.id, household: @household,

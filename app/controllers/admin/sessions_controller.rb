@@ -1,18 +1,21 @@
 module Admin
   class SessionsController < ApplicationController
-    layout "admin_auth"
-    skip_before_action :require_admin, if: :admin_logged_in?, raise: false
+    include WeddingConcern
 
-    def new
-      redirect_to admin_root_path if admin_logged_in?
-    end
+    layout "admin_auth"
+
+    before_action :require_wedding!
+    before_action :redirect_if_logged_in, only: %i[new create]
+
+    def new; end
 
     def create
-      admin = AdminUser.find_by(email: params[:email])
+      admin = AdminUser.find_by(email: params[:email].to_s.strip.downcase)
 
-      if admin&.authenticate(params[:password])
+      if admin&.authenticate(params[:password]) && admin.wedding_id == current_wedding.id
         session[:admin_id] = admin.id
-        redirect_to admin_root_path, notice: "Logged in successfully"
+        destination = admin.wedding.configured? ? admin_root_path : admin_website_path
+        redirect_to destination, notice: "Logged in successfully"
       else
         flash.now[:alert] = "Invalid email or password"
         render :new, status: :unprocessable_content
@@ -26,8 +29,14 @@ module Admin
 
     private
 
-    def admin_logged_in?
-      session[:admin_id].present?
+    def redirect_if_logged_in
+      return unless session[:admin_id].present?
+
+      admin = AdminUser.find_by(id: session[:admin_id])
+      return unless admin&.wedding_id == current_wedding.id
+
+      destination = admin.wedding.configured? ? admin_root_path : admin_website_path
+      redirect_to destination
     end
   end
 end

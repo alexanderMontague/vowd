@@ -3,7 +3,8 @@ require "test_helper"
 module Dispo
   class GalleriesControllerTest < ActionDispatch::IntegrationTest
     setup do
-      @wedding = Wedding.current
+      @wedding = create_wedding
+      host_wedding!(@wedding)
       WeddingMetadata.create!(
         wedding_id: @wedding.id,
         key: "dispo_gallery_on_main_page",

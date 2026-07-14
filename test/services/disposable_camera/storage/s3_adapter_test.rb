@@ -7,7 +7,7 @@ module DisposableCamera
 
       test "builds a presigned read url for the object on the r2 endpoint" do
         with_env(
-          "BUCKET_NAME" => "wedly",
+          "BUCKET_NAME" => "vowd",
           "AWS_REGION" => "auto",
           "R2_ACCOUNT_ID" => "f36423bf0504a5661234304fb21c4447",
           "AWS_ENDPOINT_URL_S3" => nil,
@@ -18,7 +18,7 @@ module DisposableCamera
           uri = URI.parse(@adapter.public_url_for(object_key))
           query = URI.decode_www_form(uri.query).to_h
 
-          assert_equal "wedly.f36423bf0504a5661234304fb21c4447.r2.cloudflarestorage.com", uri.host
+          assert_equal "vowd.f36423bf0504a5661234304fb21c4447.r2.cloudflarestorage.com", uri.host
           assert_equal "/#{object_key}", uri.path
           assert_equal "AWS4-HMAC-SHA256", query["X-Amz-Algorithm"]
           assert_equal S3Adapter::PRESIGNED_URL_EXPIRES_IN.to_s, query["X-Amz-Expires"]
@@ -27,7 +27,7 @@ module DisposableCamera
       end
 
       test "uploads without an acl since r2 rejects object acls" do
-        with_env("BUCKET_NAME" => "wedly") do
+        with_env("BUCKET_NAME" => "vowd") do
           captured = nil
           fake_client = Object.new
           fake_client.define_singleton_method(:put_object) { |params| captured = params }
@@ -40,7 +40,7 @@ module DisposableCamera
             )
           end
 
-          assert_equal "wedly", captured[:bucket]
+          assert_equal "vowd", captured[:bucket]
           assert_equal "test/britt-and-alex/photos/example.jpg", captured[:key]
           assert_equal "image/jpeg", captured[:content_type]
           assert_not captured.key?(:acl)
@@ -48,12 +48,12 @@ module DisposableCamera
       end
 
       test "deletes object by key from configured bucket" do
-        with_env("BUCKET_NAME" => "wedly") do
+        with_env("BUCKET_NAME" => "vowd") do
           fake_client = Minitest::Mock.new
           fake_client.expect(
             :delete_object,
             true,
-            bucket: "wedly",
+            bucket: "vowd",
             key: "test/britt-and-alex/photos/example.jpg"
           )
 
@@ -66,7 +66,7 @@ module DisposableCamera
       end
 
       test "deletes multiple objects in batches via delete_objects" do
-        with_env("BUCKET_NAME" => "wedly") do
+        with_env("BUCKET_NAME" => "vowd") do
           calls = []
           fake_client = Object.new
           fake_client.define_singleton_method(:delete_objects) do |params|
@@ -79,7 +79,7 @@ module DisposableCamera
           end
 
           assert_equal 1, calls.size
-          assert_equal "wedly", calls.first[:bucket]
+          assert_equal "vowd", calls.first[:bucket]
           assert_equal %w[a.jpg b.jpg], calls.first[:delete][:objects].pluck(:key)
         end
       end

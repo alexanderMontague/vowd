@@ -23,7 +23,7 @@
           <% section["images"]&.each_with_index do |image, index| %>
             <% delay_class = ["", "animation-delay-200", "animation-delay-400"][index % 3] %>
             <div class="gallery-item animate-on-scroll <%= delay_class %>" data-scroll-animate-target="item">
-              <%= image_tag image["url"], alt: image["alt"], loading: "lazy" %>
+              <%= image_tag wedding_asset_url(image), alt: image["alt"], loading: "lazy" %>
             </div>
           <% end %>
         </div>

@@ -1,7 +1,14 @@
-<div class="card">
+<div class="admin-page-header">
   <h1>Dashboard</h1>
   <% if current_wedding %>
-    <p><strong><%= current_wedding.title %></strong> - <%= format_date_elegant(current_wedding.date) %></p>
+    <p>
+      <strong class="font-medium text-secondary"><%= current_wedding.title %></strong>
+      <% if current_wedding.date.present? %>
+        · <%= format_date_elegant(current_wedding.date) %>
+      <% else %>
+        · <span class="text-neutral-500">Set your wedding date under Website</span>
+      <% end %>
+    </p>
   <% else %>
     <p>No wedding configured yet.</p>
   <% end %>
@@ -40,7 +47,7 @@
 </div>
 
 <div class="card">
-  <h2>Upcoming Events</h2>
+  <h2 class="card-header">Upcoming Events</h2>
   <% if @upcoming_events.any? %>
     <table>
       <thead>
@@ -61,12 +68,12 @@
       </tbody>
     </table>
   <% else %>
-    <p>No upcoming events scheduled.</p>
+    <p class="text-neutral-500 mb-0">No upcoming events scheduled.</p>
   <% end %>
 </div>
 
 <div class="card">
-  <h2>Recent RSVPs</h2>
+  <h2 class="card-header">Recent RSVPs</h2>
   <% if @recent_rsvps.any? %>
     <table>
       <thead>
@@ -91,12 +98,12 @@
       </tbody>
     </table>
   <% else %>
-    <p>No RSVPs yet.</p>
+    <p class="text-neutral-500 mb-0">No RSVPs yet.</p>
   <% end %>
 </div>
 
 <div class="card">
-  <h2>Song Requests & Messages</h2>
+  <h2 class="card-header">Song Requests & Messages</h2>
   <% if @guest_shoutouts.any? %>
     <table>
       <thead>
@@ -117,6 +124,6 @@
       </tbody>
     </table>
   <% else %>
-    <p>No song requests or messages yet.</p>
+    <p class="text-neutral-500 mb-0">No song requests or messages yet.</p>
   <% end %>
 </div>

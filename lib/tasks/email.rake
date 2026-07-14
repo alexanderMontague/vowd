@@ -10,10 +10,11 @@ namespace :email do
     # raise_delivery_errors = false), so this task is a genuine smoke test.
     ActionMailer::Base.raise_delivery_errors = true
 
-    wedding = Wedding.current
+    wedding = Wedding.find_by(id: ENV["WEDDING_ID"]) || Wedding.first
+    abort "No wedding found. Create one or set WEDDING_ID." unless wedding
 
-    accepted_guest = EmailSampleData.accepted_guest(email: recipient)
-    declined_guest = EmailSampleData.declined_guest(email: recipient)
+    accepted_guest = EmailSampleData.accepted_guest(email: recipient, wedding:)
+    declined_guest = EmailSampleData.declined_guest(email: recipient, wedding:)
 
     deliveries = {
       "invitation" => -> { InvitationMailer.invite(accepted_guest) },

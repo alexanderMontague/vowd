@@ -8,6 +8,12 @@ module WeddingConcern
   private
 
   def current_wedding
-    @current_wedding ||= Wedding.current
+    @current_wedding ||= TenantResolver.call(host: request.host)
+  end
+
+  def require_wedding!
+    return if current_wedding
+
+    raise ActionController::RoutingError, "Not Found"
   end
 end

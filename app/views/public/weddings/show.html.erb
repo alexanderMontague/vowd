@@ -1,9 +1,14 @@
 <div class="min-h-screen" data-controller="scroll-animate">
   <%# Hero Section %>
   <section class="wedding-hero">
-    <%= image_tag current_wedding.hero["image_url"],
-        alt: current_wedding.title,
-        class: "wedding-hero-image" %>
+    <% hero_src = wedding_asset_url(current_wedding.hero) %>
+    <% if hero_src.present? %>
+      <%= image_tag hero_src,
+          alt: current_wedding.title,
+          class: "wedding-hero-image" %>
+    <% else %>
+      <div class="wedding-hero-image bg-secondary"></div>
+    <% end %>
     <div class="wedding-hero-overlay"></div>
     <div class="wedding-hero-content">
       <div class="text-center px-4 animate-fade-in-up">
@@ -64,7 +69,7 @@
         <% end %>
 
         <%= render "public/shared/event_detail", icon: "clock", title: "Time", delay_class: "animation-delay-200" do %>
-          <p class="text-stone-600 font-light">Ceremony at <%= current_wedding.ceremony_time["time"] %></p>
+          <p class="text-stone-600 font-light">Ceremony at <%= current_wedding.ceremony_time %></p>
           <p class="text-sm text-stone-600 font-light opacity-70">Reception to Follow</p>
         <% end %>
 
@@ -121,7 +126,7 @@
           <% current_wedding.gallery["images"].each_with_index do |image, index| %>
             <% delay_class = index == 1 ? "animation-delay-200" : (index == 2 ? "animation-delay-400" : "") %>
             <div class="gallery-item animate-on-scroll <%= delay_class %>" data-scroll-animate-target="item">
-              <%= image_tag image["url"], alt: image["alt"] %>
+              <%= image_tag wedding_asset_url(image), alt: image["alt"] %>
             </div>
           <% end %>
         </div>

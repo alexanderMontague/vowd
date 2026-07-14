@@ -1,0 +1,118 @@
+<%
+  reminders = (notifications.presence || Wedding::DEFAULT_NOTIFICATIONS).fetch("reminders", {})
+  channels = reminders.fetch("channels", {})
+  schedule = Array(reminders["schedule"])
+  schedule = [Wedding::DEFAULT_NOTIFICATIONS.dig("reminders", "schedule").first] if schedule.empty?
+%>
+
+<div class="form-group">
+  <label class="inline-flex items-center gap-2 font-semibold text-secondary-600">
+    <%= check_box_tag "wedding[notifications][reminders][enabled]", "1",
+        ActiveModel::Type::Boolean.new.cast(reminders["enabled"]),
+        class: "rounded border-border" %>
+    Enable reminder notifications
+  </label>
+</div>
+
+<div class="grid gap-0 md:grid-cols-2 md:gap-x-6">
+  <div class="form-group">
+    <%= label_tag "wedding_notifications_send_time", "Send time" %>
+    <%= text_field_tag "wedding[notifications][reminders][send_time]",
+        reminders["send_time"],
+        class: "form-control",
+        id: "wedding_notifications_send_time",
+        placeholder: "10:00" %>
+  </div>
+
+  <div class="form-group">
+    <%= label_tag "wedding_notifications_audience", "Audience" %>
+    <%= select_tag "wedding[notifications][reminders][audience]",
+        options_for_select(
+          [["Pending RSVP", "pending_rsvp"], ["Accepted", "accepted"], ["Declined", "declined"], ["All guests", "all"]],
+          reminders["audience"]
+        ),
+        class: "form-control",
+        id: "wedding_notifications_audience" %>
+  </div>
+</div>
+
+<div class="form-group">
+  <p class="text-xs font-semibold uppercase tracking-widest text-neutral-400 mb-3">Channels</p>
+  <div class="flex flex-wrap gap-4">
+    <label class="inline-flex items-center gap-2 text-sm">
+      <%= check_box_tag "wedding[notifications][reminders][channels][email][enabled]", "1",
+          ActiveModel::Type::Boolean.new.cast(channels.dig("email", "enabled")),
+          class: "rounded border-border" %>
+      Email
+    </label>
+    <label class="inline-flex items-center gap-2 text-sm">
+      <%= check_box_tag "wedding[notifications][reminders][channels][sms][enabled]", "1",
+          ActiveModel::Type::Boolean.new.cast(channels.dig("sms", "enabled")),
+          class: "rounded border-border" %>
+      SMS
+    </label>
+  </div>
+</div>
+
+<div data-controller="nested-form">
+  <div class="flex justify-between items-center mb-3">
+    <p class="text-xs font-semibold uppercase tracking-widest text-neutral-400">Schedule</p>
+    <button type="button" class="btn btn-sm btn-secondary" data-action="nested-form#add">Add reminder</button>
+  </div>
+
+  <div class="grid gap-3" data-nested-form-target="container">
+    <% schedule.each_with_index do |row, index| %>
+      <div class="admin-nested-row" data-nested-form-target="item">
+        <div class="flex justify-between items-start mb-3">
+          <p class="text-sm font-medium text-neutral-700">Reminder</p>
+          <button type="button" class="text-sm text-danger" data-action="nested-form#remove">Remove</button>
+        </div>
+        <input type="hidden" name="wedding[notifications][reminders][schedule][<%= index %>][key]" value="<%= row["key"] %>">
+        <div class="grid gap-0 md:grid-cols-2 md:gap-x-6">
+          <div class="form-group">
+            <label>Days before wedding</label>
+            <input type="number" min="0" name="wedding[notifications][reminders][schedule][<%= index %>][days_before]" value="<%= row["days_before"] %>" class="form-control">
+          </div>
+          <div class="form-group">
+            <label>Channels</label>
+            <select name="wedding[notifications][reminders][schedule][<%= index %>][channels][]" class="form-control" multiple size="2">
+              <option value="email" <%= "selected" if Array(row["channels"]).include?("email") %>>Email</option>
+              <option value="sms" <%= "selected" if Array(row["channels"]).include?("sms") %>>SMS</option>
+            </select>
+          </div>
+          <div class="form-group md:col-span-2 mb-0">
+            <label>Email subject</label>
+            <input type="text" name="wedding[notifications][reminders][schedule][<%= index %>][email_subject]" value="<%= row["email_subject"] %>" class="form-control">
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+
+  <template data-nested-form-target="template">
+    <div class="admin-nested-row" data-nested-form-target="item">
+      <div class="flex justify-between items-start mb-3">
+        <p class="text-sm font-medium text-neutral-700">Reminder</p>
+        <button type="button" class="text-sm text-danger" data-action="nested-form#remove">Remove</button>
+      </div>
+      <input type="hidden" name="wedding[notifications][reminders][schedule][NEW_INDEX][key]" value="">
+      <div class="grid gap-0 md:grid-cols-2 md:gap-x-6">
+        <div class="form-group">
+          <label>Days before wedding</label>
+          <input type="number" min="0" name="wedding[notifications][reminders][schedule][NEW_INDEX][days_before]" value="7" class="form-control">
+        </div>
+        <div class="form-group">
+          <label>Channels</label>
+          <select name="wedding[notifications][reminders][schedule][NEW_INDEX][channels][]" class="form-control" multiple size="2">
+            <option value="email" selected>Email</option>
+            <option value="sms">SMS</option>
+          </select>
+        </div>
+        <div class="form-group md:col-span-2 mb-0">
+          <label>Email subject</label>
+          <input type="text" name="wedding[notifications][reminders][schedule][NEW_INDEX][email_subject]" value="" class="form-control">
+        </div>
+      </div>
+    </div>
+  </template>
+</div>

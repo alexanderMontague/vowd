@@ -2,7 +2,7 @@
 
 command -v rbenv >/dev/null 2>&1 && eval "$(rbenv init - bash 2>/dev/null)" || true
 
-echo "🔧 Setting up Wedly..."
+echo "🔧 Setting up Vowd..."
 echo ""
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
@@ -42,6 +42,5 @@ echo ""
 echo "To start the server, run:"
 echo "  ./bin/dev"
 echo ""
-echo "Admin login: http://localhost:3003/admin/login"
-echo "  Email: admin@wedly.com"
-echo "  Password: password"
+echo "Platform: http://vowd.localhost:3003"
+echo "Sign up there to create your wedding admin."

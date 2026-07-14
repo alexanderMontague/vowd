@@ -3,12 +3,8 @@ require "test_helper"
 module Admin
   class SaveTheDateSignupsControllerTest < ActionDispatch::IntegrationTest
     setup do
-      @wedding = Wedding.current
-      @admin = AdminUser.create!(
-        email: "admin-#{SecureRandom.hex(4)}@example.com",
-        password: "password",
-        password_confirmation: "password"
-      )
+      @wedding = create_wedding
+      @admin = create_admin_for(@wedding)
       @household = Household.create!(wedding_id: @wedding.id, name: "Admin Household")
       @guest = Guest.create!(
         wedding_id: @wedding.id, household: @household,

@@ -3,7 +3,8 @@ require "test_helper"
 module Public
   class RsvpsControllerTest < ActionDispatch::IntegrationTest
     setup do
-      @wedding = Wedding.current
+      @wedding = create_wedding
+      host_wedding!(@wedding)
       @rsvp_flag = WeddingMetadata.create!(wedding_id: @wedding.id, key: "rsvp_visible", value: "true")
       @household = Household.create!(wedding_id: @wedding.id, name: "Public Household")
       @guest = Guest.create!(

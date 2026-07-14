@@ -5,6 +5,8 @@ module Dispo
     include WeddingConcern
     include SaveTheDateModeEnforcement
 
+    before_action :require_wedding!
+
     helper_method :dispo_total_photos_stream
 
     MAX_UPLOAD_BYTES = 15.megabytes

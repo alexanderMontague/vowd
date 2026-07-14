@@ -3,7 +3,7 @@ require "test_helper"
 module WeddingReminders
   class ConfigurationTest < ActiveSupport::TestCase
     test "returns due rules based on wedding date" do
-      wedding = Wedding.current
+      wedding = create_wedding
       configuration = Configuration.new(wedding:)
 
       week_before_date = wedding.date - 7
@@ -13,7 +13,7 @@ module WeddingReminders
     end
 
     test "uses configured timezone and send window" do
-      wedding = Wedding.current
+      wedding = create_wedding(timezone: "America/Toronto")
       configuration = Configuration.new(wedding:)
 
       before_window = Time.find_zone!("America/Toronto").local(2026, 8, 29, 9, 59)

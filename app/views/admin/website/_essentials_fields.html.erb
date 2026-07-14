@@ -1,0 +1,66 @@
+<div class="grid gap-0 md:grid-cols-2 md:gap-x-6">
+  <div class="form-group md:col-span-2">
+    <%= f.label :title %>
+    <%= f.text_field :title, class: "form-control", required: true %>
+  </div>
+
+  <div class="form-group">
+    <%= f.label :partner1, "Partner 1" %>
+    <%= f.text_field :partner1, class: "form-control", required: true, placeholder: "Britt" %>
+  </div>
+
+  <div class="form-group">
+    <%= f.label :partner2, "Partner 2" %>
+    <%= f.text_field :partner2, class: "form-control", required: true, placeholder: "Alex" %>
+  </div>
+
+  <div class="form-group">
+    <%= f.label :initials %>
+    <%= f.text_field :initials, class: "form-control", placeholder: "B & A" %>
+  </div>
+
+  <div class="form-group">
+    <%= f.label :last_name %>
+    <%= f.text_field :last_name, class: "form-control" %>
+  </div>
+
+  <div class="form-group">
+    <%= f.label :date, "Wedding date" %>
+    <%= f.date_field :date, class: "form-control", required: true %>
+  </div>
+
+  <div class="form-group">
+    <%= f.label :ceremony_time %>
+    <%= f.text_field :ceremony_time, class: "form-control", placeholder: "4:00 PM" %>
+  </div>
+
+  <div class="form-group">
+    <%= f.label :wedding_duration_hours, "Duration (hours)" %>
+    <%= f.number_field :wedding_duration_hours, class: "form-control", min: 1 %>
+  </div>
+
+  <div class="form-group">
+    <%= f.label :timezone %>
+    <%= f.text_field :timezone, class: "form-control", placeholder: "America/Toronto" %>
+  </div>
+
+  <div class="form-group">
+    <%= f.label :rsvp_deadline %>
+    <%= f.date_field :rsvp_deadline, class: "form-control" %>
+  </div>
+
+  <div class="form-group">
+    <%= f.label :venue_name %>
+    <%= f.text_field :venue_name, class: "form-control" %>
+  </div>
+
+  <div class="form-group">
+    <%= f.label :venue_city %>
+    <%= f.text_field :venue_city, class: "form-control" %>
+  </div>
+
+  <div class="form-group">
+    <%= f.label :venue_region %>
+    <%= f.text_field :venue_region, class: "form-control" %>
+  </div>
+</div>

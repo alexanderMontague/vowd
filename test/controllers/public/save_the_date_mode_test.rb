@@ -3,7 +3,8 @@ require "test_helper"
 module Public
   class SaveTheDateModeTest < ActionDispatch::IntegrationTest
     setup do
-      @wedding = Wedding.current
+      @wedding = create_wedding
+      host_wedding!(@wedding)
       @metadata = WeddingMetadata.create!(wedding_id: @wedding.id, key: "save_the_date_mode", value: "true")
     end
 

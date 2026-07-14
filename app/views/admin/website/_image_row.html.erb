@@ -1,0 +1,26 @@
+<%
+  index = local_assigns.fetch(:index)
+  image = local_assigns.fetch(:image, {})
+  prefix = local_assigns.fetch(:prefix)
+%>
+<div class="admin-nested-row" data-nested-form-target="item">
+  <div class="flex justify-between items-start mb-3">
+    <p class="text-sm font-medium text-neutral-700">Image</p>
+    <button type="button" class="text-sm text-danger" data-action="nested-form#remove">Remove</button>
+  </div>
+
+  <div class="form-group">
+    <label>Photo</label>
+    <%= render "admin/website/asset_upload",
+        purpose: purpose,
+        object_key_name: "#{prefix}[#{index}][object_key]",
+        object_key: image["object_key"],
+        url_name: "#{prefix}[#{index}][url]",
+        url: image["url"] %>
+  </div>
+
+  <div class="form-group mb-0">
+    <label>Alt text</label>
+    <input type="text" name="<%= prefix %>[<%= index %>][alt]" value="<%= image["alt"] %>" class="form-control" placeholder="Describe the photo">
+  </div>
+</div>

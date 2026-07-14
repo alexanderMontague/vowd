@@ -1,0 +1,359 @@
+<%
+  story = @wedding.story.presence || Wedding::DEFAULT_STORY
+  hero = @wedding.hero.presence || Wedding::DEFAULT_HERO
+  gallery = @wedding.gallery.presence || Wedding::DEFAULT_GALLERY
+  rsvp_copy = @wedding.rsvp_copy.presence || Wedding::DEFAULT_RSVP_COPY
+  faq = @wedding.faq.presence || Wedding::DEFAULT_FAQ
+  wedding_party = @wedding.wedding_party.presence || Wedding::DEFAULT_WEDDING_PARTY
+  photos_page = @wedding.photos_page.presence || Wedding::DEFAULT_PHOTOS_PAGE
+  notifications = @wedding.notifications.presence || Wedding::DEFAULT_NOTIFICATIONS
+  subdomain_host = AppHost.subdomain_host(@wedding.id)
+  setup_mode = !@wedding.configured?
+
+  gallery_images = Array(gallery["images"])
+  gallery_images = [{}] if gallery_images.empty?
+  faq_questions = Array(faq["questions"])
+  faq_questions = [{}] if faq_questions.empty?
+  bridesmaids = Array(wedding_party["bridesmaids"])
+  bridesmaids = [{}] if bridesmaids.empty?
+  groomsmen = Array(wedding_party["groomsmen"])
+  groomsmen = [{}] if groomsmen.empty?
+  photo_sections = Array(photos_page["sections"])
+  photo_sections = [{}] if photo_sections.empty?
+%>
+
+<% if setup_mode %>
+  <div class="max-w-2xl">
+    <div class="admin-page-header">
+      <h1>Set up your wedding</h1>
+      <p>Tell us the essentials. Everything else unlocks after this.</p>
+    </div>
+
+    <div class="admin-setup-checklist card mb-6">
+      <p class="admin-setup-checklist-title">Required to continue</p>
+      <ul class="admin-setup-checklist-items">
+        <li class="<%= @wedding.partner1.present? ? 'is-done' : '' %>">Partner 1 name</li>
+        <li class="<%= @wedding.partner2.present? ? 'is-done' : '' %>">Partner 2 name</li>
+        <li class="<%= @wedding.date.present? ? 'is-done' : '' %>">Wedding date</li>
+      </ul>
+    </div>
+
+    <% if @wedding.errors.any? %>
+      <div class="alert alert-error mb-6">
+        <h3><%= pluralize(@wedding.errors.count, "error") %> prohibited this wedding from being saved:</h3>
+        <ul>
+          <% @wedding.errors.full_messages.each do |message| %>
+            <li><%= message %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+    <%= form_with model: @wedding, url: admin_website_path, method: :patch do |f| %>
+      <div class="card mb-6">
+        <%= render "admin/website/essentials_fields", f: f %>
+      </div>
+
+      <%= f.submit "Save & continue", class: "btn btn-primary" %>
+    <% end %>
+  </div>
+<% else %>
+  <div class="max-w-5xl" data-controller="tabs" data-tabs-active-value="essentials">
+    <div class="admin-page-header">
+      <h1>Wedding</h1>
+      <p>
+        Site content and logistics for
+        <a href="<%= root_url(host: subdomain_host) %>" class="text-secondary underline" target="_blank" rel="noopener">
+          <%= subdomain_host %>
+        </a>.
+      </p>
+    </div>
+
+    <% if @wedding.errors.any? %>
+      <div class="alert alert-error mb-6">
+        <h3><%= pluralize(@wedding.errors.count, "error") %> prohibited this wedding from being saved:</h3>
+        <ul>
+          <% @wedding.errors.full_messages.each do |message| %>
+            <li><%= message %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+    <div class="admin-editor">
+      <aside class="admin-editor-nav" role="tablist" aria-label="Wedding sections">
+        <p class="admin-editor-nav-label">Basics</p>
+        <% [["essentials", "Essentials"], ["meals", "Meal options"], ["domain", "Custom domain"]].each do |id, label| %>
+          <button type="button" class="admin-editor-nav-link" role="tab" data-tabs-target="tab" data-tabs-id-param="<%= id %>" data-action="tabs#select"><%= label %></button>
+        <% end %>
+
+        <p class="admin-editor-nav-label">Homepage</p>
+        <% [["hero", "Hero"], ["story", "Our story"], ["gallery", "Gallery"], ["rsvp", "RSVP copy"]].each do |id, label| %>
+          <button type="button" class="admin-editor-nav-link" role="tab" data-tabs-target="tab" data-tabs-id-param="<%= id %>" data-action="tabs#select"><%= label %></button>
+        <% end %>
+
+        <p class="admin-editor-nav-label">Pages</p>
+        <% [["faq", "FAQ"], ["party", "Wedding party"], ["photos", "Photos page"]].each do |id, label| %>
+          <button type="button" class="admin-editor-nav-link" role="tab" data-tabs-target="tab" data-tabs-id-param="<%= id %>" data-action="tabs#select"><%= label %></button>
+        <% end %>
+
+        <p class="admin-editor-nav-label">Advanced</p>
+        <button type="button" class="admin-editor-nav-link" role="tab" data-tabs-target="tab" data-tabs-id-param="notifications" data-action="tabs#select">Notifications</button>
+      </aside>
+
+      <%= form_with model: @wedding, url: admin_website_path, method: :patch, class: "admin-editor-body" do |f| %>
+        <div class="card mb-6" data-tabs-target="panel" data-tabs-id-param="essentials" role="tabpanel">
+          <h2 class="admin-editor-panel-title">Essentials</h2>
+          <p class="admin-editor-panel-copy">The core details guests see across the site.</p>
+          <%= render "admin/website/essentials_fields", f: f %>
+        </div>
+
+        <div class="card mb-6" data-tabs-target="panel" data-tabs-id-param="meals" role="tabpanel" hidden>
+          <h2 class="admin-editor-panel-title">Meal options</h2>
+          <p class="admin-editor-panel-copy">Choices shown on the RSVP form.</p>
+          <div class="form-group">
+            <%= label_tag "wedding_meal_options_text", "Options (comma-separated)" %>
+            <%= text_field_tag "wedding[meal_options_text]",
+                params.dig(:wedding, :meal_options_text).presence || Array(@wedding.meal_options).join(", "),
+                class: "form-control",
+                id: "wedding_meal_options_text",
+                placeholder: "Chicken, Beef, Vegetarian, Vegan" %>
+          </div>
+        </div>
+
+        <div class="card mb-6" data-tabs-target="panel" data-tabs-id-param="domain" role="tabpanel" hidden>
+          <h2 class="admin-editor-panel-title">Custom domain</h2>
+          <p class="admin-editor-panel-copy">Optional. Your subdomain always works.</p>
+          <div class="form-group">
+            <%= f.label :custom_domain, "Custom domain" %>
+            <%= f.text_field :custom_domain, class: "form-control", placeholder: "wedding.example.com" %>
+          </div>
+          <div class="rounded-md border border-border bg-neutral-50 px-4 py-3 text-sm text-neutral-600">
+            <p class="font-medium text-neutral-800 mb-1">DNS</p>
+            <p>
+              Point a CNAME to
+              <code class="text-neutral-800"><%= subdomain_host %></code>
+              (base domain: <code class="text-neutral-800"><%= AppHost.base_domain %></code>).
+            </p>
+          </div>
+        </div>
+
+        <div class="card mb-6" data-tabs-target="panel" data-tabs-id-param="hero" role="tabpanel" hidden>
+          <h2 class="admin-editor-panel-title">Hero</h2>
+          <p class="admin-editor-panel-copy">The first impression on your homepage.</p>
+          <div class="form-group">
+            <%= label_tag "wedding_hero_tagline", "Tagline" %>
+            <%= text_field_tag "wedding[hero][tagline]", hero["tagline"], class: "form-control", id: "wedding_hero_tagline" %>
+          </div>
+          <div class="form-group">
+            <label>Hero image</label>
+            <%= render "admin/website/asset_upload",
+                purpose: "hero",
+                object_key_name: "wedding[hero][object_key]",
+                object_key: hero["object_key"],
+                image_url_name: "wedding[hero][image_url]",
+                image_url: hero["image_url"] %>
+          </div>
+        </div>
+
+        <div class="card mb-6" data-tabs-target="panel" data-tabs-id-param="story" role="tabpanel" hidden>
+          <h2 class="admin-editor-panel-title">Our story</h2>
+          <p class="admin-editor-panel-copy">Optional homepage section about how you met.</p>
+          <div class="form-group">
+            <label class="inline-flex items-center gap-2 font-semibold text-secondary-600">
+              <%= check_box_tag "wedding[story][enabled]", "1", ActiveModel::Type::Boolean.new.cast(story["enabled"]), class: "rounded border-border" %>
+              Show story section
+            </label>
+          </div>
+          <div class="form-group">
+            <%= label_tag "wedding_story_title", "Title" %>
+            <%= text_field_tag "wedding[story][title]", story["title"], class: "form-control", id: "wedding_story_title" %>
+          </div>
+          <div class="form-group">
+            <%= label_tag "wedding_story_paragraphs_text", "Paragraphs (one per line)" %>
+            <%= text_area_tag "wedding[story][paragraphs_text]",
+                Array(story["paragraphs"]).join("\n"),
+                class: "form-control",
+                id: "wedding_story_paragraphs_text",
+                rows: 8 %>
+          </div>
+          <div class="form-group">
+            <%= label_tag "wedding_story_closing", "Closing line" %>
+            <%= text_field_tag "wedding[story][closing]", story["closing"], class: "form-control", id: "wedding_story_closing" %>
+          </div>
+        </div>
+
+        <div class="card mb-6" data-tabs-target="panel" data-tabs-id-param="gallery" role="tabpanel" hidden>
+          <h2 class="admin-editor-panel-title">Gallery</h2>
+          <p class="admin-editor-panel-copy">Homepage photo strip.</p>
+          <div class="form-group">
+            <label class="inline-flex items-center gap-2 font-semibold text-secondary-600">
+              <%= check_box_tag "wedding[gallery][enabled]", "1", ActiveModel::Type::Boolean.new.cast(gallery["enabled"]), class: "rounded border-border" %>
+              Show gallery section
+            </label>
+          </div>
+          <div class="form-group">
+            <%= label_tag "wedding_gallery_title", "Title" %>
+            <%= text_field_tag "wedding[gallery][title]", gallery["title"], class: "form-control", id: "wedding_gallery_title" %>
+          </div>
+
+          <div data-controller="nested-form">
+            <div class="flex justify-between items-center mb-3">
+              <p class="text-xs font-semibold uppercase tracking-widest text-neutral-400">Images</p>
+              <button type="button" class="btn btn-sm btn-secondary" data-action="nested-form#add">Add image</button>
+            </div>
+            <div class="grid gap-3" data-nested-form-target="container">
+              <% gallery_images.each_with_index do |image, index| %>
+                <%= render "admin/website/image_row", index: index, image: image, purpose: "gallery", prefix: "wedding[gallery][images]" %>
+              <% end %>
+            </div>
+            <template data-nested-form-target="template">
+              <%= render "admin/website/image_row", index: "NEW_INDEX", image: {}, purpose: "gallery", prefix: "wedding[gallery][images]" %>
+            </template>
+          </div>
+        </div>
+
+        <div class="card mb-6" data-tabs-target="panel" data-tabs-id-param="rsvp" role="tabpanel" hidden>
+          <h2 class="admin-editor-panel-title">RSVP copy</h2>
+          <p class="admin-editor-panel-copy">Wording for the RSVP call-to-action.</p>
+          <div class="form-group">
+            <%= label_tag "wedding_rsvp_copy_title", "Title" %>
+            <%= text_field_tag "wedding[rsvp_copy][title]", rsvp_copy["title"], class: "form-control", id: "wedding_rsvp_copy_title" %>
+          </div>
+          <div class="form-group">
+            <%= label_tag "wedding_rsvp_copy_description", "Description" %>
+            <%= text_area_tag "wedding[rsvp_copy][description]", rsvp_copy["description"], class: "form-control", id: "wedding_rsvp_copy_description", rows: 4 %>
+          </div>
+          <div class="form-group">
+            <%= label_tag "wedding_rsvp_copy_button_text", "Button text" %>
+            <%= text_field_tag "wedding[rsvp_copy][button_text]", rsvp_copy["button_text"], class: "form-control", id: "wedding_rsvp_copy_button_text" %>
+          </div>
+          <div class="form-group">
+            <%= label_tag "wedding_rsvp_copy_lookup_hint", "Lookup hint" %>
+            <%= text_field_tag "wedding[rsvp_copy][lookup_hint]", rsvp_copy["lookup_hint"], class: "form-control", id: "wedding_rsvp_copy_lookup_hint" %>
+          </div>
+        </div>
+
+        <div class="card mb-6" data-tabs-target="panel" data-tabs-id-param="faq" role="tabpanel" hidden>
+          <h2 class="admin-editor-panel-title">FAQ</h2>
+          <p class="admin-editor-panel-copy">Questions guests ask most often.</p>
+          <div class="form-group">
+            <%= label_tag "wedding_faq_title", "Title" %>
+            <%= text_field_tag "wedding[faq][title]", faq["title"], class: "form-control", id: "wedding_faq_title" %>
+          </div>
+          <div class="form-group">
+            <%= label_tag "wedding_faq_subtitle", "Subtitle" %>
+            <%= text_field_tag "wedding[faq][subtitle]", faq["subtitle"], class: "form-control", id: "wedding_faq_subtitle" %>
+          </div>
+
+          <div data-controller="nested-form">
+            <div class="flex justify-between items-center mb-3">
+              <p class="text-xs font-semibold uppercase tracking-widest text-neutral-400">Questions</p>
+              <button type="button" class="btn btn-sm btn-secondary" data-action="nested-form#add">Add question</button>
+            </div>
+            <div class="grid gap-3" data-nested-form-target="container">
+              <% faq_questions.each_with_index do |question, index| %>
+                <%= render "admin/website/faq_row", index: index, question: question %>
+              <% end %>
+            </div>
+            <template data-nested-form-target="template">
+              <%= render "admin/website/faq_row", index: "NEW_INDEX", question: {} %>
+            </template>
+          </div>
+        </div>
+
+        <div class="card mb-6" data-tabs-target="panel" data-tabs-id-param="party" role="tabpanel" hidden>
+          <h2 class="admin-editor-panel-title">Wedding party</h2>
+          <p class="admin-editor-panel-copy">Names, roles, and photos for the party page.</p>
+          <div class="grid gap-0 md:grid-cols-2 md:gap-x-6">
+            <div class="form-group md:col-span-2">
+              <%= label_tag "wedding_wedding_party_title", "Title" %>
+              <%= text_field_tag "wedding[wedding_party][title]", wedding_party["title"], class: "form-control", id: "wedding_wedding_party_title" %>
+            </div>
+            <div class="form-group md:col-span-2">
+              <%= label_tag "wedding_wedding_party_subtitle", "Subtitle" %>
+              <%= text_field_tag "wedding[wedding_party][subtitle]", wedding_party["subtitle"], class: "form-control", id: "wedding_wedding_party_subtitle" %>
+            </div>
+            <div class="form-group">
+              <%= label_tag "wedding_wedding_party_bridesmaids_title", "Bridesmaids heading" %>
+              <%= text_field_tag "wedding[wedding_party][bridesmaids_title]", wedding_party["bridesmaids_title"], class: "form-control", id: "wedding_wedding_party_bridesmaids_title" %>
+            </div>
+            <div class="form-group">
+              <%= label_tag "wedding_wedding_party_groomsmen_title", "Groomsmen heading" %>
+              <%= text_field_tag "wedding[wedding_party][groomsmen_title]", wedding_party["groomsmen_title"], class: "form-control", id: "wedding_wedding_party_groomsmen_title" %>
+            </div>
+          </div>
+
+          <div class="mt-6" data-controller="nested-form">
+            <div class="flex justify-between items-center mb-3">
+              <p class="text-xs font-semibold uppercase tracking-widest text-neutral-400">Bridesmaids</p>
+              <button type="button" class="btn btn-sm btn-secondary" data-action="nested-form#add">Add person</button>
+            </div>
+            <div class="grid gap-3" data-nested-form-target="container">
+              <% bridesmaids.each_with_index do |member, index| %>
+                <%= render "admin/website/party_member_row", index: index, member: member, group: "bridesmaids" %>
+              <% end %>
+            </div>
+            <template data-nested-form-target="template">
+              <%= render "admin/website/party_member_row", index: "NEW_INDEX", member: {}, group: "bridesmaids" %>
+            </template>
+          </div>
+
+          <div class="mt-8" data-controller="nested-form">
+            <div class="flex justify-between items-center mb-3">
+              <p class="text-xs font-semibold uppercase tracking-widest text-neutral-400">Groomsmen</p>
+              <button type="button" class="btn btn-sm btn-secondary" data-action="nested-form#add">Add person</button>
+            </div>
+            <div class="grid gap-3" data-nested-form-target="container">
+              <% groomsmen.each_with_index do |member, index| %>
+                <%= render "admin/website/party_member_row", index: index, member: member, group: "groomsmen" %>
+              <% end %>
+            </div>
+            <template data-nested-form-target="template">
+              <%= render "admin/website/party_member_row", index: "NEW_INDEX", member: {}, group: "groomsmen" %>
+            </template>
+          </div>
+        </div>
+
+        <div class="card mb-6" data-tabs-target="panel" data-tabs-id-param="photos" role="tabpanel" hidden>
+          <h2 class="admin-editor-panel-title">Photos page</h2>
+          <p class="admin-editor-panel-copy">Curated sections on the public photos page.</p>
+          <div class="form-group">
+            <%= label_tag "wedding_photos_page_title", "Title" %>
+            <%= text_field_tag "wedding[photos_page][title]", photos_page["title"], class: "form-control", id: "wedding_photos_page_title" %>
+          </div>
+          <div class="form-group">
+            <%= label_tag "wedding_photos_page_subtitle", "Subtitle" %>
+            <%= text_field_tag "wedding[photos_page][subtitle]", photos_page["subtitle"], class: "form-control", id: "wedding_photos_page_subtitle" %>
+          </div>
+
+          <div data-controller="nested-form">
+            <div class="flex justify-between items-center mb-3">
+              <p class="text-xs font-semibold uppercase tracking-widest text-neutral-400">Sections</p>
+              <button type="button" class="btn btn-sm btn-secondary" data-action="nested-form#add">Add section</button>
+            </div>
+            <div class="grid gap-3" data-nested-form-target="container">
+              <% photo_sections.each_with_index do |section, index| %>
+                <%= render "admin/website/photos_section", index: index, section: section %>
+              <% end %>
+            </div>
+            <template data-nested-form-target="template">
+              <%= render "admin/website/photos_section", index: "NEW_INDEX", section: {} %>
+            </template>
+          </div>
+        </div>
+
+        <div class="card mb-6" data-tabs-target="panel" data-tabs-id-param="notifications" role="tabpanel" hidden>
+          <h2 class="admin-editor-panel-title">Notifications</h2>
+          <p class="admin-editor-panel-copy">Reminder schedule and channels.</p>
+          <%= render "admin/website/notifications_fields", notifications: notifications %>
+        </div>
+
+        <div class="flex items-center gap-3">
+          <%= f.submit "Save changes", class: "btn btn-primary" %>
+          <p class="text-xs text-muted">Changes apply to the public site immediately.</p>
+        </div>
+      <% end %>
+    </div>
+  </div>
+<% end %>

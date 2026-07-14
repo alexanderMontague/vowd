@@ -4,25 +4,34 @@
 module EmailSampleData
   module_function
 
-  def accepted_guest(email: "sample.guest@example.com")
-    build_guest("Sample", "Guest", email).tap do |guest|
-      guest.build_rsvp(status: "accepted", meal_choice: Wedding.current.meal_options.first)
+  def accepted_guest(email: "sample.guest@example.com", wedding: nil)
+    wedding = resolve_wedding(wedding)
+    build_guest("Sample", "Guest", email, wedding).tap do |guest|
+      guest.build_rsvp(status: "accepted", meal_choice: Array(wedding.meal_options).first)
     end
   end
 
-  def declined_guest(email: "sample.partner@example.com")
-    build_guest("Sample", "Partner", email).tap do |guest|
+  def declined_guest(email: "sample.partner@example.com", wedding: nil)
+    wedding = resolve_wedding(wedding)
+    build_guest("Sample", "Partner", email, wedding).tap do |guest|
       guest.build_rsvp(status: "declined")
     end
   end
 
-  def build_guest(first_name, last_name, email)
+  def build_guest(first_name, last_name, email, wedding = nil)
+    wedding = resolve_wedding(wedding)
     Guest.new(
       first_name:,
       last_name:,
       email:,
       invite_code: "SAMPLECODE",
-      wedding_id: Wedding.current.id
+      wedding_id: wedding.id
     )
+  end
+
+  def resolve_wedding(wedding)
+    return wedding if wedding
+
+    Wedding.first || raise(ArgumentError, "No wedding found. Pass wedding: or create a Wedding first.")
   end
 end

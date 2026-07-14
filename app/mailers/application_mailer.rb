@@ -11,15 +11,18 @@ class ApplicationMailer < ActionMailer::Base
 
   def default_from_address
     email_address_with_name(
-      ENV.fetch("SMTP_USERNAME", "noreply@wedly.com"),
+      ENV.fetch("SMTP_USERNAME", "noreply@vowd.site"),
       sender_display_name
     )
   end
 
   def sender_display_name
-    couple = Wedding.current.couple
-    "#{couple['partner1']} and #{couple['partner2']}'s Wedding"
-  rescue StandardError
+    couple = @wedding&.couple
+    return "Wedding" if couple.blank?
+
+    partners = [couple["partner1"], couple["partner2"]].compact_blank
+    return "#{partners.join(' and ')}'s Wedding" if partners.any?
+
     "Wedding"
   end
 

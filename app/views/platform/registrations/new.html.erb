@@ -1,0 +1,43 @@
+<% content_for :title, "Sign up - Vowd" %>
+
+<div class="flex min-h-screen items-center justify-center px-4 py-28">
+  <div class="w-full max-w-form rounded-xl bg-bg-card p-10 shadow-2xl">
+    <h1 class="mb-card text-center text-secondary">Create your wedding site</h1>
+
+    <%= form_with url: platform_signup_path, method: :post, data: { turbo: false } do |f| %>
+      <div class="form-group">
+        <%= f.label :email, "Email" %>
+        <%= f.email_field :email, value: @registration["email"], class: "form-control", required: true, autofocus: true, autocomplete: "email" %>
+      </div>
+
+      <div class="form-group">
+        <%= f.label :password, "Password" %>
+        <%= f.password_field :password, class: "form-control", required: true, autocomplete: "new-password", minlength: 6 %>
+        <p class="form-hint">At least 6 characters</p>
+      </div>
+
+      <div class="form-group">
+        <%= f.label :password_confirmation, "Confirm password" %>
+        <%= f.password_field :password_confirmation, class: "form-control", required: true, autocomplete: "new-password", minlength: 6 %>
+      </div>
+
+      <div class="form-group">
+        <%= f.label :title, "Couple display name" %>
+        <%= f.text_field :title, value: @registration["title"], class: "form-control", required: true, placeholder: "Britt & Alex" %>
+      </div>
+
+      <div class="form-group">
+        <%= f.label :slug, "Site address" %>
+        <%= f.text_field :slug, value: @registration["slug"], class: "form-control", required: true, placeholder: "britt-and-alex", pattern: "[a-z0-9]+(?:-[a-z0-9]+)*" %>
+        <p class="form-hint">Lowercase letters, numbers, and hyphens. This becomes your subdomain.</p>
+      </div>
+
+      <%= f.submit "Create account", class: "btn btn-primary w-full" %>
+    <% end %>
+
+    <p class="mb-0 mt-8 text-center text-neutral-500">
+      Already have an account?
+      <%= link_to "Log in", platform_login_path, class: "font-medium text-primary no-underline hover:underline" %>
+    </p>
+  </div>
+</div>

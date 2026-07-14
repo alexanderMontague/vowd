@@ -3,12 +3,8 @@ require "test_helper"
 module Admin
   class SettingsControllerTest < ActionDispatch::IntegrationTest
     setup do
-      @wedding = Wedding.current
-      @admin = AdminUser.create!(
-        email: "admin-#{SecureRandom.hex(4)}@example.com",
-        password: "password",
-        password_confirmation: "password"
-      )
+      @wedding = create_wedding
+      @admin = create_admin_for(@wedding)
       sign_in_admin(@admin)
     end
 
@@ -23,12 +19,19 @@ module Admin
       assert_includes response.body, "Photo Display Style"
     end
 
+    test "shows settings when wedding date is blank" do
+      @wedding.update!(date: nil, ceremony_time: nil)
+
+      get admin_settings_path
+
+      assert_redirected_to admin_website_path
+    end
+
     test "persists a valid photo style override" do
       patch admin_settings_path, params: { dispo_photo_style: "bw" }
 
       assert_redirected_to admin_settings_path
-      Wedding.reset_current!
-      assert_equal "bw", Wedding.current.dispo_photo_style
+      assert_equal "bw", @wedding.reload.dispo_photo_style
     end
 
     test "ignores an unknown photo style" do

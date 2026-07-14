@@ -1,0 +1,46 @@
+<%
+  object_key ||= nil
+  url ||= nil
+  image_url ||= nil
+  url_name ||= nil
+  image_url_name ||= nil
+  preview_src = wedding_asset_url("object_key" => object_key, "url" => url, "image_url" => image_url)
+%>
+<div
+  class="admin-asset-upload"
+  data-controller="asset-upload"
+  data-asset-upload-purpose-value="<%= purpose %>"
+  data-asset-upload-url-value="<%= admin_website_assets_path %>"
+>
+  <%= hidden_field_tag object_key_name, object_key, data: { asset_upload_target: "objectKey" } %>
+  <% if url_name.present? %>
+    <%= hidden_field_tag url_name, url %>
+  <% end %>
+  <% if image_url_name.present? %>
+    <%= hidden_field_tag image_url_name, image_url %>
+  <% end %>
+
+  <div class="flex items-start gap-4">
+    <img
+      data-asset-upload-target="preview"
+      <% if preview_src.present? %>src="<%= preview_src %>"<% end %>
+      alt=""
+      class="admin-asset-preview"
+      <%= "hidden" if preview_src.blank? %>
+    >
+
+    <div class="min-w-0 flex-1">
+      <input
+        type="file"
+        accept="image/jpeg,image/png,image/webp"
+        class="form-control"
+        data-asset-upload-target="input"
+        data-action="change->asset-upload#upload"
+      >
+      <div class="mt-2 flex items-center gap-3">
+        <button type="button" class="btn btn-sm btn-secondary" data-action="asset-upload#clear">Clear</button>
+        <span class="text-xs text-muted" data-asset-upload-target="status"></span>
+      </div>
+    </div>
+  </div>
+</div>

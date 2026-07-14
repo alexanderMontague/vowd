@@ -2,6 +2,11 @@ require "test_helper"
 
 module Public
   class SaveTheDatesControllerTest < ActionDispatch::IntegrationTest
+    setup do
+      @wedding = create_wedding
+      host_wedding!(@wedding)
+    end
+
     test "show renders invitation video reveal" do
       get public_save_the_date_path
       assert_response :success
@@ -31,6 +36,7 @@ module Public
 
       assert_redirected_to public_save_the_date_path(skip_video: 1)
       assert_equal "alex@example.com", SaveTheDateSignup.last.email
+      assert_equal @wedding.id, SaveTheDateSignup.last.wedding_id
     end
 
     test "signup with invalid email redirects with an alert" do

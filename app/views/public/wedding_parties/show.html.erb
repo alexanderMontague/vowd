@@ -24,7 +24,11 @@
             <% delay_class = ["", "animation-delay-200", "animation-delay-400", "animation-delay-400"][index % 4] %>
             <div class="text-center animate-on-scroll <%= delay_class %>" data-scroll-animate-target="item">
               <div class="w-40 h-40 rounded-full overflow-hidden mx-auto mb-6 border-2 border-stone-200/50 shadow-md">
-                <%= image_tag person["image_url"], alt: person["name"], class: "w-full h-full object-cover" %>
+                <% if (src = wedding_asset_url(person)).present? %>
+                  <%= image_tag src, alt: person["name"], class: "w-full h-full object-cover" %>
+                <% else %>
+                  <div class="w-full h-full bg-stone-200"></div>
+                <% end %>
               </div>
               <p class="text-xs tracking-[0.15em] uppercase text-stone-400 font-light mb-1">
                 <%= person["role"] %>
@@ -54,7 +58,11 @@
             <% delay_class = ["", "animation-delay-200", "animation-delay-400", "animation-delay-400"][index % 4] %>
             <div class="text-center animate-on-scroll <%= delay_class %>" data-scroll-animate-target="item">
               <div class="w-40 h-40 rounded-full overflow-hidden mx-auto mb-6 border-2 border-stone-200/50 shadow-md">
-                <%= image_tag person["image_url"], alt: person["name"], class: "w-full h-full object-cover" %>
+                <% if (src = wedding_asset_url(person)).present? %>
+                  <%= image_tag src, alt: person["name"], class: "w-full h-full object-cover" %>
+                <% else %>
+                  <div class="w-full h-full bg-stone-200"></div>
+                <% end %>
               </div>
               <p class="text-xs tracking-[0.15em] uppercase text-stone-400 font-light mb-1">
                 <%= person["role"] %>

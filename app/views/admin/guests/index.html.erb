@@ -1,9 +1,14 @@
+<%= render "admin/guests/hub_nav" %>
+
 <div class="card">
   <div class="flex justify-between items-center mb-8">
-    <h1>Guests</h1>
+    <div>
+      <h1>Guests</h1>
+      <p class="text-sm text-neutral-500 mt-1">Guest list, households, and RSVP status.</p>
+    </div>
     <div class="flex gap-4">
       <%= link_to "Export CSV", export_admin_guests_path(format: :csv), class: "btn btn-secondary" %>
-      <%= link_to "New Household", new_admin_household_path, class: "btn btn-primary" %>
+      <%= link_to "Add household", new_admin_household_path, class: "btn btn-primary" %>
     </div>
   </div>
 
@@ -42,7 +47,7 @@
           <tr>
             <td><%= guest.full_name %></td>
             <td><%= guest.email %></td>
-            <td><%= guest.household.display_name %></td>
+            <td><%= link_to guest.household.display_name, edit_admin_household_path(guest.household), class: "text-secondary underline" %></td>
             <td>
               <span class="<%= guest.rsvp.accepted? ? 'text-success' : guest.rsvp.declined? ? 'text-danger' : 'text-warning' %>">
                 <%= guest.rsvp.status.capitalize %>
@@ -52,13 +57,13 @@
             <td class="actions">
               <%= link_to "Edit", edit_admin_guest_path(guest), class: "btn btn-secondary" %>
               <%= button_to "Delete", admin_guest_path(guest), method: :delete,
-                            data: { confirm: "Are you sure?" }, class: "btn btn-danger" %>
+                            data: { turbo_confirm: "Are you sure?" }, class: "btn btn-danger" %>
             </td>
           </tr>
         <% end %>
       </tbody>
     </table>
   <% else %>
-    <p>No guests found.</p>
+    <p>No guests yet. Add a household to get started.</p>
   <% end %>
 </div>

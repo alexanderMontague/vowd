@@ -3,10 +3,12 @@ module Admin
     before_action :set_household, only: %i[show edit update destroy]
 
     def index
-      @households = current_wedding.households.includes(:guests).order(:created_at)
+      redirect_to admin_guests_path
     end
 
-    def show; end
+    def show
+      redirect_to edit_admin_household_path(@household)
+    end
 
     def new
       @household = current_wedding.households.build
@@ -21,7 +23,7 @@ module Admin
       @household = current_wedding.households.build(household_params)
 
       if @household.save
-        redirect_to admin_households_path, notice: "Household created successfully"
+        redirect_to admin_guests_path, notice: "Household created successfully"
       else
         render :new, status: :unprocessable_content
       end
@@ -29,7 +31,7 @@ module Admin
 
     def update
       if @household.update(household_params)
-        redirect_to admin_households_path, notice: "Household updated successfully"
+        redirect_to admin_guests_path, notice: "Household updated successfully"
       else
         render :edit, status: :unprocessable_content
       end
@@ -37,7 +39,7 @@ module Admin
 
     def destroy
       @household.destroy
-      redirect_to admin_households_path, notice: "Household deleted successfully"
+      redirect_to admin_guests_path, notice: "Household deleted successfully"
     end
 
     private

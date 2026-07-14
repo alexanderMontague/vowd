@@ -9,7 +9,7 @@ module WeddingReminders
 
     class << self
       def deliver!(guest:, message:, reminder_key:)
-        mode = ENV.fetch("WEDLY_SMS_MODE", LOG_MODE)
+        mode = ENV.fetch("VOWD_SMS_MODE", LOG_MODE)
 
         case mode
         when LOG_MODE
@@ -17,15 +17,15 @@ module WeddingReminders
         when WEBHOOK_MODE
           deliver_via_webhook!(guest:, message:, reminder_key:)
         else
-          raise ArgumentError, "Unsupported WEDLY_SMS_MODE=#{mode.inspect}"
+          raise ArgumentError, "Unsupported VOWD_SMS_MODE=#{mode.inspect}"
         end
       end
 
       private
 
       def deliver_via_webhook!(guest:, message:, reminder_key:)
-        webhook_url = ENV["WEDLY_SMS_WEBHOOK_URL"].to_s
-        raise "WEDLY_SMS_WEBHOOK_URL is required for webhook SMS mode" if webhook_url.blank?
+        webhook_url = ENV["VOWD_SMS_WEBHOOK_URL"].to_s
+        raise "VOWD_SMS_WEBHOOK_URL is required for webhook SMS mode" if webhook_url.blank?
 
         uri = URI.parse(webhook_url)
         request = Net::HTTP::Post.new(uri)

@@ -4,5 +4,7 @@ module Public
     include SaveTheDateModeEnforcement
 
     layout "public"
+
+    before_action :require_wedding!
   end
 end

@@ -7,7 +7,7 @@ class WeddingReminderPipelineJobTest < ActiveJob::TestCase
     clear_enqueued_jobs
     clear_performed_jobs
 
-    wedding = Wedding.current
+    wedding = create_wedding
     household = Household.create!(wedding_id: wedding.id, name: "Reminder Household")
     Guest.create!(
       wedding_id: wedding.id,
@@ -18,8 +18,8 @@ class WeddingReminderPipelineJobTest < ActiveJob::TestCase
       phone_number: "+15550001234"
     )
 
-    # Derive the trigger time from the configured wedding date so the test stays
-    # valid as db/weddings.yml changes. 10:05 is just past the 10:00 send window.
+    # Derive the trigger time from the wedding date so the test stays valid as
+    # wedding dates change. 10:05 is just past the 10:00 send window.
     week_before = wedding.date - 7
     @week_before_send_time = Time.find_zone!(wedding.timezone)
                                  .local(week_before.year, week_before.month, week_before.day, 10, 5)

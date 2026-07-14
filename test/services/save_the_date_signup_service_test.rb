@@ -2,7 +2,7 @@ require "test_helper"
 
 class SaveTheDateSignupServiceTest < ActiveSupport::TestCase
   setup do
-    @wedding = Wedding.current
+    @wedding = create_wedding
     @household = Household.create!(wedding_id: @wedding.id, name: "Match Household")
   end
 

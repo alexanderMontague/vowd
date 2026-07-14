@@ -1,3 +1,3 @@
 # Run the reminder scheduler every 15 minutes.
-# Replace /path/to/wedly with your deploy path.
-*/15 * * * * cd /path/to/wedly && /usr/bin/env RAILS_ENV=production bundle exec rails notifications:process_reminders
+# Replace /path/to/vowd with your deploy path.
+*/15 * * * * cd /path/to/vowd && /usr/bin/env RAILS_ENV=production bundle exec rails notifications:process_reminders

@@ -80,8 +80,8 @@ design/
 
 .ruby-lsp/
 
-wedly_development
-wedly_development-shm
-wedly_development-wal
+vowd_development
+vowd_development-shm
+vowd_development-wal
 # Disposable camera uploads written by the local storage backend (development/test)
 /public/uploads

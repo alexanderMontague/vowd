@@ -5,6 +5,8 @@ module Dispo
     include WeddingConcern
     include SaveTheDateModeEnforcement
 
+    before_action :require_wedding!
+
     DEFAULT_PER_PAGE = 48
     MAX_PER_PAGE = 96
 

@@ -109,6 +109,21 @@ module ApplicationHelper
     link_to(label, path, class: css_class)
   end
 
+  def admin_nav_section(label)
+    content_tag(:p, label, class: "admin-side-nav-section")
+  end
+
+  # Resolves wedding content images: uploaded object keys via app proxy, or legacy absolute URLs.
+  def wedding_asset_url(entry)
+    return if entry.blank?
+
+    data = entry.is_a?(Hash) ? entry.with_indifferent_access : { "url" => entry.to_s }
+    object_key = data[:object_key].presence
+    return public_site_asset_path(object_key: object_key) if object_key.present?
+
+    data[:url].presence || data[:image_url].presence
+  end
+
   private
 
   def ios_device?(user_agent)

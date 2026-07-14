@@ -83,8 +83,7 @@ module WeddingReminders
       notifications = @wedding.attributes["notifications"]
       return {} unless notifications.is_a?(Hash)
 
-      # FrozenRecord deep-freezes attributes, so build a fresh hash rather than
-      # mutating the source. Inject the wedding timezone so `#timezone` resolves it.
+      # Copy reminders so callers can safely merge without mutating stored JSON.
       reminders = deep_stringify_keys(notifications).fetch("reminders", {})
       reminders.merge("timezone" => @wedding.timezone)
     end
