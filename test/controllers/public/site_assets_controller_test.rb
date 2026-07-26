@@ -30,6 +30,18 @@ module Public
       assert_equal "fake-image-bytes", response.body
     end
 
+    test "serves a remote storage body without a path" do
+      io = StringIO.new("remote-bytes")
+      DisposableCamera::StorageClient.stub(:download_object, io) do
+        get public_site_asset_path(object_key: @object_key)
+      end
+
+      assert_response :success
+      assert_equal "image/jpeg", response.media_type
+      assert_equal "remote-bytes", response.body
+      assert io.closed?
+    end
+
     test "returns not found for another wedding key" do
       foreign_key = @object_key.sub("/#{@wedding.id}/", "/other-wedding/")
 
