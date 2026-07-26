@@ -21,6 +21,13 @@ module WeddingAssets
         key.start_with?(prefix) && !key.include?("..")
       end
 
+      def thumbnail_key(object_key)
+        key = object_key.to_s
+        raise ArgumentError, "object_key is required" if key.blank?
+
+        key.sub(/(\.[^.]+\z)/, ".thumb\\1")
+      end
+
       def content_type_for(object_key)
         case File.extname(object_key.to_s).downcase
         when ".jpg", ".jpeg" then "image/jpeg"

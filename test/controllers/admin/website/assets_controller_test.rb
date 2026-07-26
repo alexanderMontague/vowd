@@ -22,8 +22,12 @@ module Admin
         assert_response :created
         body = JSON.parse(response.body)
         assert body["object_key"].start_with?("#{Rails.env}/#{@wedding.id}/site/hero/")
+        assert body["object_key"].end_with?(".webp")
         assert_includes body["url"], "/site-assets/"
+        assert_includes body["thumbnail_url"], ".thumb.webp"
         assert File.exist?(Rails.public_path.join("uploads/disposable_camera", body["object_key"]))
+        thumb_key = WeddingAssets::ObjectKeyBuilder.thumbnail_key(body["object_key"])
+        assert File.exist?(Rails.public_path.join("uploads/disposable_camera", thumb_key))
       end
 
       test "rejects unsupported purpose" do

@@ -35,13 +35,16 @@ module AppHost
     slug
   end
 
+  # Always the slug subdomain — session cookies are scoped to APP_BASE_DOMAIN
+  # and will not stick on a wedding's custom_domain.
   def wedding_admin_url(wedding, path: "/admin")
-    host = wedding.public_host
+    host = subdomain_host(wedding.id)
     port = ENV["APP_PORT"].presence
     protocol = Rails.env.local? ? "http" : "https"
     authority = port.present? ? "#{host}:#{port}" : host
     "#{protocol}://#{authority}#{path}"
   end
+
 
   def local_dev_apex?(normalized)
     return false unless Rails.env.local?

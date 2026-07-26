@@ -44,7 +44,6 @@ module Admin
       attrs[:meal_options] = parse_list(permitted[:meal_options_text]) if raw.key?("meal_options_text")
       attrs[:story] = build_story(permitted[:story]) if raw.key?("story")
       attrs[:hero] = build_hero(permitted[:hero]) if raw.key?("hero")
-      attrs[:gallery] = build_gallery(permitted[:gallery]) if raw.key?("gallery")
       attrs[:rsvp_copy] = build_rsvp_copy(permitted[:rsvp_copy]) if raw.key?("rsvp_copy")
       attrs[:faq] = build_faq(permitted[:faq]) if raw.key?("faq")
       attrs[:wedding_party] = build_wedding_party(permitted[:wedding_party]) if raw.key?("wedding_party")
@@ -64,10 +63,6 @@ module Admin
         :meal_options_text,
         story: %i[enabled title paragraphs_text closing],
         hero: %i[tagline object_key image_url],
-        gallery: [
-          :enabled, :title,
-          { images: %i[object_key alt url] }
-        ],
         rsvp_copy: %i[title description button_text lookup_hint],
         faq: [
           :title, :subtitle,
@@ -79,13 +74,13 @@ module Admin
           { groomsmen: %i[name role relation object_key image_url] }
         ],
         photos_page: [
-          :title, :subtitle,
+          :title, :subtitle, :homepage_enabled, :homepage_title, :homepage_limit,
           { sections: [:title, { images: %i[object_key alt url] }] }
         ],
         notifications: {
           reminders: [
             :enabled, :send_time, :audience,
-            { channels: { email: [:enabled], sms: [:enabled] } },
+            { channels: { email: [:enabled] } },
             { schedule: [:key, :days_before, :email_subject, { channels: [] }] }
           ]
         }
@@ -111,15 +106,6 @@ module Admin
         hero["image_url"] = data[:image_url].to_s
       end
       hero
-    end
-
-    def build_gallery(raw)
-      data = nested_hash(raw)
-      {
-        "enabled" => ActiveModel::Type::Boolean.new.cast(data[:enabled]),
-        "title" => data[:title].to_s,
-        "images" => build_image_entries(data[:images])
-      }
     end
 
     def build_rsvp_copy(raw)
@@ -171,9 +157,15 @@ module Admin
         { "title" => title, "images" => images }
       end
 
+      limit = data[:homepage_limit].to_i
+      limit = Wedding::HOMEPAGE_GALLERY_DEFAULT_LIMIT unless limit.positive?
+
       {
         "title" => data[:title].to_s,
         "subtitle" => data[:subtitle].to_s,
+        "homepage_enabled" => ActiveModel::Type::Boolean.new.cast(data[:homepage_enabled]),
+        "homepage_title" => data[:homepage_title].to_s.presence || "Gallery",
+        "homepage_limit" => limit,
         "sections" => sections
       }
     end
@@ -183,7 +175,6 @@ module Admin
       reminders = nested_hash(data[:reminders])
       channels = nested_hash(reminders[:channels])
       email = nested_hash(channels[:email])
-      sms = nested_hash(channels[:sms])
 
       schedule = nested_list(reminders[:schedule]).filter_map do |row|
         days = row[:days_before].presence
@@ -192,7 +183,7 @@ module Admin
         {
           "key" => row[:key].presence || "custom_#{SecureRandom.hex(4)}",
           "days_before" => days.to_i,
-          "channels" => Array(row[:channels]).map(&:to_s).reject(&:blank?).presence || ["email"],
+          "channels" => Array(row[:channels]).map(&:to_s).select { |channel| NotificationDelivery::CHANNELS.include?(channel) }.presence || ["email"],
           "email_subject" => row[:email_subject].to_s
         }
       end
@@ -203,8 +194,7 @@ module Admin
           "send_time" => reminders[:send_time].presence || "10:00",
           "audience" => reminders[:audience].presence || "pending_rsvp",
           "channels" => {
-            "email" => { "enabled" => ActiveModel::Type::Boolean.new.cast(email[:enabled]) },
-            "sms" => { "enabled" => ActiveModel::Type::Boolean.new.cast(sms[:enabled]) }
+            "email" => { "enabled" => ActiveModel::Type::Boolean.new.cast(email[:enabled]) }
           },
           "schedule" => schedule.presence || Wedding::DEFAULT_NOTIFICATIONS.dig("reminders", "schedule")
         }

@@ -27,6 +27,30 @@ module Public
       assert_select %(a[href="#{dispo_gallery_path}"]), text: /View the Full Gallery/
     end
 
+    test "renders curated gallery sections" do
+      @wedding.update!(
+        photos_page: {
+          "title" => "Our Photos",
+          "subtitle" => "Moments",
+          "homepage_enabled" => true,
+          "homepage_title" => "Gallery",
+          "homepage_limit" => 6,
+          "sections" => [
+            {
+              "title" => "Engagement",
+              "images" => [{ "object_key" => "test/#{@wedding.id}/site/photos/a.jpg", "alt" => "Park" }]
+            }
+          ]
+        }
+      )
+
+      get public_gallery_path
+
+      assert_response :success
+      assert_includes response.body, "Engagement"
+      assert_includes response.body, "Our Photos"
+    end
+
     private
 
     def create_photo!(index)

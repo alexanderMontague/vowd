@@ -101,7 +101,7 @@ Keep new features in the namespace that matches their audience and routing.
 ## Security and configuration
 
 - Layouts use **`csp_meta_tag`** — respect CSP when adding scripts or inline styles (prefer external Stimulus and CSS).
-- Do not commit secrets; use **Rails credentials** or environment-specific config for keys (SMS, storage, etc.) per existing service objects.
+- Do not commit secrets; use **Rails credentials** or environment-specific config for keys (storage, etc.) per existing service objects.
 
 ## When adding a feature (checklist)
 

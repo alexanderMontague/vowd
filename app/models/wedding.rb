@@ -53,9 +53,15 @@ class Wedding < ApplicationRecord
     "groomsmen" => []
   }.freeze
 
+  HOMEPAGE_GALLERY_DEFAULT_LIMIT = 6
+
+  # Single source for curated photos: sectioned gallery page + homepage preview.
   DEFAULT_PHOTOS_PAGE = {
     "title" => "Our Photos",
     "subtitle" => "A few of our favourite moments",
+    "homepage_enabled" => false,
+    "homepage_title" => "Gallery",
+    "homepage_limit" => HOMEPAGE_GALLERY_DEFAULT_LIMIT,
     "sections" => []
   }.freeze
 
@@ -65,8 +71,7 @@ class Wedding < ApplicationRecord
       "send_time" => "10:00",
       "audience" => "pending_rsvp",
       "channels" => {
-        "email" => { "enabled" => true },
-        "sms" => { "enabled" => false }
+        "email" => { "enabled" => true }
       },
       "schedule" => [
         {
@@ -129,6 +134,41 @@ class Wedding < ApplicationRecord
 
   def rsvp
     rsvp_copy.presence || DEFAULT_RSVP_COPY.deep_dup
+  end
+
+  # Canonical gallery content (sections + homepage preview settings).
+  # Falls back to legacy `gallery` JSON when photos_page has no sections yet.
+  def gallery_content
+    page = DEFAULT_PHOTOS_PAGE.deep_dup.merge((photos_page.presence || {}).deep_dup)
+    sections = Array(page["sections"])
+
+    if sections.empty?
+      legacy = gallery.presence || {}
+      legacy_images = Array(legacy["images"]).select { |image| image_entry_present?(image) }
+      if legacy_images.any?
+        page["sections"] = [{ "title" => legacy["title"].presence || "Gallery", "images" => legacy_images }]
+        page["homepage_enabled"] = ActiveModel::Type::Boolean.new.cast(legacy["enabled"])
+        page["homepage_title"] = legacy["title"].presence || page["homepage_title"]
+      end
+    end
+
+    limit = page["homepage_limit"].to_i
+    page["homepage_limit"] = limit.positive? ? limit : HOMEPAGE_GALLERY_DEFAULT_LIMIT
+    page["sections"] = Array(page["sections"])
+    page
+  end
+
+  def gallery_sections
+    Array(gallery_content["sections"])
+  end
+
+  def homepage_gallery_visible?
+    ActiveModel::Type::Boolean.new.cast(gallery_content["homepage_enabled"]) && homepage_gallery_images.any?
+  end
+
+  def homepage_gallery_images
+    limit = gallery_content["homepage_limit"].to_i
+    gallery_sections.flat_map { |section| Array(section["images"]) }.first(limit)
   end
 
   def feature_flag(key)
@@ -200,6 +240,11 @@ class Wedding < ApplicationRecord
   end
 
   private
+
+  def image_entry_present?(image)
+    image = image.to_h
+    image["object_key"].present? || image["url"].present? || image["image_url"].present?
+  end
 
   def normalize_id
     self.id = id.to_s.strip.downcase.presence

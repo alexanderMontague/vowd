@@ -53,6 +53,50 @@ class WeddingTest < ActiveSupport::TestCase
     wedding&.destroy
   end
 
+  test "gallery_content falls back to legacy gallery images" do
+    @wedding.update!(
+      photos_page: Wedding::DEFAULT_PHOTOS_PAGE.deep_dup,
+      gallery: {
+        "enabled" => true,
+        "title" => "Moments",
+        "images" => [{ "object_key" => "test/photo.jpg", "alt" => "Us" }]
+      }
+    )
+
+    content = @wedding.gallery_content
+    assert_equal "Moments", content["sections"].first["title"]
+    assert_equal true, content["homepage_enabled"]
+    assert_equal 1, @wedding.homepage_gallery_images.size
+    assert @wedding.homepage_gallery_visible?
+  end
+
+  test "homepage_gallery_images respects limit across sections" do
+    @wedding.update!(
+      photos_page: {
+        "title" => "Photos",
+        "subtitle" => "",
+        "homepage_enabled" => true,
+        "homepage_title" => "Gallery",
+        "homepage_limit" => 2,
+        "sections" => [
+          {
+            "title" => "Engagement",
+            "images" => [
+              { "object_key" => "a.jpg", "alt" => "A" },
+              { "object_key" => "b.jpg", "alt" => "B" }
+            ]
+          },
+          {
+            "title" => "Memories",
+            "images" => [{ "object_key" => "c.jpg", "alt" => "C" }]
+          }
+        ]
+      }
+    )
+
+    assert_equal %w[a.jpg b.jpg], @wedding.homepage_gallery_images.map { |image| image["object_key"] }
+  end
+
   private
 
   def set_style_override(value)

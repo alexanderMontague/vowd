@@ -15,19 +15,35 @@ module WeddingAssets
 
     def call
       validate!
+      compressed = nil
+      compressed = ImageCompressor.call(uploaded_file: @uploaded_file)
+
       object_key = ObjectKeyBuilder.build(
         wedding_id: @wedding.id,
         purpose: @purpose,
-        content_type: content_type
+        content_type: compressed.content_type
       )
+      thumbnail_key = ObjectKeyBuilder.thumbnail_key(object_key)
 
       DisposableCamera::StorageClient.upload!(
-        io: @uploaded_file.tempfile,
+        io: compressed.io,
         object_key: object_key,
-        content_type: content_type
+        content_type: compressed.content_type
+      )
+      DisposableCamera::StorageClient.upload!(
+        io: compressed.thumbnail_io,
+        object_key: thumbnail_key,
+        content_type: compressed.content_type
       )
 
-      { object_key: object_key, content_type: content_type, byte_size: @uploaded_file.size }
+      {
+        object_key: object_key,
+        thumbnail_object_key: thumbnail_key,
+        content_type: compressed.content_type,
+        byte_size: compressed.byte_size
+      }
+    ensure
+      compressed&.close
     end
 
     private

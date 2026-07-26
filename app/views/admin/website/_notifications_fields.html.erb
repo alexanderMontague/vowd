@@ -45,12 +45,6 @@
           class: "rounded border-border" %>
       Email
     </label>
-    <label class="inline-flex items-center gap-2 text-sm">
-      <%= check_box_tag "wedding[notifications][reminders][channels][sms][enabled]", "1",
-          ActiveModel::Type::Boolean.new.cast(channels.dig("sms", "enabled")),
-          class: "rounded border-border" %>
-      SMS
-    </label>
   </div>
 </div>
 
@@ -68,17 +62,11 @@
           <button type="button" class="text-sm text-danger" data-action="nested-form#remove">Remove</button>
         </div>
         <input type="hidden" name="wedding[notifications][reminders][schedule][<%= index %>][key]" value="<%= row["key"] %>">
+        <input type="hidden" name="wedding[notifications][reminders][schedule][<%= index %>][channels][]" value="email">
         <div class="grid gap-0 md:grid-cols-2 md:gap-x-6">
           <div class="form-group">
             <label>Days before wedding</label>
             <input type="number" min="0" name="wedding[notifications][reminders][schedule][<%= index %>][days_before]" value="<%= row["days_before"] %>" class="form-control">
-          </div>
-          <div class="form-group">
-            <label>Channels</label>
-            <select name="wedding[notifications][reminders][schedule][<%= index %>][channels][]" class="form-control" multiple size="2">
-              <option value="email" <%= "selected" if Array(row["channels"]).include?("email") %>>Email</option>
-              <option value="sms" <%= "selected" if Array(row["channels"]).include?("sms") %>>SMS</option>
-            </select>
           </div>
           <div class="form-group md:col-span-2 mb-0">
             <label>Email subject</label>
@@ -96,17 +84,11 @@
         <button type="button" class="text-sm text-danger" data-action="nested-form#remove">Remove</button>
       </div>
       <input type="hidden" name="wedding[notifications][reminders][schedule][NEW_INDEX][key]" value="">
+      <input type="hidden" name="wedding[notifications][reminders][schedule][NEW_INDEX][channels][]" value="email">
       <div class="grid gap-0 md:grid-cols-2 md:gap-x-6">
         <div class="form-group">
           <label>Days before wedding</label>
           <input type="number" min="0" name="wedding[notifications][reminders][schedule][NEW_INDEX][days_before]" value="7" class="form-control">
-        </div>
-        <div class="form-group">
-          <label>Channels</label>
-          <select name="wedding[notifications][reminders][schedule][NEW_INDEX][channels][]" class="form-control" multiple size="2">
-            <option value="email" selected>Email</option>
-            <option value="sms">SMS</option>
-          </select>
         </div>
         <div class="form-group md:col-span-2 mb-0">
           <label>Email subject</label>

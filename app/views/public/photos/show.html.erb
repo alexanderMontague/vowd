@@ -1,18 +1,21 @@
+<% gallery = current_wedding.gallery_content %>
+<% sections = current_wedding.gallery_sections %>
+
 <div class="min-h-screen" data-controller="scroll-animate">
   <section class="py-16 md:py-32 px-4 bg-gradient-to-b from-stone-50 via-amber-50/30 to-stone-100">
     <div class="max-w-3xl mx-auto text-center animate-fade-in-up">
       <%= render "public/shared/divider" %>
       <div class="mb-8"></div>
       <h1 class="text-6xl mb-6 tracking-wide font-display font-light text-stone-800">
-        <%= current_wedding.photos_page["title"] %>
+        <%= gallery["title"] %>
       </h1>
       <p class="text-base tracking-wider text-stone-500 font-light">
-        <%= current_wedding.photos_page["subtitle"] %>
+        <%= gallery["subtitle"] %>
       </p>
     </div>
   </section>
 
-  <% current_wedding.photos_page["sections"]&.each_with_index do |section, section_index| %>
+  <% sections.each_with_index do |section, section_index| %>
     <section class="py-24 px-4 <%= section_index.odd? ? 'bg-stone-100/50 border-y border-stone-200' : '' %>">
       <div class="max-w-7xl mx-auto">
         <%= render "public/shared/divider" %>
@@ -32,8 +35,7 @@
   <% end %>
 
   <% if current_wedding.dispo_gallery_visible? %>
-    <%# Disposable camera album - alternates background based on how many curated sections there are %>
-    <% dispo_section_index = current_wedding.photos_page["sections"]&.length.to_i %>
+    <% dispo_section_index = sections.length %>
     <section id="dispo-photos" class="py-24 px-4 <%= dispo_section_index.odd? ? 'bg-stone-100/50 border-y border-stone-200' : '' %>">
       <div class="max-w-7xl mx-auto">
         <%= render "public/shared/divider" %>

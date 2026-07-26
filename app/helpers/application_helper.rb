@@ -124,6 +124,16 @@ module ApplicationHelper
     data[:url].presence || data[:image_url].presence
   end
 
+  def wedding_asset_thumbnail_url(entry)
+    return if entry.blank?
+
+    data = entry.is_a?(Hash) ? entry.with_indifferent_access : { "url" => entry.to_s }
+    object_key = data[:object_key].presence
+    return wedding_asset_url(entry) if object_key.blank?
+
+    public_site_asset_path(object_key: WeddingAssets::ObjectKeyBuilder.thumbnail_key(object_key))
+  end
+
   private
 
   def ios_device?(user_agent)

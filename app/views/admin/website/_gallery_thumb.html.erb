@@ -1,0 +1,39 @@
+<%
+  index = local_assigns.fetch(:index)
+  image = local_assigns.fetch(:image, {})
+  prefix = local_assigns.fetch(:prefix)
+  full_url = wedding_asset_url(image)
+  thumb_url = wedding_asset_thumbnail_url(image)
+%>
+<div class="admin-gallery-thumb" data-nested-form-target="item">
+  <%= hidden_field_tag "#{prefix}[#{index}][object_key]", image["object_key"] %>
+  <% if image["url"].present? %>
+    <%= hidden_field_tag "#{prefix}[#{index}][url]", image["url"] %>
+  <% end %>
+
+  <button
+    type="button"
+    class="admin-gallery-thumb__preview"
+    data-action="gallery-lightbox#open"
+    data-full-url="<%= full_url %>"
+    aria-label="View photo"
+  >
+    <img
+      src="<%= thumb_url %>"
+      data-full-url="<%= full_url %>"
+      data-action="error->gallery-lightbox#fallbackThumb"
+      alt=""
+      width="96"
+      height="96"
+      loading="lazy"
+      decoding="async"
+    >
+  </button>
+
+  <button
+    type="button"
+    class="admin-gallery-thumb__remove"
+    data-action="nested-form#remove"
+    aria-label="Remove photo"
+  >&times;</button>
+</div>

@@ -44,7 +44,7 @@ Sign up, pick a slug, and configure everything from admin.
 Also included:
 
 - **Email invitations** with tracking
-- **Reminder pipeline** (email/SMS) with idempotent delivery
+- **Reminder pipeline** (email) with idempotent delivery
 - **Custom domains** (CNAME to your wedding subdomain)
 - **CSV export** of guest / RSVP data
 
@@ -180,10 +180,7 @@ Example cron (every 15 minutes; deliveries are idempotent):
 */15 * * * * cd /path/to/vowd && /usr/bin/env RAILS_ENV=production bundle exec rails notifications:process_reminders
 ```
 
-See `config/cron.example`. Optional SMS:
-
-- `VOWD_SMS_MODE=webhook`
-- `VOWD_SMS_WEBHOOK_URL=https://your-sms-dispatch-endpoint`
+See `config/cron.example`.
 
 ### Disposable camera storage
 

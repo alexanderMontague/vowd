@@ -803,6 +803,55 @@
     @apply size-20 shrink-0 rounded-md object-cover border border-border bg-neutral-100;
   }
 
+  .admin-gallery-thumbs {
+    @apply grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-2;
+  }
+
+  .admin-gallery-thumb {
+    @apply relative aspect-square;
+  }
+
+  .admin-gallery-thumb__preview {
+    @apply block size-full overflow-hidden rounded-md border border-border bg-neutral-100 p-0 cursor-zoom-in;
+  }
+
+  .admin-gallery-thumb__preview img {
+    @apply size-full object-cover;
+  }
+
+  .admin-gallery-thumb__remove {
+    @apply absolute -top-1.5 -right-1.5 flex size-5 items-center justify-center rounded-full border border-border bg-white text-sm leading-none text-danger shadow-sm;
+  }
+
+  .admin-upload-progress__track {
+    @apply h-1.5 overflow-hidden rounded-full bg-neutral-200;
+  }
+
+  .admin-upload-progress__bar {
+    @apply h-full rounded-full bg-secondary transition-[width] duration-200 ease-out;
+    width: 0%;
+  }
+
+  .admin-upload-progress__status {
+    @apply mt-1.5 mb-0 text-xs text-neutral-500;
+  }
+
+  .admin-gallery-lightbox {
+    @apply relative m-auto max-h-[90vh] max-w-[90vw] border-0 bg-transparent p-0;
+  }
+
+  .admin-gallery-lightbox::backdrop {
+    background: rgb(0 0 0 / 0.72);
+  }
+
+  .admin-gallery-lightbox__image {
+    @apply max-h-[85vh] max-w-[85vw] rounded-md object-contain;
+  }
+
+  .admin-gallery-lightbox__close {
+    @apply absolute right-0 top-0 z-10 flex size-8 items-center justify-center rounded-full bg-white/90 text-xl leading-none text-neutral-800;
+  }
+
   .admin-hub-nav {
     @apply flex flex-wrap gap-1 mb-6 border-b border-border pb-3;
   }

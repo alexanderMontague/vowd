@@ -1,6 +1,7 @@
 module Admin
   class SessionsController < ApplicationController
     include WeddingConcern
+    include AdminCanonicalHost
 
     layout "admin_auth"
 

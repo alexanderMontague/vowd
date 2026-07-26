@@ -60,11 +60,7 @@ class WeddingReminderPipelineJob < ApplicationJob
   end
 
   def deliverable?(guest, channel)
-    case channel
-    when "email" then guest.email.present?
-    when "sms" then guest.phone_number.present?
-    else false
-    end
+    channel == "email" && guest.email.present?
   end
 
   def normalize_time(reference_time)

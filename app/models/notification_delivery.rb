@@ -1,5 +1,5 @@
 class NotificationDelivery < ApplicationRecord
-  CHANNELS = %w[email sms].freeze
+  CHANNELS = %w[email].freeze
   STATUSES = %w[queued sent failed].freeze
 
   belongs_to :guest

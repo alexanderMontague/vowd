@@ -11,24 +11,14 @@ class WeddingReminderDeliveryJob < ApplicationJob
     rule = config.rules.find { |configured_rule| configured_rule.key == delivery.reminder_key }
     raise "Reminder rule not found for key=#{delivery.reminder_key}" unless rule
 
-    message_builder = WeddingReminders::MessageBuilder.new(wedding:, reminder_rule: rule)
+    raise "Unsupported channel=#{delivery.channel}" unless delivery.channel == "email"
 
-    case delivery.channel
-    when "email"
-      WeddingReminderMailer.reminder(
-        guest:,
-        wedding:,
-        subject: message_builder.email_subject
-      ).deliver_now
-    when "sms"
-      WeddingReminders::SmsDelivery.deliver!(
-        guest:,
-        message: message_builder.sms_body(guest),
-        reminder_key: rule.key
-      )
-    else
-      raise "Unsupported channel=#{delivery.channel}"
-    end
+    message_builder = WeddingReminders::MessageBuilder.new(wedding:, reminder_rule: rule)
+    WeddingReminderMailer.reminder(
+      guest:,
+      wedding:,
+      subject: message_builder.email_subject
+    ).deliver_now
 
     delivery.mark_sent!
   rescue StandardError => e

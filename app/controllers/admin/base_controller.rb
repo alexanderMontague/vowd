@@ -2,6 +2,7 @@ module Admin
   class BaseController < ApplicationController
     include AdminAuthentication
     include WeddingConcern
+    include AdminCanonicalHost
 
     layout "admin"
 

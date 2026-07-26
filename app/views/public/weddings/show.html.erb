@@ -114,16 +114,17 @@
     </section>
   <% end %>
 
-  <% if current_wedding.gallery["enabled"] && current_wedding.gallery["images"].present? %>
-    <%# Photo Gallery %>
+  <% if current_wedding.homepage_gallery_visible? %>
+    <% homepage_images = current_wedding.homepage_gallery_images %>
+    <%# Photo Gallery preview %>
     <section class="py-32">
       <div class="max-w-7xl mx-auto px-4">
         <%= render "public/shared/divider" %>
         <div class="mb-12"></div>
-        <%= render "public/shared/section_title", title: current_wedding.gallery["title"], centered: true %>
+        <%= render "public/shared/section_title", title: current_wedding.gallery_content["homepage_title"], centered: true %>
         <div class="mb-24"></div>
         <div class="grid md:grid-cols-3 gap-8">
-          <% current_wedding.gallery["images"].each_with_index do |image, index| %>
+          <% homepage_images.each_with_index do |image, index| %>
             <% delay_class = index == 1 ? "animation-delay-200" : (index == 2 ? "animation-delay-400" : "") %>
             <div class="gallery-item animate-on-scroll <%= delay_class %>" data-scroll-animate-target="item">
               <%= image_tag wedding_asset_url(image), alt: image["alt"] %>
@@ -131,7 +132,7 @@
           <% end %>
         </div>
         <div class="text-center mt-16">
-          <%= link_to "View Photos", public_gallery_path, class: "btn-wedding-primary" %>
+          <%= link_to "View Gallery", public_gallery_path, class: "btn-wedding-primary" %>
         </div>
       </div>
     </section>

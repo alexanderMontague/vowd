@@ -1,17 +1,14 @@
 <%
   story = @wedding.story.presence || Wedding::DEFAULT_STORY
   hero = @wedding.hero.presence || Wedding::DEFAULT_HERO
-  gallery = @wedding.gallery.presence || Wedding::DEFAULT_GALLERY
   rsvp_copy = @wedding.rsvp_copy.presence || Wedding::DEFAULT_RSVP_COPY
   faq = @wedding.faq.presence || Wedding::DEFAULT_FAQ
   wedding_party = @wedding.wedding_party.presence || Wedding::DEFAULT_WEDDING_PARTY
-  photos_page = @wedding.photos_page.presence || Wedding::DEFAULT_PHOTOS_PAGE
+  photos_page = @wedding.gallery_content
   notifications = @wedding.notifications.presence || Wedding::DEFAULT_NOTIFICATIONS
   subdomain_host = AppHost.subdomain_host(@wedding.id)
   setup_mode = !@wedding.configured?
 
-  gallery_images = Array(gallery["images"])
-  gallery_images = [{}] if gallery_images.empty?
   faq_questions = Array(faq["questions"])
   faq_questions = [{}] if faq_questions.empty?
   bridesmaids = Array(wedding_party["bridesmaids"])
@@ -93,7 +90,7 @@
         <% end %>
 
         <p class="admin-editor-nav-label">Pages</p>
-        <% [["faq", "FAQ"], ["party", "Wedding party"], ["photos", "Photos page"]].each do |id, label| %>
+        <% [["faq", "FAQ"], ["party", "Wedding party"]].each do |id, label| %>
           <button type="button" class="admin-editor-nav-link" role="tab" data-tabs-target="tab" data-tabs-id-param="<%= id %>" data-action="tabs#select"><%= label %></button>
         <% end %>
 
@@ -185,30 +182,47 @@
 
         <div class="card mb-6" data-tabs-target="panel" data-tabs-id-param="gallery" role="tabpanel" hidden>
           <h2 class="admin-editor-panel-title">Gallery</h2>
-          <p class="admin-editor-panel-copy">Homepage photo strip.</p>
-          <div class="form-group">
-            <label class="inline-flex items-center gap-2 font-semibold text-secondary-600">
-              <%= check_box_tag "wedding[gallery][enabled]", "1", ActiveModel::Type::Boolean.new.cast(gallery["enabled"]), class: "rounded border-border" %>
-              Show gallery section
-            </label>
-          </div>
-          <div class="form-group">
-            <%= label_tag "wedding_gallery_title", "Title" %>
-            <%= text_field_tag "wedding[gallery][title]", gallery["title"], class: "form-control", id: "wedding_gallery_title" %>
+          <p class="admin-editor-panel-copy">
+            Organize photos into sections for the gallery page. A subset can also appear on the homepage.
+          </p>
+
+          <div class="grid gap-0 md:grid-cols-2 md:gap-x-6">
+            <div class="form-group md:col-span-2">
+              <label class="inline-flex items-center gap-2 font-semibold text-secondary-600">
+                <%= check_box_tag "wedding[photos_page][homepage_enabled]", "1", ActiveModel::Type::Boolean.new.cast(photos_page["homepage_enabled"]), class: "rounded border-border" %>
+                Show preview on homepage
+              </label>
+            </div>
+            <div class="form-group">
+              <%= label_tag "wedding_photos_page_homepage_title", "Homepage title" %>
+              <%= text_field_tag "wedding[photos_page][homepage_title]", photos_page["homepage_title"], class: "form-control", id: "wedding_photos_page_homepage_title" %>
+            </div>
+            <div class="form-group">
+              <%= label_tag "wedding_photos_page_homepage_limit", "Homepage photo count" %>
+              <%= number_field_tag "wedding[photos_page][homepage_limit]", photos_page["homepage_limit"], class: "form-control", id: "wedding_photos_page_homepage_limit", min: 1, max: 24 %>
+            </div>
+            <div class="form-group">
+              <%= label_tag "wedding_photos_page_title", "Gallery page title" %>
+              <%= text_field_tag "wedding[photos_page][title]", photos_page["title"], class: "form-control", id: "wedding_photos_page_title" %>
+            </div>
+            <div class="form-group">
+              <%= label_tag "wedding_photos_page_subtitle", "Gallery page subtitle" %>
+              <%= text_field_tag "wedding[photos_page][subtitle]", photos_page["subtitle"], class: "form-control", id: "wedding_photos_page_subtitle" %>
+            </div>
           </div>
 
-          <div data-controller="nested-form">
+          <div class="mt-6" data-controller="nested-form" data-nested-form-placeholder-value="NEW_SECTION_INDEX">
             <div class="flex justify-between items-center mb-3">
-              <p class="text-xs font-semibold uppercase tracking-widest text-neutral-400">Images</p>
-              <button type="button" class="btn btn-sm btn-secondary" data-action="nested-form#add">Add image</button>
+              <p class="text-xs font-semibold uppercase tracking-widest text-neutral-400">Sections</p>
+              <button type="button" class="btn btn-sm btn-secondary" data-action="nested-form#add">Add section</button>
             </div>
             <div class="grid gap-3" data-nested-form-target="container">
-              <% gallery_images.each_with_index do |image, index| %>
-                <%= render "admin/website/image_row", index: index, image: image, purpose: "gallery", prefix: "wedding[gallery][images]" %>
+              <% photo_sections.each_with_index do |section, index| %>
+                <%= render "admin/website/photos_section", index: index, section: section %>
               <% end %>
             </div>
             <template data-nested-form-target="template">
-              <%= render "admin/website/image_row", index: "NEW_INDEX", image: {}, purpose: "gallery", prefix: "wedding[gallery][images]" %>
+              <%= render "admin/website/photos_section", index: "NEW_SECTION_INDEX", section: {} %>
             </template>
           </div>
         </div>
@@ -311,34 +325,6 @@
             </div>
             <template data-nested-form-target="template">
               <%= render "admin/website/party_member_row", index: "NEW_INDEX", member: {}, group: "groomsmen" %>
-            </template>
-          </div>
-        </div>
-
-        <div class="card mb-6" data-tabs-target="panel" data-tabs-id-param="photos" role="tabpanel" hidden>
-          <h2 class="admin-editor-panel-title">Photos page</h2>
-          <p class="admin-editor-panel-copy">Curated sections on the public photos page.</p>
-          <div class="form-group">
-            <%= label_tag "wedding_photos_page_title", "Title" %>
-            <%= text_field_tag "wedding[photos_page][title]", photos_page["title"], class: "form-control", id: "wedding_photos_page_title" %>
-          </div>
-          <div class="form-group">
-            <%= label_tag "wedding_photos_page_subtitle", "Subtitle" %>
-            <%= text_field_tag "wedding[photos_page][subtitle]", photos_page["subtitle"], class: "form-control", id: "wedding_photos_page_subtitle" %>
-          </div>
-
-          <div data-controller="nested-form">
-            <div class="flex justify-between items-center mb-3">
-              <p class="text-xs font-semibold uppercase tracking-widest text-neutral-400">Sections</p>
-              <button type="button" class="btn btn-sm btn-secondary" data-action="nested-form#add">Add section</button>
-            </div>
-            <div class="grid gap-3" data-nested-form-target="container">
-              <% photo_sections.each_with_index do |section, index| %>
-                <%= render "admin/website/photos_section", index: index, section: section %>
-              <% end %>
-            </div>
-            <template data-nested-form-target="template">
-              <%= render "admin/website/photos_section", index: "NEW_INDEX", section: {} %>
             </template>
           </div>
         </div>

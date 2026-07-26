@@ -10,7 +10,8 @@ module Admin
 
         render json: {
           object_key: result[:object_key],
-          url: helpers.public_site_asset_path(object_key: result[:object_key])
+          url: helpers.public_site_asset_path(object_key: result[:object_key]),
+          thumbnail_url: helpers.public_site_asset_path(object_key: result[:thumbnail_object_key])
         }, status: :created
       rescue ActionController::ParameterMissing, ArgumentError => e
         render json: { error: e.message }, status: :unprocessable_content

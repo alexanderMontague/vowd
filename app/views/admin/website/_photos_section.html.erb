@@ -1,10 +1,9 @@
 <%
   index = local_assigns.fetch(:index)
   section = local_assigns.fetch(:section, {})
-  images = Array(section["images"])
-  images = [{}] if images.empty?
+  images = Array(section["images"]).select { |image| image["object_key"].present? || image["url"].present? }
 %>
-<div class="admin-nested-row" data-nested-form-target="item" data-controller="nested-form">
+<div class="admin-nested-row" data-nested-form-target="item" data-controller="gallery-lightbox">
   <div class="flex justify-between items-start mb-3">
     <p class="text-sm font-medium text-neutral-700">Section</p>
     <button type="button" class="text-sm text-danger" data-action="nested-form#remove">Remove section</button>
@@ -12,29 +11,57 @@
 
   <div class="form-group">
     <label>Section title</label>
-    <input type="text" name="wedding[photos_page][sections][<%= index %>][title]" value="<%= section["title"] %>" class="form-control">
+    <input type="text" name="wedding[photos_page][sections][<%= index %>][title]" value="<%= section["title"] %>" class="form-control" placeholder="Engagement, Memories, …">
   </div>
 
-  <div class="flex justify-between items-center mb-3">
-    <p class="text-xs font-semibold uppercase tracking-widest text-neutral-400">Images</p>
-    <button type="button" class="btn btn-sm btn-secondary" data-action="nested-form#add">Add image</button>
-  </div>
+  <div
+    data-controller="nested-form multi-asset-upload"
+    data-nested-form-placeholder-value="NEW_IMAGE_INDEX"
+    data-multi-asset-upload-purpose-value="photos"
+    data-multi-asset-upload-url-value="<%= admin_website_assets_path %>"
+    data-multi-asset-upload-placeholder-value="NEW_IMAGE_INDEX"
+  >
+    <div class="flex justify-between items-center mb-3 gap-3 flex-wrap">
+      <p class="text-xs font-semibold uppercase tracking-widest text-neutral-400">Images</p>
+      <label class="btn btn-sm btn-secondary cursor-pointer mb-0">
+        Upload photos
+        <input
+          type="file"
+          accept="image/jpeg,image/png,image/webp"
+          multiple
+          class="hidden"
+          data-multi-asset-upload-target="input"
+          data-action="change->multi-asset-upload#upload"
+        >
+      </label>
+    </div>
 
-  <div class="grid gap-3" data-nested-form-target="container">
-    <% images.each_with_index do |image, image_index| %>
-      <%= render "admin/website/image_row",
-          index: image_index,
-          image: image,
-          purpose: "photos",
+    <div class="admin-upload-progress mb-2" hidden data-multi-asset-upload-target="progress">
+      <div class="admin-upload-progress__track">
+        <div class="admin-upload-progress__bar" data-multi-asset-upload-target="progressBar"></div>
+      </div>
+      <p class="admin-upload-progress__status" data-multi-asset-upload-target="status"></p>
+    </div>
+
+    <div class="admin-gallery-thumbs" data-nested-form-target="container" data-multi-asset-upload-target="container">
+      <% images.each_with_index do |image, image_index| %>
+        <%= render "admin/website/gallery_thumb",
+            index: image_index,
+            image: image,
+            prefix: "wedding[photos_page][sections][#{index}][images]" %>
+      <% end %>
+    </div>
+
+    <template data-nested-form-target="template" data-multi-asset-upload-target="template">
+      <%= render "admin/website/gallery_thumb",
+          index: "NEW_IMAGE_INDEX",
+          image: {},
           prefix: "wedding[photos_page][sections][#{index}][images]" %>
-    <% end %>
+    </template>
   </div>
 
-  <template data-nested-form-target="template">
-    <%= render "admin/website/image_row",
-        index: "NEW_INDEX",
-        image: {},
-        purpose: "photos",
-        prefix: "wedding[photos_page][sections][#{index}][images]" %>
-  </template>
+  <dialog class="admin-gallery-lightbox" data-gallery-lightbox-target="dialog" data-action="click->gallery-lightbox#backdropClose">
+    <button type="button" class="admin-gallery-lightbox__close" aria-label="Close" data-action="gallery-lightbox#close">&times;</button>
+    <img src="" alt="" class="admin-gallery-lightbox__image" data-gallery-lightbox-target="image">
+  </dialog>
 </div>
