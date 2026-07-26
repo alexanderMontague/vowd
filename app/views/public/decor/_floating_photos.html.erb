@@ -1,6 +1,7 @@
 <%
-  # Decorative echoes of photos shown elsewhere, so they are hidden from assistive
-  # tech and from narrow screens where there is no room beside the invitation.
+  # Decorative echoes of photos shown elsewhere — hidden from assistive tech.
+  # On narrow screens they peek from the card edges without covering copy;
+  # on wide screens they scatter beside the invitation.
   layers = floating_photo_layers(local_assigns.fetch(:assets, []))
 %>
 <% if layers.any? %>
