@@ -46,14 +46,14 @@ export default class extends Controller {
     this.toggleConditionalFields(radio)
   }
 
+  // The selected appearance lives in `.rsvp-radio-card.selected` so it follows the
+  // wedding's theme colours rather than being pinned to one palette here.
   styleCardAsSelected(card) {
-    card.classList.add("border-stone-800", "bg-stone-50")
-    card.classList.remove("border-stone-300")
+    card.classList.add("selected")
   }
 
   styleCardAsUnselected(card) {
-    card.classList.remove("border-stone-800", "bg-stone-50")
-    card.classList.add("border-stone-300")
+    card.classList.remove("selected")
   }
 
   toggleConditionalFields(radio) {

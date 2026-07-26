@@ -25,6 +25,7 @@
 
           <% if current_wedding&.configured? %>
             <%= admin_nav_link("Dashboard", admin_root_path, exact: true) %>
+            <%= admin_nav_link("Theme", admin_theme_path, exact: true) %>
 
             <%= admin_nav_section("Guests") %>
             <%= admin_nav_link(
@@ -41,6 +42,7 @@
             <%= admin_nav_section("Day of") %>
             <%= admin_nav_link("Events", admin_events_path, active_prefixes: [admin_events_path]) %>
             <%= admin_nav_link("Photos", admin_disposable_photos_path, active_prefixes: [admin_disposable_photos_path]) %>
+            <%= admin_nav_link("Camera sign", admin_dispo_sign_path, exact: true) %>
 
             <%= admin_nav_section("System") %>
             <%= admin_nav_link("Feature flags", admin_settings_path, exact: true) %>

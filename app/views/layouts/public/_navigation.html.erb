@@ -1,38 +1,22 @@
-<% save_the_date_only = current_wedding.save_the_date_mode? %>
-<% home_path = save_the_date_only ? public_save_the_date_path : root_path %>
+<% pages = site_navigation.pages %>
+<% landing_path = site_page_path(site_navigation.landing_page) %>
+<% show_links = pages.many? %>
 
 <nav class="wedding-nav" data-controller="nav">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="flex justify-between items-center h-24">
-      <%= link_to home_path, class: "flex items-center no-underline" do %>
-        <span class="text-3xl font-display text-stone-800">
-          <%= current_wedding&.title || "Wedding" %>
-        </span>
+      <%= link_to landing_path, class: "flex min-w-0 items-center no-underline" do %>
+        <span class="wedding-nav-brand"><%= current_wedding.title %></span>
       <% end %>
 
-      <% unless save_the_date_only %>
-        <%# Desktop links %>
+      <% if show_links %>
         <div class="hidden md:flex gap-8">
-          <%= link_to "Home", root_path,
-              class: class_names("wedding-nav-link", { active: current_page?(root_path) }) %>
-          <%= link_to "Gallery", public_gallery_path,
-              class: class_names("wedding-nav-link", { active: current_page?(public_gallery_path) }) %>
-          <%= link_to "Wedding Party", public_wedding_party_path,
-              class: class_names("wedding-nav-link", { active: current_page?(public_wedding_party_path) }) %>
-          <%= link_to "FAQ", public_faq_path,
-              class: class_names("wedding-nav-link", { active: current_page?(public_faq_path) }) %>
-          <%= link_to "Save the Date", public_save_the_date_path,
-              class: class_names("wedding-nav-link", { active: current_page?(public_save_the_date_path) }) %>
-          <% if current_wedding.rsvp_visible? %>
-            <%= link_to "RSVP", public_rsvp_lookup_path,
-                class: class_names("wedding-nav-link", { active: request.path.start_with?('/rsvp') }) %>
+          <% pages.each do |page| %>
+            <%= site_page_link(page) %>
           <% end %>
         </div>
 
-        <%# Mobile hamburger button %>
-        <button class="md:hidden p-2 -mr-2 text-stone-600 hover:text-stone-800 transition-colors"
-                data-action="nav#toggle"
-                aria-label="Toggle navigation">
+        <button class="wedding-nav-toggle" data-action="nav#toggle" aria-label="Toggle navigation">
           <svg data-nav-target="openIcon" class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"/>
           </svg>
@@ -44,23 +28,11 @@
     </div>
   </div>
 
-  <% unless save_the_date_only %>
-    <%# Mobile menu %>
-    <div class="md:hidden hidden border-t border-stone-200/50" data-nav-target="menu" data-action="click->nav#close">
+  <% if show_links %>
+    <div class="md:hidden hidden border-t border-hairline" data-nav-target="menu" data-action="click->nav#close">
       <div class="max-w-7xl mx-auto px-6 py-6 flex flex-col gap-6">
-        <%= link_to "Home", root_path,
-            class: class_names("wedding-nav-link self-start", { active: current_page?(root_path) }) %>
-        <%= link_to "Gallery", public_gallery_path,
-            class: class_names("wedding-nav-link self-start", { active: current_page?(public_gallery_path) }) %>
-        <%= link_to "Wedding Party", public_wedding_party_path,
-            class: class_names("wedding-nav-link self-start", { active: current_page?(public_wedding_party_path) }) %>
-        <%= link_to "FAQ", public_faq_path,
-            class: class_names("wedding-nav-link self-start", { active: current_page?(public_faq_path) }) %>
-        <%= link_to "Save the Date", public_save_the_date_path,
-            class: class_names("wedding-nav-link self-start", { active: current_page?(public_save_the_date_path) }) %>
-        <% if current_wedding.rsvp_visible? %>
-          <%= link_to "RSVP", public_rsvp_lookup_path,
-              class: class_names("wedding-nav-link self-start", { active: request.path.start_with?('/rsvp') }) %>
+        <% pages.each do |page| %>
+          <%= site_page_link(page, css_class: "wedding-nav-link self-start") %>
         <% end %>
       </div>
     </div>

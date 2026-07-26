@@ -16,4 +16,18 @@ class AppHostTest < ActiveSupport::TestCase
     assert_equal "http://plain-wedding.example.test:3003/admin",
                  AppHost.wedding_admin_url(wedding)
   end
+
+  test "wedding_public_url prefers the custom domain so guest links stay on brand" do
+    wedding = create_wedding(id: "acme-wedding", custom_domain: "acme.example.com")
+
+    assert_equal "http://acme.example.com:3003/dispo",
+                 AppHost.wedding_public_url(wedding, path: "/dispo")
+  end
+
+  test "wedding_public_url falls back to the slug subdomain" do
+    wedding = create_wedding(id: "plain-wedding")
+
+    assert_equal "http://plain-wedding.example.test:3003/dispo",
+                 AppHost.wedding_public_url(wedding, path: "/dispo")
+  end
 end

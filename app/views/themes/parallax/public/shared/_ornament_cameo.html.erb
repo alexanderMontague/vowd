@@ -1,0 +1,9 @@
+<%
+  # The blank oval plate, carrying the couple's monogram. The original design had no
+  # lettering here and reused a floral artifact instead.
+  plate = image_path("themes/parallax/cameo-plate.webp")
+%>
+<div class="parallax-cameo">
+  <div class="parallax-cameo__plate" style="--parallax-ornament-src: url('<%= plate %>')" aria-hidden="true"></div>
+  <span class="parallax-cameo__initials"><%= wedding_monogram(current_wedding) %></span>
+</div>

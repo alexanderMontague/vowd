@@ -38,13 +38,21 @@ module AppHost
   # Always the slug subdomain — session cookies are scoped to APP_BASE_DOMAIN
   # and will not stick on a wedding's custom_domain.
   def wedding_admin_url(wedding, path: "/admin")
-    host = subdomain_host(wedding.id)
+    absolute_url(host: subdomain_host(wedding.id), path: path)
+  end
+
+  # The guest-facing origin, so links handed to guests (printed QR codes, emails)
+  # honour a wedding's custom domain instead of leaking the admin host.
+  def wedding_public_url(wedding, path: "/")
+    absolute_url(host: wedding.public_host, path: path)
+  end
+
+  def absolute_url(host:, path: "/")
     port = ENV["APP_PORT"].presence
     protocol = Rails.env.local? ? "http" : "https"
     authority = port.present? ? "#{host}:#{port}" : host
     "#{protocol}://#{authority}#{path}"
   end
-
 
   def local_dev_apex?(normalized)
     return false unless Rails.env.local?

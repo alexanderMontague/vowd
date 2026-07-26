@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_07_13_180000) do
+ActiveRecord::Schema[7.1].define(version: 2026_07_25_110000) do
   create_table "admin_users", force: :cascade do |t|
     t.string "email", null: false
     t.string "password_digest", null: false
@@ -61,7 +61,7 @@ ActiveRecord::Schema[7.1].define(version: 2026_07_13_180000) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["household_id"], name: "index_guests_on_household_id"
-    t.index ["invite_code"], name: "index_guests_on_invite_code", unique: true
+    t.index ["wedding_id", "invite_code"], name: "index_guests_on_wedding_id_and_invite_code", unique: true
     t.index ["wedding_id"], name: "index_guests_on_wedding_id"
   end
 
@@ -124,12 +124,27 @@ ActiveRecord::Schema[7.1].define(version: 2026_07_13_180000) do
     t.index ["wedding_id", "email"], name: "index_save_the_date_signups_on_wedding_id_and_email"
   end
 
+  create_table "wedding_assets", id: :string, force: :cascade do |t|
+    t.string "wedding_id", null: false
+    t.string "object_key", null: false
+    t.string "content_type", null: false
+    t.integer "byte_size"
+    t.string "alt"
+    t.string "caption"
+    t.integer "position", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["object_key"], name: "index_wedding_assets_on_object_key", unique: true
+    t.index ["wedding_id", "position"], name: "index_wedding_assets_on_wedding_id_and_position"
+  end
+
   create_table "wedding_metadata", id: :string, force: :cascade do |t|
     t.string "wedding_id"
     t.string "key"
     t.string "value"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["wedding_id", "key"], name: "index_wedding_metadata_on_wedding_id_and_key", unique: true
     t.index ["wedding_id"], name: "index_wedding_metadata_on_wedding_id"
   end
 
@@ -160,6 +175,8 @@ ActiveRecord::Schema[7.1].define(version: 2026_07_13_180000) do
     t.datetime "custom_domain_verified_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.json "placements", default: {}, null: false
+    t.json "theme", default: {}, null: false
     t.index ["custom_domain"], name: "index_weddings_on_custom_domain", unique: true
   end
 

@@ -1,0 +1,19 @@
+<%
+  # A single piece of decorative artwork. Placement and size are the caller's job
+  # (`css_class`); this partial owns the asset lookup, the accessibility treatment and
+  # the parallax wiring.
+  #
+  # Passing `speed` enrols the ornament in the nearest `parallax` controller, which
+  # drifts it by publishing `--parallax-shift`. Leave it off for ornament that should
+  # stay put.
+  speed = local_assigns[:speed]
+  source = image_path("themes/parallax/#{local_assigns.fetch(:name)}.webp")
+
+  style = +"--parallax-ornament-src: url('#{source}')"
+  style << "; --parallax-ornament-opacity: #{local_assigns[:opacity]}" if local_assigns[:opacity]
+%>
+<div class="parallax-ornament <%= local_assigns[:css_class] %>"
+     style="<%= style %>"
+     aria-hidden="true"
+     <%= tag.attributes(data: { parallax_target: ("layer" if speed), parallax_speed: speed }) %>>
+</div>

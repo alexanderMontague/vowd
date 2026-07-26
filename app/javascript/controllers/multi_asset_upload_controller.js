@@ -1,12 +1,12 @@
 import { Controller } from "@hotwired/stimulus"
 
-// Multi-file image upload with progress bar; appends compact thumbnail rows.
+// Uploads several images into the photo library, applying each Turbo Stream response
+// so the library grid and the picker options stay in sync without a page reload.
 export default class extends Controller {
-  static targets = ["input", "container", "template", "status", "progress", "progressBar"]
+  static targets = ["input", "status", "progress", "progressBar"]
   static values = {
     purpose: String,
-    url: String,
-    placeholder: { type: String, default: "NEW_IMAGE_INDEX" }
+    url: String
   }
 
   async upload(event) {
@@ -15,14 +15,16 @@ export default class extends Controller {
 
     let completed = 0
     let failed = 0
+    let lastError = null
     this.showProgress(0, files.length)
 
-    for (const [index, file] of files.entries()) {
+    for (const file of files) {
       try {
-        await this.uploadFile(file, index)
+        await this.uploadFile(file)
         completed += 1
-      } catch (_error) {
+      } catch (error) {
         failed += 1
+        lastError = error
       }
       this.showProgress(completed + failed, files.length)
     }
@@ -30,13 +32,13 @@ export default class extends Controller {
     if (this.hasInputTarget) this.inputTarget.value = ""
 
     if (failed > 0) {
-      this.setStatus(`Uploaded ${completed} of ${files.length} (${failed} failed)`)
+      this.setStatus(`Uploaded ${completed} of ${files.length}. ${lastError?.message || "Some uploads failed."}`)
     } else {
       this.setStatus(`Uploaded ${completed}`)
     }
   }
 
-  async uploadFile(file, index) {
+  async uploadFile(file) {
     const body = new FormData()
     body.append("file", file)
     body.append("purpose", this.purposeValue)
@@ -45,35 +47,24 @@ export default class extends Controller {
       method: "POST",
       headers: {
         "X-CSRF-Token": this.csrfToken,
-        Accept: "application/json"
+        Accept: "text/vnd.turbo-stream.html, application/json"
       },
       body,
       credentials: "same-origin"
     })
 
-    const data = await response.json()
-    if (!response.ok) throw new Error(data.error || "Upload failed")
+    if (!response.ok) throw new Error(await this.errorMessage(response))
 
-    this.appendThumb(data, index)
+    window.Turbo.renderStreamMessage(await response.text())
   }
 
-  appendThumb(data, index) {
-    const html = this.templateTarget.innerHTML
-      .split(this.placeholderValue)
-      .join(String(Date.now() + index))
-    this.containerTarget.insertAdjacentHTML("beforeend", html)
-
-    const row = this.containerTarget.lastElementChild
-    const objectKeyInput = row.querySelector("input[name*='[object_key]']")
-    const preview = row.querySelector("img")
-    const openButton = row.querySelector("[data-full-url]")
-
-    if (objectKeyInput) objectKeyInput.value = data.object_key
-    if (preview) {
-      preview.src = data.thumbnail_url || data.url
-      preview.dataset.fullUrl = data.url
+  async errorMessage(response) {
+    try {
+      const data = await response.json()
+      return data.error || "Upload failed"
+    } catch (_error) {
+      return "Upload failed"
     }
-    if (openButton) openButton.dataset.fullUrl = data.url
   }
 
   showProgress(done, total) {

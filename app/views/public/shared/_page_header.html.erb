@@ -1,0 +1,12 @@
+<%# The masthead every standalone guest page opens with. Themes override this one
+    partial to restyle the photos, wedding party, FAQ and RSVP pages at once. %>
+<section class="wedding-page-wash px-4 py-16 md:py-32">
+  <div class="mx-auto max-w-3xl text-center animate-fade-in-up">
+    <%= render "public/shared/divider" %>
+    <div class="mb-8"></div>
+    <h1 class="wedding-page-title"><%= title %></h1>
+    <% if local_assigns[:subtitle].present? %>
+      <p class="wedding-page-subtitle"><%= subtitle %></p>
+    <% end %>
+  </div>
+</section>

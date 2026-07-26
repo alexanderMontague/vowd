@@ -1,0 +1,12 @@
+<%# Left-aligned masthead type in place of the shared theme's centred rule-and-ornament
+    header. The ornament and divider locals the shared partial accepts are irrelevant
+    here and are deliberately unused. %>
+<header class="mb-12 <%= local_assigns.fetch(:header_class, '') %>">
+  <% if local_assigns[:eyebrow].present? %>
+    <p class="editorial-label mb-5"><%= eyebrow %></p>
+  <% end %>
+  <h1 class="editorial-title"><%= title %></h1>
+  <% if local_assigns[:subtitle].present? %>
+    <p class="editorial-standfirst mt-6"><%= subtitle %></p>
+  <% end %>
+</header>

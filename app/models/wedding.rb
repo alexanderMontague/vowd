@@ -7,6 +7,12 @@ class Wedding < ApplicationRecord
 
   SLUG_FORMAT = /\A[a-z0-9]+(?:-[a-z0-9]+)*\z/
 
+  VENUE_LABEL_PARTS = %w[name city region].freeze
+
+  # Where a stored image entry can carry its source: a library asset's key, an
+  # uploaded object key, or a legacy absolute url.
+  IMAGE_ENTRY_KEYS = %w[object_key url image_url].freeze
+
   DEFAULT_STORY = {
     "enabled" => false,
     "title" => "Our Story",
@@ -65,6 +71,13 @@ class Wedding < ApplicationRecord
     "sections" => []
   }.freeze
 
+  # Only the theme key is seeded: colours, fonts and page toggles are left empty so a
+  # wedding that has never opened the theme editor keeps inheriting whatever the
+  # chosen theme declares as its defaults.
+  DEFAULT_THEME = {
+    "key" => SiteThemes::DEFAULT_KEY
+  }.freeze
+
   DEFAULT_NOTIFICATIONS = {
     "reminders" => {
       "enabled" => true,
@@ -104,6 +117,7 @@ class Wedding < ApplicationRecord
   has_many :metadata, class_name: "WeddingMetadata", foreign_key: :wedding_id, primary_key: :id,
                        dependent: :destroy, inverse_of: false
   has_many :disposable_photos, foreign_key: :wedding_id, primary_key: :id, dependent: :destroy, inverse_of: false
+  has_many :wedding_assets, foreign_key: :wedding_id, primary_key: :id, dependent: :destroy, inverse_of: :wedding
 
   before_validation :normalize_id
   before_validation :normalize_custom_domain
@@ -132,6 +146,23 @@ class Wedding < ApplicationRecord
     }
   end
 
+  # "The Grand Hall, Toronto, Ontario" — the venue as a single readable line.
+  def self.venue_label(venue_hash)
+    venue_hash.to_h.values_at(*VENUE_LABEL_PARTS).compact_blank.join(", ")
+  end
+
+  # True when an entry actually points at a photo, whatever shape it is stored in.
+  def self.image_entry?(entry)
+    return false if entry.blank?
+    return entry.object_key.present? if entry.is_a?(WeddingAsset)
+
+    entry.to_h.values_at(*IMAGE_ENTRY_KEYS).any?(&:present?)
+  end
+
+  def venue_label
+    self.class.venue_label(venue)
+  end
+
   def rsvp
     rsvp_copy.presence || DEFAULT_RSVP_COPY.deep_dup
   end
@@ -158,8 +189,29 @@ class Wedding < ApplicationRecord
     page
   end
 
+  # Sections with their images resolved from the photo library. Library assets come
+  # first, followed by any legacy entries that only ever had an external url.
   def gallery_sections
-    Array(gallery_content["sections"])
+    Array(gallery_content["sections"]).map do |section|
+      {
+        "title" => section["title"],
+        "images" => section_images(section)
+      }
+    end
+  end
+
+  # Assets placed in a `SiteSlots` slot, in the configured order, with ids that no
+  # longer resolve dropped and the slot's maximum enforced.
+  def placements_for(slot_key)
+    slot = SiteSlots.find(slot_key)
+    return [] if slot.nil?
+
+    ids = Array(placements.presence&.dig(slot.key)).map(&:to_s)
+    ids.filter_map { |id| asset_library_index[id] }.first(slot.max)
+  end
+
+  def placement(slot_key)
+    placements_for(slot_key).first
   end
 
   def homepage_gallery_visible?
@@ -201,6 +253,11 @@ class Wedding < ApplicationRecord
     feature_flag("dispo_gallery_on_main_page")
   end
 
+  # The resolved website theme. Memoised because a page render reads it many times.
+  def site_theme
+    @site_theme ||= WeddingTheme.for(self)
+  end
+
   def dispo_photo_style
     value = metadata.find_by(key: PHOTO_STYLE_METADATA_KEY)&.value
     PHOTO_STYLES.include?(value) ? value : DEFAULT_PHOTO_STYLE
@@ -239,11 +296,28 @@ class Wedding < ApplicationRecord
     custom_domain.presence || AppHost.subdomain_host(id)
   end
 
+  def reload(...)
+    @asset_library_index = nil
+    @site_theme = nil
+    super
+  end
+
   private
 
+  # Memoized so a page rendering several slots and sections costs one query.
+  def asset_library_index
+    @asset_library_index ||= wedding_assets.ordered.index_by { |asset| asset.id.to_s }
+  end
+
+  def section_images(section)
+    from_library = Array(section["asset_ids"]).filter_map { |id| asset_library_index[id.to_s] }
+    legacy = Array(section["images"]).select { |image| image_entry_present?(image) }
+
+    from_library + legacy
+  end
+
   def image_entry_present?(image)
-    image = image.to_h
-    image["object_key"].present? || image["url"].present? || image["image_url"].present?
+    self.class.image_entry?(image)
   end
 
   def normalize_id
@@ -266,6 +340,7 @@ class Wedding < ApplicationRecord
     self.wedding_party = DEFAULT_WEDDING_PARTY.deep_dup if wedding_party.blank?
     self.photos_page = DEFAULT_PHOTOS_PAGE.deep_dup if photos_page.blank?
     self.notifications = DEFAULT_NOTIFICATIONS.deep_dup if notifications.blank?
+    self.theme = DEFAULT_THEME.deep_dup if theme.blank?
     self.meal_options = [] if meal_options.nil?
   end
 

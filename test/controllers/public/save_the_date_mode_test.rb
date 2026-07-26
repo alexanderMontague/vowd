@@ -28,7 +28,7 @@ module Public
     end
 
     test "other public pages redirect to save the date" do
-      get public_gallery_path
+      get public_photos_path
       assert_redirected_to public_save_the_date_path
 
       get public_faq_path

@@ -17,15 +17,19 @@ module WeddingAssets
     end
 
     def self.call(uploaded_file:)
-      new(uploaded_file).call
+      new(path: path_for(uploaded_file)).call
     end
 
-    def initialize(uploaded_file)
-      @uploaded_file = uploaded_file
+    def self.from_path(path)
+      new(path: path).call
+    end
+
+    def initialize(path:)
+      @path = path
     end
 
     def call
-      source = ImageProcessing::Vips.source(source_path)
+      source = ImageProcessing::Vips.source(@path)
 
       full = source
         .resize_to_limit(MAX_EDGE, MAX_EDGE)
@@ -48,12 +52,12 @@ module WeddingAssets
       )
     end
 
-    private
-
-    def source_path
-      tempfile = @uploaded_file.tempfile
+    def self.path_for(uploaded_file)
+      tempfile = uploaded_file.tempfile
       tempfile.rewind if tempfile.respond_to?(:rewind)
       tempfile.path
     end
+    private_class_method :path_for
   end
 end
+

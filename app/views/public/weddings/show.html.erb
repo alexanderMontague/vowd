@@ -7,7 +7,7 @@
           alt: current_wedding.title,
           class: "wedding-hero-image" %>
     <% else %>
-      <div class="wedding-hero-image bg-secondary"></div>
+      <div class="wedding-hero-image bg-ink"></div>
     <% end %>
     <div class="wedding-hero-overlay"></div>
     <div class="wedding-hero-content">
@@ -39,12 +39,12 @@
         <%= render "public/shared/divider" %>
         <div class="mb-12"></div>
         <%= render "public/shared/section_title", title: current_wedding.story["title"] %>
-        <div class="space-y-8 leading-loose text-lg font-light max-w-2xl mx-auto text-stone-600">
+        <div class="space-y-8 leading-loose text-lg wedding-prose max-w-2xl mx-auto">
           <% current_wedding.story["paragraphs"]&.each do |paragraph| %>
             <p><%= paragraph %></p>
           <% end %>
           <% if current_wedding.story["closing"] %>
-            <p class="italic text-base text-stone-500">
+            <p class="italic text-base text-ink-soft">
               <%= current_wedding.story["closing"] %>
             </p>
           <% end %>
@@ -56,26 +56,26 @@
   <% end %>
 
   <%# Event Details %>
-  <section class="py-32 border-y border-stone-200 bg-stone-100/50" id="events">
+  <section class="wedding-band py-32" id="events">
     <div class="max-w-6xl mx-auto px-4">
       <%= render "public/shared/section_title", title: "Event Details", centered: true %>
       <div class="mb-24"></div>
       <div class="grid md:grid-cols-3 gap-20">
         <%= render "public/shared/event_detail", icon: "calendar", title: "Date" do %>
           <% if current_wedding.date %>
-            <p class="text-stone-600 font-light"><%= current_wedding.date.strftime("%A") %></p>
-            <p class="text-stone-600 font-light"><%= format_date(current_wedding.date) %></p>
+            <p class="wedding-prose"><%= current_wedding.date.strftime("%A") %></p>
+            <p class="wedding-prose"><%= format_date(current_wedding.date) %></p>
           <% end %>
         <% end %>
 
         <%= render "public/shared/event_detail", icon: "clock", title: "Time", delay_class: "animation-delay-200" do %>
-          <p class="text-stone-600 font-light">Ceremony at <%= current_wedding.ceremony_time %></p>
-          <p class="text-sm text-stone-600 font-light opacity-70">Reception to Follow</p>
+          <p class="wedding-prose">Ceremony at <%= current_wedding.ceremony_time %></p>
+          <p class="wedding-prose text-sm opacity-70">Reception to Follow</p>
         <% end %>
 
         <%= render "public/shared/event_detail", icon: "map_pin", title: "Venue", delay_class: "animation-delay-400" do %>
-          <p class="text-stone-600 font-light"><%= current_wedding.venue["name"] %></p>
-          <p class="text-sm text-stone-600 font-light opacity-70">
+          <p class="wedding-prose"><%= current_wedding.venue["name"] %></p>
+          <p class="wedding-prose text-sm opacity-70">
             <%= full_venue_name(current_wedding.venue) %>
           </p>
         <% end %>
@@ -92,20 +92,20 @@
         <%= render "public/shared/section_title", title: "Schedule", centered: true %>
         <div class="space-y-8">
           <% @events.each do |event| %>
-            <div class="bg-white p-8 shadow-sm border border-stone-200/50 animate-on-scroll" data-scroll-animate-target="item">
-              <h3 class="text-2xl mb-2 font-display text-stone-800">
+            <div class="wedding-card animate-on-scroll" data-scroll-animate-target="item">
+              <h3 class="text-2xl mb-2 font-theme-display text-ink">
                 <%= event.name %>
               </h3>
               <% if event.datetime %>
-                <p class="text-sm tracking-wider uppercase mb-4 text-stone-500 font-light">
+                <p class="text-sm tracking-wider uppercase mb-4 text-ink-soft font-light">
                   <%= event.datetime.strftime("%I:%M %p") %>
                 </p>
               <% end %>
               <% if event.location.present? %>
-                <p class="text-stone-600 font-light"><%= event.location %></p>
+                <p class="wedding-prose"><%= event.location %></p>
               <% end %>
               <% if event.description.present? %>
-                <p class="mt-4 text-stone-500 font-light"><%= event.description %></p>
+                <p class="mt-4 text-ink-soft font-light"><%= event.description %></p>
               <% end %>
             </div>
           <% end %>
@@ -127,41 +127,36 @@
           <% homepage_images.each_with_index do |image, index| %>
             <% delay_class = index == 1 ? "animation-delay-200" : (index == 2 ? "animation-delay-400" : "") %>
             <div class="gallery-item animate-on-scroll <%= delay_class %>" data-scroll-animate-target="item">
-              <%= image_tag wedding_asset_url(image), alt: image["alt"] %>
+              <%= image_tag wedding_asset_url(image), alt: wedding_asset_alt(image), loading: "lazy" %>
             </div>
           <% end %>
         </div>
-        <div class="text-center mt-16">
-          <%= link_to "View Gallery", public_gallery_path, class: "btn-wedding-primary" %>
-        </div>
+        <%# Only offer the gallery page when the theme actually has one. %>
+        <% if site_navigation.visible?("gallery") %>
+          <div class="text-center mt-16">
+            <%= link_to "View All Photos", public_photos_path, class: "btn-wedding-primary" %>
+          </div>
+        <% end %>
       </div>
     </section>
   <% end %>
 
-  <% if current_wedding.rsvp_visible? %>
+  <% if site_navigation.visible?("rsvp") %>
     <%# RSVP Call to Action %>
-    <section class="py-32 border-y border-stone-200 bg-stone-100/50" id="rsvp-section">
+    <section class="wedding-band py-32" id="rsvp-section">
       <div class="max-w-2xl mx-auto px-4 text-center">
         <%= render "public/shared/divider" %>
         <div class="mb-12"></div>
         <%= render "public/shared/section_title", title: current_wedding.rsvp["title"] %>
-        <p class="text-lg mb-12 max-w-lg mx-auto leading-relaxed text-stone-600 font-light">
+        <p class="text-lg mb-12 max-w-lg mx-auto leading-relaxed wedding-prose">
           <%= current_wedding.rsvp["description"] %>
         </p>
         <%= link_to current_wedding.rsvp["button_text"], public_rsvp_lookup_path,
             class: "btn-wedding-primary" %>
-        <p class="text-sm tracking-wider mt-8 text-stone-400 font-light">
+        <p class="text-sm tracking-wider mt-8 text-ink-faint font-light">
           <%= current_wedding.rsvp["lookup_hint"] %>
         </p>
       </div>
     </section>
   <% end %>
-
-  <%# Footer %>
-  <footer class="wedding-footer">
-    <p class="text-xs tracking-[0.2em] uppercase mb-2"><%= current_wedding.title %></p>
-    <% if current_wedding.date %>
-      <p class="text-xs font-light"><%= format_date_short(current_wedding.date) %></p>
-    <% end %>
-  </footer>
 </div>

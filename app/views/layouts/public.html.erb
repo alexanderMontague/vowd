@@ -1,20 +1,27 @@
 <!DOCTYPE html>
-<html>
+<%# The theme's authored tokens land on the root element, where the derived tokens in
+    the stylesheet's `:root` block pick them up. `data-theme` opts into that theme's
+    scoped layer. %>
+<html data-theme="<%= site_theme.key %>" style="<%= site_theme.style_attribute %>">
   <head>
-    <title><%= current_wedding&.title || "Wedding" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
+    <%= render "layouts/public/meta_tags" %>
     <%= favicon_link_tag '/favicon.png', type: 'image/png' %>
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="<%= site_theme.fonts_href %>" data-theme-fonts>
     <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
   </head>
 
-  <body class="min-h-screen bg-stone-50 font-body">
+  <body class="wedding-page">
     <%= render "layouts/public/navigation" %>
-
     <main>
       <%= yield %>
     </main>
+    <%= render "layouts/public/footer" unless content_for?(:hide_site_footer) %>
+    <%= render "layouts/public/theme_preview_banner" if theme_preview_active? %>
   </body>
 </html>

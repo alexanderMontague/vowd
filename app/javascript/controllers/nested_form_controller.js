@@ -19,6 +19,9 @@ export default class extends Controller {
   remove(event) {
     event.preventDefault()
     const item = event.currentTarget.closest("[data-nested-form-target='item']")
-    if (item) item.remove()
+    if (!item) return
+
+    item.remove()
+    this.dispatch("removed")
   }
 }

@@ -1,4 +1,8 @@
 module ApplicationHelper
+  # Drift speeds for the floating photo positions defined in the stylesheet.
+  # Alternating signs give the cluster a sense of depth.
+  FLOATING_PHOTO_SPEEDS = [0.16, -0.11, 0.22].freeze
+
   def page_title(title = nil)
     base_title = current_wedding&.title || "Wedding"
     title.present? ? "#{title} | #{base_title}" : base_title
@@ -113,11 +117,12 @@ module ApplicationHelper
     content_tag(:p, label, class: "admin-side-nav-section")
   end
 
-  # Resolves wedding content images: uploaded object keys via app proxy, or legacy absolute URLs.
+  # Resolves wedding content images: library assets and uploaded object keys via the
+  # app proxy, or legacy absolute URLs.
   def wedding_asset_url(entry)
     return if entry.blank?
 
-    data = entry.is_a?(Hash) ? entry.with_indifferent_access : { "url" => entry.to_s }
+    data = wedding_asset_attributes(entry)
     object_key = data[:object_key].presence
     return public_site_asset_path(object_key: object_key) if object_key.present?
 
@@ -127,14 +132,37 @@ module ApplicationHelper
   def wedding_asset_thumbnail_url(entry)
     return if entry.blank?
 
-    data = entry.is_a?(Hash) ? entry.with_indifferent_access : { "url" => entry.to_s }
-    object_key = data[:object_key].presence
+    object_key = wedding_asset_attributes(entry)[:object_key].presence
     return wedding_asset_url(entry) if object_key.blank?
 
     public_site_asset_path(object_key: WeddingAssets::ObjectKeyBuilder.thumbnail_key(object_key))
   end
 
+  def wedding_asset_alt(entry)
+    return "" if entry.blank?
+
+    wedding_asset_attributes(entry)[:alt].to_s
+  end
+
+  # Single lookup point for decorative components so a future theme can swap the
+  # whole decor set without touching the pages that render them.
+  def decor_partial(name)
+    "public/decor/#{name}"
+  end
+
+  def floating_photo_layers(assets)
+    Array(assets).first(FLOATING_PHOTO_SPEEDS.size).zip(FLOATING_PHOTO_SPEEDS)
+  end
+
   private
+
+  def wedding_asset_attributes(entry)
+    case entry
+    when WeddingAsset then { object_key: entry.object_key, alt: entry.alt }.with_indifferent_access
+    when Hash then entry.with_indifferent_access
+    else { url: entry.to_s }.with_indifferent_access
+    end
+  end
 
   def ios_device?(user_agent)
     user_agent.match?(/iphone|ipad|ipod/)

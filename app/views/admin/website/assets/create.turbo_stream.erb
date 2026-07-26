@@ -1,0 +1,13 @@
+<% if @asset.video? %>
+  <%= turbo_stream.replace "envelope_open_section" do %>
+    <%= render "admin/website/envelope_section", asset: @asset %>
+  <% end %>
+<% else %>
+  <%= turbo_stream.append "photo_library" do %>
+    <%= render "admin/website/library_asset", asset: @asset %>
+  <% end %>
+
+  <%= turbo_stream.append "photo_library_options" do %>
+    <%= render "admin/website/picker_option", asset: @asset %>
+  <% end %>
+<% end %>

@@ -1,0 +1,28 @@
+<% party = current_wedding.wedding_party %>
+
+<div data-controller="scroll-animate">
+  <%= render "public/shared/page_header",
+      title: party["title"],
+      subtitle: party["subtitle"],
+      kicker: "Contributors" %>
+
+  <% groups = [["bridesmaids", "bridesmaids_title"], ["groomsmen", "groomsmen_title"]] %>
+  <% groups.each_with_index do |(group, title_key), index| %>
+    <% members = Array(party[group]) %>
+    <% next if members.empty? %>
+
+    <section class="editorial-shell editorial-section">
+      <div class="editorial-grid">
+        <div class="editorial-rail">
+          <%= render "public/shared/marker", number: index + 1, label: party[title_key] %>
+        </div>
+
+        <div class="editorial-contributors">
+          <% members.each_with_index do |person, position| %>
+            <%= render "public/wedding_parties/member", person: person, index: position %>
+          <% end %>
+        </div>
+      </div>
+    </section>
+  <% end %>
+</div>

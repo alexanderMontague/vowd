@@ -1,8 +1,13 @@
-<div class="min-h-screen bg-gradient-to-b from-stone-50 via-amber-50/30 to-stone-100 px-4 py-10 md:py-20">
-  <%= render "public/shared/invitation_frame" do %>
+<div class="wedding-page-wash min-h-screen px-4 py-10 md:py-20">
+  <%= render "public/shared/invitation_frame",
+      floating_assets: current_wedding.placements_for("rsvp_floating") do %>
     <%= render "public/shared/invitation_hero",
         eyebrow: "RSVP",
         title: current_wedding.title %>
+
+    <%= render decor_partial("framed_photo"),
+        asset: current_wedding.placement("rsvp_portrait"),
+        wrapper_class: "mb-10" %>
 
     <p class="invitation-lead mb-10 text-center">
       Search for your name to find your invitation
@@ -20,7 +25,7 @@
                  data-action="input->guest-search#search"
                  placeholder="Enter your first or last name"
                  autocomplete="off"
-                 class="w-full border-b-2 border-stone-300 bg-transparent px-0 py-4 font-display text-xl text-stone-800 outline-none transition-colors focus:border-stone-800" />
+                 class="w-full border-b-2 border-hairline-strong bg-transparent px-0 py-4 font-theme-display text-xl text-ink outline-none transition-colors focus:border-brand" />
           <div class="absolute right-0 top-1/2 -translate-y-1/2">
             <%= render "public/shared/icon", name: "search" %>
           </div>
@@ -28,27 +33,27 @@
       </div>
 
       <div data-guest-search-target="searching" class="hidden py-8 text-center">
-        <p class="text-sm font-light text-stone-500">Searching...</p>
+        <p class="text-sm font-light text-ink-soft">Searching...</p>
       </div>
 
       <div data-guest-search-target="results" class="hidden">
         <p class="rsvp-label mb-4">Select your name</p>
-        <div class="border border-stone-200">
+        <div class="border border-hairline">
         </div>
       </div>
 
       <div data-guest-search-target="noResults" class="hidden py-8 text-center">
-        <div class="mb-6 inline-flex h-16 w-16 items-center justify-center rounded-full border border-stone-300">
+        <div class="mb-6 inline-flex h-16 w-16 items-center justify-center rounded-full border border-hairline-strong">
           <%= render "public/shared/icon", name: "sad" %>
         </div>
-        <p class="mb-2 font-display text-lg text-stone-800">No guests found</p>
-        <p class="text-sm font-light text-stone-500">
+        <p class="mb-2 font-theme-display text-lg text-ink">No guests found</p>
+        <p class="text-sm font-light text-ink-soft">
           Please check the spelling or try a different name
         </p>
       </div>
 
-      <div class="mt-8 border-t border-primary/10 pb-24 pt-8 sm:pb-28">
-        <p class="text-center text-sm font-light text-stone-400">
+      <div class="mt-8 border-t border-accent/20 pb-24 pt-8 sm:pb-28">
+        <p class="text-center text-sm font-light text-ink-faint">
           If you received an invitation link, you can use that to go directly to your RSVP
         </p>
       </div>

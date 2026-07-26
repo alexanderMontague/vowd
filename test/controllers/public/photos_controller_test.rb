@@ -20,7 +20,7 @@ module Public
     test "caps the dispo preview and links to the full gallery" do
       15.times { |index| create_photo!(index) }
 
-      get public_gallery_path
+      get public_photos_path
 
       assert_response :success
       assert_select ".retro-photo", Public::PhotosController::DISPO_PREVIEW_LIMIT
@@ -44,11 +44,38 @@ module Public
         }
       )
 
-      get public_gallery_path
+      get public_photos_path
 
       assert_response :success
       assert_includes response.body, "Engagement"
       assert_includes response.body, "Our Photos"
+    end
+
+    test "renders section photos referenced from the library" do
+      asset = @wedding.wedding_assets.create!(
+        object_key: "#{Rails.env}/#{@wedding.id}/site/photos/library.webp",
+        content_type: "image/webp",
+        byte_size: 1024,
+        alt: "On the pier"
+      )
+      @wedding.update!(
+        photos_page: {
+          "title" => "Our Photos",
+          "sections" => [{ "title" => "Engagement", "asset_ids" => [asset.id] }]
+        }
+      )
+
+      get public_photos_path
+
+      assert_response :success
+      assert_select %(img[alt="On the pier"])
+      assert_includes response.body, public_site_asset_path(object_key: asset.object_key)
+    end
+
+    test "legacy gallery path redirects to photos" do
+      get "/gallery"
+
+      assert_redirected_to "/photos"
     end
 
     private

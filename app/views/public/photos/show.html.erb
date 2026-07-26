@@ -2,21 +2,10 @@
 <% sections = current_wedding.gallery_sections %>
 
 <div class="min-h-screen" data-controller="scroll-animate">
-  <section class="py-16 md:py-32 px-4 bg-gradient-to-b from-stone-50 via-amber-50/30 to-stone-100">
-    <div class="max-w-3xl mx-auto text-center animate-fade-in-up">
-      <%= render "public/shared/divider" %>
-      <div class="mb-8"></div>
-      <h1 class="text-6xl mb-6 tracking-wide font-display font-light text-stone-800">
-        <%= gallery["title"] %>
-      </h1>
-      <p class="text-base tracking-wider text-stone-500 font-light">
-        <%= gallery["subtitle"] %>
-      </p>
-    </div>
-  </section>
+  <%= render "public/shared/page_header", title: gallery["title"], subtitle: gallery["subtitle"] %>
 
   <% sections.each_with_index do |section, section_index| %>
-    <section class="py-24 px-4 <%= section_index.odd? ? 'bg-stone-100/50 border-y border-stone-200' : '' %>">
+    <section class="py-24 px-4 <%= "wedding-band" if section_index.odd? %>">
       <div class="max-w-7xl mx-auto">
         <%= render "public/shared/divider" %>
         <div class="mb-12"></div>
@@ -26,7 +15,7 @@
           <% section["images"]&.each_with_index do |image, index| %>
             <% delay_class = ["", "animation-delay-200", "animation-delay-400"][index % 3] %>
             <div class="gallery-item animate-on-scroll <%= delay_class %>" data-scroll-animate-target="item">
-              <%= image_tag wedding_asset_url(image), alt: image["alt"], loading: "lazy" %>
+              <%= image_tag wedding_asset_url(image), alt: wedding_asset_alt(image), loading: "lazy" %>
             </div>
           <% end %>
         </div>
@@ -36,7 +25,7 @@
 
   <% if current_wedding.dispo_gallery_visible? %>
     <% dispo_section_index = sections.length %>
-    <section id="dispo-photos" class="py-24 px-4 <%= dispo_section_index.odd? ? 'bg-stone-100/50 border-y border-stone-200' : '' %>">
+    <section id="dispo-photos" class="py-24 px-4 <%= "wedding-band" if dispo_section_index.odd? %>">
       <div class="max-w-7xl mx-auto">
         <%= render "public/shared/divider" %>
         <div class="mb-12"></div>
@@ -44,7 +33,7 @@
         <div class="mb-16"></div>
 
         <% if @dispo_total.to_i == 0 %>
-          <p class="text-center text-stone-400 font-light tracking-wider text-sm py-16">
+          <p class="text-center text-ink-faint font-light tracking-wider text-sm py-16">
             Photos will appear here after the wedding.
           </p>
         <% else %>
@@ -59,7 +48,7 @@
 
           <div class="mt-16 flex flex-col items-center gap-4">
             <% if @dispo_has_more %>
-              <p class="text-xs tracking-[0.15em] uppercase text-stone-400 font-light">
+              <p class="wedding-meta">
                 Showing <%= @dispo_photos.size %> of <%= pluralize(@dispo_total, "photo") %>
               </p>
             <% end %>
@@ -70,10 +59,4 @@
     </section>
   <% end %>
 
-  <footer class="wedding-footer">
-    <p class="text-xs tracking-[0.2em] uppercase mb-2"><%= current_wedding.title %></p>
-    <% if current_wedding.date %>
-      <p class="text-xs font-light"><%= format_date_short(current_wedding.date) %></p>
-    <% end %>
-  </footer>
 </div>

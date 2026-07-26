@@ -1,0 +1,6 @@
+<%# Same treatment as the framed plate: the urn pedestal the shared partial props the
+    photo on is ornament this theme does not carry. %>
+<%= render "public/decor/framed_photo",
+    asset: local_assigns[:asset],
+    caption: local_assigns[:caption],
+    wrapper_class: local_assigns.fetch(:wrapper_class, "") %>

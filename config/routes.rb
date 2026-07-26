@@ -23,7 +23,8 @@ Rails.application.routes.draw do
     post "/save-the-date", to: "public/save_the_dates#signup", as: :public_save_the_date_signup
     get "/calendar.ics", to: "public/save_the_dates#calendar", as: :public_calendar_ics
     get "/faq", to: "public/faqs#show", as: :public_faq
-    get "/gallery", to: "public/photos#show", as: :public_gallery
+    get "/photos", to: "public/photos#show", as: :public_photos
+    get "/gallery", to: redirect("/photos")
     get "/wedding-party", to: "public/wedding_parties#show", as: :public_wedding_party
     get "/site-assets/*object_key", to: "public/site_assets#show", as: :public_site_asset, format: false
 
@@ -64,9 +65,15 @@ Rails.application.routes.draw do
           delete :destroy_all
         end
       end
+      resource :dispo_sign, only: :show, controller: "dispo_signs"
       resource :settings, only: %i[show update]
+      resource :theme, only: %i[show update], controller: "themes" do
+        # update is accepted so a leaked `_method=patch` from the Save form cannot 404
+        # the live preview POST the editor issues against this same path.
+        resource :preview, only: %i[create update destroy], module: :themes, controller: "previews"
+      end
       resource :website, only: %i[show update], controller: "website" do
-        resources :assets, only: :create, module: :website
+        resources :assets, only: %i[create update destroy], module: :website
       end
     end
 

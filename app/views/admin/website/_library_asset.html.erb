@@ -1,0 +1,27 @@
+<%
+  asset = local_assigns.fetch(:asset)
+  full_url = wedding_asset_url(asset)
+  thumb_url = wedding_asset_thumbnail_url(asset)
+%>
+<div class="admin-library-asset" id="<%= dom_id(asset) %>">
+  <button type="button" class="admin-thumb-button" data-action="gallery-lightbox#open"
+    data-full-url="<%= full_url %>" data-asset-id="<%= asset.id %>" aria-label="View photo">
+    <img src="<%= thumb_url %>" data-full-url="<%= full_url %>"
+      data-action="error->gallery-lightbox#fallbackThumb"
+      alt="" width="96" height="96" loading="lazy" decoding="async">
+    <span class="admin-usage-overlay" data-asset-picker-target="usage" data-asset-id="<%= asset.id %>"></span>
+  </button>
+
+  <input type="text" class="admin-library-asset__alt" value="<%= asset.alt %>"
+    placeholder="Describe this photo" aria-label="Alt text for screen readers"
+    data-url="<%= admin_website_asset_path(asset) %>"
+    data-action="change->photo-library#updateAlt">
+
+  <%= link_to admin_website_asset_path(asset),
+      class: "admin-thumb-remove",
+      aria: { label: "Delete photo" },
+      data: {
+        turbo_method: :delete,
+        turbo_confirm: "Delete this photo? It will disappear from every section and page using it."
+      } do %>&times;<% end %>
+</div>

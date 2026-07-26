@@ -17,6 +17,33 @@ module Public
       @rsvp_flag&.destroy
     end
 
+    test "lookup renders the framed portrait and floating photos when placed" do
+      portrait = create_asset(alt: "Us at sunset")
+      floating = Array.new(3) { create_asset }
+      @wedding.update!(
+        placements: {
+          "rsvp_portrait" => [portrait.id],
+          "rsvp_floating" => floating.map(&:id)
+        }
+      )
+
+      get public_rsvp_lookup_path
+
+      assert_response :success
+      assert_select ".framed-photo img.framed-photo__image[alt='Us at sunset']"
+      assert_select "[data-controller=parallax] .floating-photo", 3
+      assert_select ".botanical-accent"
+    end
+
+    test "lookup omits photo compositions when no slots are placed" do
+      get public_rsvp_lookup_path
+
+      assert_response :success
+      assert_select ".framed-photo", false
+      assert_select ".floating-photos", false
+      assert_select ".botanical-accent"
+    end
+
     test "edit renders the song request field" do
       get public_rsvp_path(@guest.invite_code)
       assert_response :success
@@ -41,6 +68,26 @@ module Public
       assert_equal "Can't wait to celebrate with you!", rsvp.notes
     end
 
+    test "an invite code from another wedding is not found on this host" do
+      other_wedding = create_wedding
+      other_flag = WeddingMetadata.create!(wedding_id: other_wedding.id, key: "rsvp_visible", value: "true")
+      other_household = Household.create!(wedding_id: other_wedding.id, name: "Other Household")
+      other_guest = Guest.create!(
+        household: other_household, first_name: "Ada", last_name: "Lovelace"
+      )
+
+      get public_rsvp_path(other_guest.invite_code)
+      assert_response :not_found
+
+      patch public_rsvp_path(other_guest.invite_code), params: {
+        rsvps: { other_guest.id.to_s => { status: "accepted" } }
+      }
+      assert_response :not_found
+      assert_equal "pending", other_guest.rsvp.reload.status
+    ensure
+      other_flag&.destroy
+    end
+
     test "update is blocked when rsvps are closed" do
       @rsvp_flag.update!(value: "false")
 
@@ -50,6 +97,18 @@ module Public
 
       assert_response :not_found
       assert_nil @guest.rsvp.reload.song_request
+    end
+
+    private
+
+    def create_asset(attrs = {})
+      @wedding.wedding_assets.create!(
+        {
+          object_key: "#{Rails.env}/#{@wedding.id}/site/photos/#{SecureRandom.hex(6)}.webp",
+          content_type: "image/webp",
+          byte_size: 2048
+        }.merge(attrs)
+      )
     end
   end
 end

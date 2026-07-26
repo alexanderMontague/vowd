@@ -1,0 +1,68 @@
+<%
+  gallery = current_wedding.gallery_content
+  sections = current_wedding.gallery_sections
+%>
+
+<div data-controller="scroll-animate">
+  <%= render "public/shared/page_header",
+      title: gallery["title"],
+      subtitle: gallery["subtitle"],
+      kicker: "Portfolio" %>
+
+  <% sections.each_with_index do |section, index| %>
+    <section class="editorial-shell editorial-section">
+      <div class="editorial-grid">
+        <div class="editorial-rail">
+          <%= render "public/shared/marker", number: index + 1, label: section["title"] %>
+        </div>
+
+        <div class="editorial-filmstrip">
+          <% Array(section["images"]).each do |image| %>
+            <figure>
+              <%= image_tag wedding_asset_url(image),
+                  alt: wedding_asset_alt(image),
+                  loading: "lazy" %>
+            </figure>
+          <% end %>
+        </div>
+      </div>
+    </section>
+  <% end %>
+
+  <% if current_wedding.dispo_gallery_visible? %>
+    <section class="editorial-shell editorial-section" id="dispo-photos">
+      <div class="editorial-grid">
+        <div class="editorial-rail">
+          <%= render "public/shared/marker",
+              number: sections.length + 1,
+              label: "Shot by our guests" %>
+        </div>
+
+        <div>
+          <% if @dispo_total.to_i.zero? %>
+            <p class="editorial-caption">Photographs will appear here after the wedding.</p>
+          <% else %>
+            <div class="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4"
+                 data-photo-style="<%= current_wedding.dispo_photo_style %>">
+              <% @dispo_photos.each do |photo| %>
+                <div class="animate-on-scroll" data-scroll-animate-target="item">
+                  <%= render "dispo/shared/photo", photo: photo %>
+                </div>
+              <% end %>
+            </div>
+
+            <div class="mt-10 flex flex-wrap items-center gap-6">
+              <%= link_to "View the full gallery", dispo_gallery_path,
+                  class: "editorial-label border-b border-accent pb-1 text-ink hover:text-accent" %>
+              <% if @dispo_has_more %>
+                <p class="editorial-caption">
+                  Showing <%= @dispo_photos.size %> of <%= pluralize(@dispo_total, "photograph") %>
+                </p>
+              <% end %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </section>
+  <% end %>
+</div>

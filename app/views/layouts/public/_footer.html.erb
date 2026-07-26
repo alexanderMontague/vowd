@@ -1,0 +1,6 @@
+<footer class="wedding-footer">
+  <p class="text-xs tracking-[0.2em] uppercase mb-2"><%= current_wedding.title %></p>
+  <% if current_wedding.date %>
+    <p class="text-xs font-light"><%= format_date_short(current_wedding.date) %></p>
+  <% end %>
+</footer>

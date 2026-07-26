@@ -1,6 +1,6 @@
 <%# RSVP fields for a single guest %>
-<div class="<%= 'pt-10 mt-10 border-t border-stone-200' if index > 0 %>">
-  <h3 class="text-2xl mb-8 font-display text-stone-700">
+<div class="<%= 'pt-10 mt-10 border-t border-hairline' if index > 0 %>">
+  <h3 class="text-2xl mb-8 font-theme-display text-ink">
     <%= guest.full_name %>
   </h3>
 
@@ -8,7 +8,7 @@
     <%# Attendance Selection %>
     <div class="mb-8">
       <label class="rsvp-label">
-        Will you be attending? <span class="text-stone-400">*</span>
+        Will you be attending? <span class="text-ink-faint">*</span>
       </label>
       <div class="grid grid-cols-2 gap-6">
         <label class="cursor-pointer">
@@ -16,7 +16,7 @@
               id: "guest_#{guest.id}_accepted",
               class: "sr-only",
               required: true %>
-          <div class="rsvp-radio-card border-stone-300 <%= 'border-stone-800 bg-stone-50' if guest.rsvp&.accepted? %>"
+          <div class="rsvp-radio-card <%= 'selected' if guest.rsvp&.accepted? %>"
                data-rsvp-form-target="radioCard"
                data-action="click->rsvp-form#selectRadio">
             <span class="rsvp-radio-label">Joyfully Accepts</span>
@@ -26,7 +26,7 @@
           <%= rsvp_f.radio_button :status, "declined",
               id: "guest_#{guest.id}_declined",
               class: "sr-only" %>
-          <div class="rsvp-radio-card border-stone-300 <%= 'border-stone-800 bg-stone-50' if guest.rsvp&.declined? %>"
+          <div class="rsvp-radio-card <%= 'selected' if guest.rsvp&.declined? %>"
                data-rsvp-form-target="radioCard"
                data-action="click->rsvp-form#selectRadio">
             <span class="rsvp-radio-label">Regretfully Declines</span>

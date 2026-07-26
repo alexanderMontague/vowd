@@ -2,6 +2,11 @@
 @import url('https://fonts.googleapis.com/css2?family=Special+Elite&display=swap');
 @import "tailwindcss";
 
+/* Per-theme layers. Each is scoped to `[data-theme="<key>"]`, so they only apply
+   on a guest site the wedding has switched to that theme. */
+@import "./themes/parallax.css";
+@import "./themes/editorial.css";
+
 @theme {
   /* Primary - Warm Gold/Tan (Wedding aesthetic) */
   --color-primary-50: #FAF5F1;
@@ -116,10 +121,78 @@
   --max-width-content: 65ch;
   --max-width-form: 32rem;
 
+  /* --------------------------------------------------------------------------
+     Guest site theme aliases
+
+     These resolve to the `--theme-*` variables below, which the public layout
+     overrides per wedding. Utilities built on them (bg-surface, text-ink,
+     border-hairline, ...) therefore repaint from a chosen palette with no
+     stylesheet rebuild. Admin chrome keeps using the fixed primary/secondary
+     scales above.
+     -------------------------------------------------------------------------- */
+  --color-brand: var(--theme-primary);
+  --color-brand-contrast: var(--theme-primary-contrast);
+  --color-brand-hover: var(--theme-primary-hover);
+  --color-accent: var(--theme-accent);
+  --color-accent-contrast: var(--theme-accent-contrast);
+  --color-accent-soft: var(--theme-accent-soft);
+  --color-ink: var(--theme-ink);
+  --color-ink-muted: var(--theme-ink-muted);
+  --color-ink-soft: var(--theme-ink-soft);
+  --color-ink-faint: var(--theme-ink-faint);
+  --color-ink-deep: var(--theme-ink-deep);
+  --color-ink-contrast: var(--theme-ink-contrast);
+  --color-surface: var(--theme-surface);
+  --color-surface-alt: var(--theme-surface-alt);
+  --color-hairline: var(--theme-hairline);
+  --color-hairline-strong: var(--theme-hairline-strong);
+
+  --font-theme-display: var(--theme-font-display);
+  --font-theme-body: var(--theme-font-body);
 }
+
+/* ==========================================================================
+   Guest site theme tokens
+
+   The base palette here matches the Classic Invitation theme so any page
+   rendered without a theme (admin chrome, mailers, error pages) still looks
+   right. `layouts/public.html.erb` overrides the eight authored values per
+   wedding; everything else is mixed from them, so a palette change stays
+   internally consistent.
+   ========================================================================== */
 
 :root {
   --primary-color: var(--color-primary);
+
+  /* Authored per wedding */
+  --theme-primary: #292524;
+  --theme-primary-contrast: #FFFFFF;
+  --theme-accent: #C89B7B;
+  --theme-accent-contrast: #1C1917;
+  --theme-ink: #292524;
+  --theme-ink-contrast: #FFFFFF;
+  --theme-surface: #FAFAF9;
+  --theme-surface-alt: #F5F5F4;
+  --theme-font-display: 'Cormorant Garamond', Georgia, Cambria, 'Times New Roman', serif;
+  --theme-font-body: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+  /* Derived */
+  --theme-ink-muted: color-mix(in srgb, var(--theme-ink) 72%, var(--theme-surface));
+  --theme-ink-soft: color-mix(in srgb, var(--theme-ink) 52%, var(--theme-surface));
+  --theme-ink-faint: color-mix(in srgb, var(--theme-ink) 34%, var(--theme-surface));
+  --theme-ink-deep: color-mix(in srgb, var(--theme-ink) 88%, #000000);
+  --theme-hairline: color-mix(in srgb, var(--theme-ink) 14%, var(--theme-surface));
+  --theme-hairline-strong: color-mix(in srgb, var(--theme-ink) 26%, var(--theme-surface));
+  --theme-primary-hover: color-mix(in srgb, var(--theme-primary) 86%, #000000);
+  --theme-accent-soft: color-mix(in srgb, var(--theme-accent) 45%, var(--theme-surface));
+
+  /* The tinted page background used by the standalone guest pages. */
+  --theme-wash: linear-gradient(
+    to bottom,
+    var(--theme-surface),
+    color-mix(in srgb, var(--theme-accent) 10%, var(--theme-surface)),
+    var(--theme-surface-alt)
+  );
 }
 
 /* ==========================================================================
@@ -319,10 +392,76 @@
   }
 
   /* --------------------------------------------------------------------------
+     Guest site shell
+
+     Shared by every theme. A theme changes what these look like by overriding
+     the `--theme-*` tokens and adding `[data-theme="..."]` rules, not by
+     inventing a parallel set of classes.
+     -------------------------------------------------------------------------- */
+  .wedding-page {
+    @apply min-h-screen bg-surface text-ink font-theme-body;
+  }
+
+  .wedding-prose {
+    @apply text-ink-muted font-light leading-relaxed;
+  }
+
+  .wedding-eyebrow {
+    @apply text-xs font-light uppercase tracking-[0.25em] text-accent;
+  }
+
+  .wedding-page-title {
+    @apply mb-6 font-theme-display text-6xl font-light tracking-wide text-ink;
+  }
+
+  .wedding-page-subtitle {
+    @apply mx-auto max-w-md text-base font-light tracking-wider leading-relaxed text-ink-soft;
+  }
+
+  .wedding-meta {
+    @apply text-xs font-light uppercase tracking-[0.2em] text-ink-faint;
+  }
+
+  .wedding-card {
+    @apply bg-surface-alt border border-hairline p-8 shadow-sm;
+  }
+
+  /* A full-width alternating section. */
+  .wedding-band {
+    @apply border-y border-hairline bg-surface-alt;
+  }
+
+  .wedding-page-wash {
+    background-image: var(--theme-wash);
+  }
+
+  /* The washed backdrop behind the invitation reveal pages. */
+  .invitation-stage {
+    @apply relative min-h-screen;
+    background-image: var(--theme-wash);
+  }
+
+  /* Shown inside the admin preview iframe only. */
+  .theme-preview-banner {
+    @apply fixed bottom-0 left-0 right-0 z-[100] flex flex-wrap items-center justify-center gap-3
+           bg-ink px-4 py-2 text-center text-[11px] font-light tracking-wider text-ink-contrast;
+  }
+
+  .theme-preview-banner__exit {
+    @apply underline decoration-dotted underline-offset-2 text-ink-contrast;
+  }
+
+  /* --------------------------------------------------------------------------
      Wedding Navigation
      -------------------------------------------------------------------------- */
   .wedding-nav {
-    @apply bg-white/95 backdrop-blur-sm shadow-sm sticky top-0 z-50 border-b border-stone-200/50;
+    @apply bg-surface-alt/95 backdrop-blur-sm shadow-sm sticky top-0 z-50 border-b border-hairline;
+  }
+
+  /* Truncates rather than overflows. A brand that cannot shrink pushes the whole
+     document wider than a phone viewport, which shifts and clips every page. */
+  .wedding-nav-brand {
+    @apply block truncate font-theme-display text-2xl text-ink sm:text-3xl;
   }
 
   .wedding-nav-link {
@@ -331,7 +470,7 @@
 
   .wedding-nav-link::after {
     content: '';
-    @apply absolute -bottom-1 left-0 w-full h-px bg-stone-800 transition-transform origin-left scale-x-0;
+    @apply absolute -bottom-1 left-0 w-full h-px bg-brand transition-transform origin-left scale-x-0;
   }
 
   .wedding-nav-link:hover::after,
@@ -340,11 +479,15 @@
   }
 
   .wedding-nav-link.active {
-    @apply text-stone-800;
+    @apply text-ink;
   }
 
   .wedding-nav-link:not(.active) {
-    @apply text-stone-500 hover:text-stone-800;
+    @apply text-ink-soft hover:text-ink;
+  }
+
+  .wedding-nav-toggle {
+    @apply md:hidden p-2 -mr-2 text-ink-muted hover:text-ink transition-colors;
   }
 
   /* --------------------------------------------------------------------------
@@ -368,8 +511,7 @@
   }
 
   .wedding-hero-title {
-    @apply text-7xl md:text-8xl mb-6 tracking-wide;
-    font-family: var(--font-display);
+    @apply text-7xl md:text-8xl mb-6 tracking-wide font-theme-display;
     font-weight: 300;
   }
 
@@ -381,13 +523,12 @@
      Wedding Section Styles
      -------------------------------------------------------------------------- */
   .wedding-section-title {
-    @apply text-6xl mb-16 tracking-wide text-stone-800;
-    font-family: var(--font-display);
+    @apply text-6xl mb-16 tracking-wide text-ink font-theme-display;
     font-weight: 300;
   }
 
   .wedding-divider {
-    @apply w-px bg-stone-300 mx-auto;
+    @apply w-px bg-hairline-strong mx-auto;
   }
 
   .wedding-divider-horizontal {
@@ -398,11 +539,11 @@
      Event Detail Cards
      -------------------------------------------------------------------------- */
   .event-icon-circle {
-    @apply inline-flex items-center justify-center w-20 h-20 border border-stone-300 rounded-full mb-8 bg-white;
+    @apply inline-flex items-center justify-center w-20 h-20 border border-hairline-strong rounded-full mb-8 bg-surface-alt;
   }
 
   .event-icon {
-    @apply w-8 h-8 text-stone-700;
+    @apply w-8 h-8 text-accent;
     stroke-width: 1.5;
   }
 
@@ -425,48 +566,56 @@
      Wedding Footer
      -------------------------------------------------------------------------- */
   .wedding-footer {
-    @apply bg-stone-900 text-stone-400 py-16 text-center;
+    @apply bg-ink-deep py-16 text-center;
+    color: color-mix(in srgb, var(--theme-ink-contrast) 62%, var(--theme-ink-deep));
   }
 
   /* --------------------------------------------------------------------------
      RSVP Form Styles
      -------------------------------------------------------------------------- */
   .rsvp-form-card {
-    @apply bg-white shadow-xl p-12 md:p-16 border border-stone-200/50;
+    @apply bg-surface-alt shadow-xl p-12 md:p-16 border border-hairline;
   }
 
   .rsvp-label {
-    @apply block text-xs tracking-wider uppercase text-stone-600 mb-3 font-light;
+    @apply block text-xs tracking-wider uppercase text-ink-muted mb-3 font-light;
   }
 
   .rsvp-input {
-    @apply w-full px-0 py-3 border-b border-stone-300 focus:border-stone-800 outline-none transition-colors bg-transparent text-stone-800;
+    @apply w-full px-0 py-3 border-b border-hairline-strong focus:border-brand outline-none transition-colors bg-transparent text-ink;
   }
 
   .rsvp-radio-card {
-    @apply h-32 border border-stone-300 transition-all flex items-center justify-center cursor-pointer;
+    @apply h-32 border border-hairline-strong transition-all flex items-center justify-center cursor-pointer;
   }
 
   .rsvp-radio-card:hover {
-    @apply border-stone-400;
+    @apply border-ink-faint;
   }
 
   .rsvp-radio-card.selected {
-    @apply border-stone-800 bg-stone-50;
+    @apply border-brand bg-surface;
   }
 
   .rsvp-radio-label {
-    @apply text-stone-700 text-xl;
-    font-family: var(--font-display);
+    @apply text-ink-muted text-xl font-theme-display;
     font-weight: 300;
   }
 
   .rsvp-submit {
-    @apply w-10 bg-stone-800 text-white py-5 hover:bg-stone-900 transition-colors text-xs tracking-[0.2em] uppercase font-light shadow-lg cursor-pointer border-none;
+    @apply w-10 bg-brand text-brand-contrast py-5 hover:bg-brand-hover transition-colors text-xs tracking-[0.2em] uppercase font-light shadow-lg cursor-pointer border-none;
   }
 
   .btn-wedding-primary {
-    @apply inline-block px-12 py-4 bg-stone-800 text-white text-xs uppercase tracking-[0.2em] font-light no-underline transition-colors hover:bg-stone-900 cursor-pointer;
+    @apply inline-block px-12 py-4 bg-brand text-brand-contrast text-xs uppercase tracking-[0.2em] font-light no-underline transition-colors hover:bg-brand-hover cursor-pointer;
+  }
+
+  .btn-wedding-secondary {
+    @apply inline-block border border-accent px-10 py-4 text-xs uppercase tracking-[0.2em] font-light text-accent no-underline transition-colors cursor-pointer;
+  }
+
+  .btn-wedding-secondary:hover {
+    @apply bg-accent text-accent-contrast;
   }
 
   /* --------------------------------------------------------------------------
@@ -485,27 +634,27 @@
   }
 
   .invitation-eyebrow {
-    @apply text-[10px] font-light uppercase tracking-[0.35em] text-primary-700;
+    @apply text-[10px] font-light uppercase tracking-[0.35em] text-accent;
   }
 
   .invitation-title {
-    @apply mb-4 font-display text-5xl font-light tracking-wide text-stone-800 md:text-6xl;
+    @apply mb-4 font-theme-display text-5xl font-light tracking-wide text-ink md:text-6xl;
   }
 
   .invitation-subtitle {
-    @apply mb-8 text-sm font-light tracking-[0.4em] text-stone-400;
+    @apply mb-8 text-sm font-light tracking-[0.4em] text-ink-faint;
   }
 
   .invitation-lead {
-    @apply text-sm font-light tracking-wider text-stone-500;
+    @apply text-sm font-light tracking-wider text-ink-soft;
   }
 
   .invitation-party-name {
-    @apply font-display text-4xl font-light text-stone-800 md:text-5xl;
+    @apply font-theme-display text-4xl font-light text-ink md:text-5xl;
   }
 
   .invitation-rule {
-    @apply mx-auto h-px w-20 bg-stone-300;
+    @apply mx-auto h-px w-20 bg-hairline-strong;
   }
 
   .invitation-frame-shell {
@@ -513,12 +662,12 @@
   }
 
   .invitation-frame {
-    @apply relative overflow-hidden border border-primary/25 px-6 py-10 sm:px-10 sm:py-12;
+    @apply relative overflow-hidden border border-accent/40 px-6 py-10 sm:px-10 sm:py-12;
   }
 
   .invitation-frame::before {
     content: "";
-    @apply pointer-events-none absolute inset-2 border border-primary/10;
+    @apply pointer-events-none absolute inset-2 border border-accent/20;
     clip-path: polygon(
       0 12px, 12px 0, calc(100% - 12px) 0, 100% 12px,
       100% calc(100% - 12px), calc(100% - 12px) 100%, 12px 100%, 0 calc(100% - 12px)
@@ -549,12 +698,103 @@
     @apply mb-6 flex items-center justify-center gap-4;
   }
 
+  /* --------------------------------------------------------------------------
+     Decor / photo compositions
+     -------------------------------------------------------------------------- */
+
+  /* Oval geometry measured against the lace frame artwork, kept as variables so it
+     can be retuned if the artwork is ever replaced. */
+  .framed-photo {
+    --frame-oval-width: 30%;
+    --frame-oval-height: 30.5%;
+    --frame-oval-x: 49%;
+    --frame-oval-y: 49.5%;
+    @apply relative mx-auto my-0 w-full max-w-[17rem] sm:max-w-[19rem];
+  }
+
+  .framed-photo__frame {
+    @apply relative z-0 block w-full;
+  }
+
+  /* Sits above the frame: the artwork's oval interior is opaque, so the photo has to
+     cover it and the clip keeps the surrounding beading visible. */
+  .framed-photo__image {
+    @apply absolute inset-0 z-10 size-full object-cover;
+    clip-path: ellipse(
+      var(--frame-oval-width) var(--frame-oval-height) at var(--frame-oval-x) var(--frame-oval-y)
+    );
+  }
+
+  .framed-photo__caption {
+    @apply mt-4 text-center text-xs font-light uppercase tracking-[0.2em] text-ink-faint;
+  }
+
+  .vase-photo {
+    --urn-opacity: 0.92;
+    @apply relative mx-auto my-0 w-full max-w-sm;
+  }
+
+  .vase-photo__arch {
+    @apply ml-auto w-[84%] overflow-hidden bg-surface-alt shadow-sm;
+    aspect-ratio: 4 / 5;
+    border-radius: 50% 50% 0 0 / 28% 28% 0 0;
+  }
+
+  .vase-photo__image {
+    @apply size-full object-cover;
+  }
+
+  /* Overlaps the arch's lower-left corner and breaks its bottom edge so the pedestal
+     reads as standing in front of the photo rather than inside it. */
+  .vase-photo__urn {
+    @apply pointer-events-none absolute z-10 w-[44%];
+    left: -3%;
+    bottom: -5%;
+    opacity: var(--urn-opacity);
+  }
+
+  .vase-photo__caption {
+    @apply mt-4 text-center text-xs font-light uppercase tracking-[0.2em] text-ink-faint;
+  }
+
+  /* The parallax controller publishes each layer's drift as `--parallax-shift`, so a
+     layer composes it here rather than having its transform overwritten. No transform
+     transition: the controller measures each layer's live rect every frame, and an
+     in-flight transition would feed back into that measurement. */
+  [data-parallax-target="layer"] {
+    transform: translate3d(0, var(--parallax-shift, 0px), 0);
+  }
+
+  .floating-photos {
+    @apply pointer-events-none absolute inset-0 z-20 hidden lg:block;
+  }
+
+  .floating-photo {
+    @apply absolute m-0 overflow-hidden border border-accent/30 bg-surface-alt p-2 shadow-md;
+  }
+
+  .floating-photo img {
+    @apply block size-full object-cover;
+  }
+
+  .floating-photo--1 {
+    @apply -left-36 top-24 h-52 w-40 -rotate-3 xl:-left-48 xl:h-60 xl:w-48;
+  }
+
+  .floating-photo--2 {
+    @apply -right-36 top-1/3 h-44 w-36 rotate-2 xl:-right-48 xl:h-52 xl:w-44;
+  }
+
+  .floating-photo--3 {
+    @apply -left-28 bottom-32 h-40 w-32 rotate-6 xl:-left-40 xl:h-48 xl:w-40;
+  }
+
   .invitation-eyebrow-line {
-    @apply h-px w-10 bg-primary/30 sm:w-14;
+    @apply h-px w-10 bg-accent/40 sm:w-14;
   }
 
   .botanical-accent {
-    @apply block text-stone-400;
+    @apply block text-accent-soft;
   }
 
   .botanical-accent--sm {
@@ -570,7 +810,7 @@
   }
 
   .botanical-ornament {
-    @apply mx-auto h-5 w-36 text-stone-400;
+    @apply mx-auto h-5 w-36 text-accent-soft;
   }
 
   .countdown {
@@ -582,11 +822,11 @@
   }
 
   .countdown-value {
-    @apply font-display text-2xl font-light tabular-nums text-stone-800 md:text-3xl;
+    @apply font-theme-display text-2xl font-light tabular-nums text-ink md:text-3xl;
   }
 
   .countdown-label {
-    @apply text-[9px] font-light uppercase tracking-[0.2em] text-stone-400;
+    @apply text-[9px] font-light uppercase tracking-[0.2em] text-ink-faint;
   }
 
   /* --------------------------------------------------------------------------
@@ -803,24 +1043,314 @@
     @apply size-20 shrink-0 rounded-md object-cover border border-border bg-neutral-100;
   }
 
-  .admin-gallery-thumbs {
-    @apply grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-2;
+  .admin-thumb-button {
+    @apply relative block aspect-square w-full overflow-hidden rounded-md border border-border bg-neutral-100 p-0 cursor-zoom-in;
   }
 
-  .admin-gallery-thumb {
-    @apply relative aspect-square;
-  }
-
-  .admin-gallery-thumb__preview {
-    @apply block size-full overflow-hidden rounded-md border border-border bg-neutral-100 p-0 cursor-zoom-in;
-  }
-
-  .admin-gallery-thumb__preview img {
+  .admin-thumb-button img {
     @apply size-full object-cover;
   }
 
-  .admin-gallery-thumb__remove {
-    @apply absolute -top-1.5 -right-1.5 flex size-5 items-center justify-center rounded-full border border-border bg-white text-sm leading-none text-danger shadow-sm;
+  .admin-thumb-remove {
+    @apply absolute -top-1.5 -right-1.5 flex size-5 items-center justify-center rounded-full border border-border bg-white text-sm leading-none text-danger no-underline shadow-sm;
+  }
+
+  /* --------------------------------------------------------------------------
+     Admin photo library and pickers
+     -------------------------------------------------------------------------- */
+  .admin-photo-library {
+    @apply rounded-md border border-border bg-neutral-50/60 p-4;
+  }
+
+  .admin-photo-library__header {
+    @apply mb-3 flex flex-wrap items-start justify-between gap-3;
+  }
+
+  .admin-photo-library__grid {
+    @apply grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5;
+  }
+
+  .admin-photo-library__empty {
+    @apply mb-0 text-sm text-neutral-500;
+  }
+
+  .admin-photo-library:has(.admin-library-asset) .admin-photo-library__empty {
+    @apply hidden;
+  }
+
+  .admin-library-asset {
+    @apply relative flex flex-col gap-1.5;
+  }
+
+  .admin-library-asset__alt {
+    @apply w-full rounded-md border border-border bg-white px-2 py-1 text-xs text-neutral-700 outline-none transition-colors focus:border-secondary;
+  }
+
+  .admin-library-asset__alt.is-invalid {
+    @apply border-danger;
+  }
+
+  /* "Used in" badges laid over a photo, written by the picker controller from the
+     live selections. Shared by the library grid, the picker options, and the
+     lightbox preview. */
+  .admin-usage-overlay {
+    @apply pointer-events-none absolute inset-x-0 bottom-0 m-0 flex flex-wrap gap-1 bg-white/85 p-1 empty:hidden;
+  }
+
+  .admin-usage-badge {
+    @apply rounded-full bg-secondary-100 px-1.5 py-0.5 text-[10px] font-medium leading-tight text-secondary-700;
+  }
+
+  .admin-envelope-section {
+    @apply rounded-md border border-border bg-neutral-50/60 p-4;
+  }
+
+  .admin-envelope-section__preview {
+    @apply mb-3;
+  }
+
+  .admin-envelope-section__poster {
+    @apply mb-2 max-h-48 w-auto rounded-md border border-border object-cover;
+  }
+
+  .admin-envelope-section__meta {
+    @apply text-sm text-neutral-500;
+  }
+
+  .admin-envelope-section__empty {
+    @apply mb-3 text-sm text-neutral-500;
+  }
+
+  .admin-asset-picker {
+    @apply flex flex-col items-start gap-2;
+  }
+
+  .admin-asset-picker__selection {
+    @apply flex flex-wrap gap-2 empty:hidden;
+  }
+
+  .admin-asset-picker__empty {
+    @apply mb-0 text-sm text-neutral-500;
+  }
+
+  .admin-asset-picker:has(.admin-picker-selection) .admin-asset-picker__empty {
+    @apply hidden;
+  }
+
+  .admin-picker-selection {
+    @apply relative size-18 shrink-0;
+  }
+
+  .admin-picker-selection img {
+    @apply size-full rounded-md border border-border object-cover;
+  }
+
+  .admin-picker-dialog {
+    @apply m-auto w-[min(48rem,92vw)] max-h-[85vh] overflow-y-auto rounded-lg border border-border bg-white p-5;
+  }
+
+  .admin-picker-dialog::backdrop {
+    background: rgb(0 0 0 / 0.5);
+  }
+
+  .admin-picker-dialog__header {
+    @apply mb-4 flex items-start justify-between gap-4;
+  }
+
+  .admin-picker-dialog__title {
+    @apply m-0 text-sm font-semibold text-neutral-800;
+  }
+
+  .admin-picker-dialog__hint {
+    @apply m-0 text-xs text-neutral-500;
+  }
+
+  .admin-picker-dialog__options {
+    @apply grid grid-cols-3 gap-2 sm:grid-cols-4 md:grid-cols-6;
+  }
+
+  .admin-picker-dialog__empty {
+    @apply mb-0 text-sm text-neutral-500;
+  }
+
+  .admin-picker-dialog:has(.admin-picker-option) .admin-picker-dialog__empty {
+    @apply hidden;
+  }
+
+  .admin-picker-option {
+    @apply relative aspect-square overflow-hidden rounded-md border-2 border-transparent bg-neutral-100 p-0 outline-none ring-1 ring-border transition-colors cursor-pointer;
+  }
+
+  .admin-picker-option img {
+    @apply size-full object-cover;
+  }
+
+  .admin-picker-option[aria-pressed="true"] {
+    @apply border-secondary ring-secondary;
+  }
+
+  /* --------------------------------------------------------------------------
+     Theme editor
+
+     A form beside a live preview of the guest site. The preview column sticks so
+     the frame stays in view while working down a long form.
+     -------------------------------------------------------------------------- */
+  .theme-editor {
+    @apply max-w-[100rem];
+  }
+
+  .theme-editor-panes {
+    @apply grid gap-6 xl:grid-cols-[minmax(0,26rem)_minmax(0,1fr)] xl:gap-8 xl:items-start;
+  }
+
+  .theme-editor-notice {
+    @apply mb-6 flex flex-wrap items-center justify-between gap-4 rounded-md border border-warning-100
+           bg-warning-50 px-4 py-3 text-sm text-warning-600;
+  }
+
+  .theme-editor-actions {
+    @apply sticky bottom-0 flex flex-wrap items-center gap-4 border-t border-border bg-neutral-50/95 py-4 backdrop-blur-sm;
+  }
+
+  .theme-editor-status {
+    @apply text-xs text-neutral-500;
+  }
+
+  /* Theme picker */
+  .theme-choice-grid {
+    @apply grid gap-3;
+  }
+
+  .theme-choice {
+    @apply relative grid cursor-pointer grid-cols-[auto_minmax(0,1fr)] items-start gap-4 rounded-md
+           border border-border p-4 transition-colors hover:border-neutral-300;
+  }
+
+  .theme-choice.is-selected {
+    @apply border-secondary bg-secondary-50/60;
+  }
+
+  .theme-choice__input {
+    @apply absolute right-4 top-4 m-0;
+  }
+
+  .theme-choice__swatches {
+    @apply flex w-5 flex-col overflow-hidden rounded-sm border border-border;
+  }
+
+  .theme-choice__swatch {
+    @apply block h-5 w-full;
+  }
+
+  .theme-choice__body {
+    @apply grid gap-1 pr-6;
+  }
+
+  .theme-choice__name {
+    @apply text-sm font-semibold text-neutral-800;
+  }
+
+  .theme-choice__tagline {
+    @apply text-xs italic text-neutral-500;
+  }
+
+  .theme-choice__description {
+    @apply text-xs leading-relaxed text-neutral-500;
+  }
+
+  /* Colour and page rows */
+  .theme-color-rows,
+  .theme-page-rows {
+    @apply divide-y divide-neutral-100;
+  }
+
+  .theme-color-row,
+  .theme-page-row {
+    @apply flex items-start justify-between gap-4 py-4 first:pt-0 last:pb-0;
+  }
+
+  .theme-color-row__labels,
+  .theme-page-row__labels {
+    @apply min-w-0 flex-1;
+  }
+
+  .theme-color-row__label,
+  .theme-page-row__label {
+    @apply mb-1 block text-sm font-medium text-neutral-800;
+  }
+
+  .theme-color-row__hint,
+  .theme-page-row__hint {
+    @apply m-0 text-xs leading-relaxed text-neutral-500;
+  }
+
+  .theme-page-row__flag {
+    @apply block text-neutral-400;
+  }
+
+  .theme-color-row__inputs {
+    @apply flex shrink-0 items-center gap-2;
+  }
+
+  .theme-color-swatch {
+    @apply h-9 w-9 cursor-pointer rounded-md border border-border bg-transparent p-0;
+  }
+
+  .theme-color-hex {
+    @apply w-24 px-2 py-1.5 text-center font-mono text-xs uppercase;
+  }
+
+  .theme-page-row__control {
+    @apply shrink-0 pt-1;
+  }
+
+  /* Preview pane */
+  .theme-preview {
+    @apply overflow-hidden rounded-card border border-border bg-bg-card shadow-card xl:sticky xl:top-6;
+  }
+
+  .theme-preview__bar {
+    @apply flex flex-wrap items-center justify-between gap-3 border-b border-border px-4 py-3;
+  }
+
+  .theme-preview__pages,
+  .theme-preview__tools {
+    @apply flex flex-wrap items-center gap-1;
+  }
+
+  .theme-preview__page,
+  .theme-preview__device {
+    @apply rounded-md border border-transparent px-2.5 py-1.5 text-xs text-neutral-600 transition-colors
+           hover:bg-neutral-100 disabled:cursor-not-allowed disabled:text-neutral-300 disabled:hover:bg-transparent;
+  }
+
+  .theme-preview__page.is-active,
+  .theme-preview__device.is-active {
+    @apply border-border bg-neutral-100 text-neutral-900;
+  }
+
+  .theme-preview__stage {
+    @apply mx-auto w-full bg-neutral-100 transition-[max-width] duration-300;
+  }
+
+  .theme-preview__frame {
+    @apply block h-[75vh] min-h-[32rem] w-full border-0 bg-white;
+  }
+
+  .theme-preview__note {
+    @apply m-0 border-t border-border px-4 py-3 text-xs text-neutral-500;
+  }
+
+  .admin-editor-divider {
+    @apply my-6 border-t border-border;
+  }
+
+  .admin-editor-subheading {
+    @apply mt-5 mb-3 text-sm font-semibold text-neutral-700;
+  }
+
+  .admin-field-hint {
+    @apply mt-0 mb-2 text-xs text-neutral-500;
   }
 
   .admin-upload-progress__track {
@@ -842,6 +1372,11 @@
 
   .admin-gallery-lightbox::backdrop {
     background: rgb(0 0 0 / 0.72);
+  }
+
+  /* Shrink-wraps the image so the usage badges line up with its edges. */
+  .admin-gallery-lightbox__figure {
+    @apply relative m-0 flex overflow-hidden rounded-md;
   }
 
   .admin-gallery-lightbox__image {
@@ -989,12 +1524,65 @@
     width: 2.5rem;
     height: 2.5rem;
   }
+
+  /* --------------------------------------------------------------------------
+     Venue Signage - a full sheet built around one scannable code. Sized in
+     percentages so the same markup fits Letter or A4 without clipping.
+     -------------------------------------------------------------------------- */
+  .sign-panel {
+    width: 100%;
+    max-width: 7.5in;
+    aspect-ratio: 8.5 / 11;
+    @apply bg-white flex flex-col items-center justify-center text-center gap-6 px-10 py-12;
+  }
+
+  .sign-eyebrow {
+    font-family: var(--font-body);
+    @apply m-0 text-sm font-light uppercase tracking-[0.3em] text-stone-500;
+  }
+
+  .sign-headline {
+    font-family: var(--font-display);
+    @apply m-0 text-5xl font-normal tracking-wide text-stone-800;
+  }
+
+  .sign-qr {
+    width: 58%;
+    @apply aspect-square rounded-xl border border-stone-200 p-3;
+  }
+
+  .sign-qr > svg {
+    @apply h-full w-full;
+  }
+
+  .sign-instruction {
+    font-family: var(--font-body);
+    @apply m-0 text-xl font-light text-stone-700;
+  }
+
+  .sign-url {
+    font-family: var(--font-body);
+    @apply m-0 break-all text-base font-medium tracking-wide text-stone-800;
+  }
+
+  .sign-footnote {
+    font-family: var(--font-body);
+    @apply m-0 max-w-[80%] text-sm font-light leading-relaxed text-stone-500;
+  }
 }
 
 @media print {
-  @page {
+  /* Each printable artifact names its own paper stock, so the invitation
+     builder's 5×7 cardstock cannot dictate the size of unrelated print jobs. */
+  @page invitation-sheet {
     size: 5in 7in;
     margin: 0;
+  }
+
+  /* A half-inch margin keeps the sign clear of printer non-printable edges. */
+  @page sign-sheet {
+    size: letter portrait;
+    margin: 0.5in;
   }
 
   .print\:hidden {
@@ -1007,7 +1595,6 @@
 
   html,
   body {
-    width: 5in;
     margin: 0;
     padding: 0;
     -webkit-print-color-adjust: exact;
@@ -1023,6 +1610,7 @@
   }
 
   .invitation-print-sheet {
+    page: invitation-sheet;
     width: 5in;
     height: 7in;
     break-after: page;
@@ -1041,6 +1629,30 @@
     height: 7in;
     box-shadow: none;
     margin: 0;
+  }
+
+  .sign-print-sheet {
+    page: sign-sheet;
+    width: 100%;
+    min-height: 100vh;
+    break-after: page;
+    page-break-after: always;
+    box-sizing: border-box;
+    margin: 0;
+  }
+
+  .sign-print-sheet:last-child {
+    break-after: auto;
+    page-break-after: auto;
+  }
+
+  /* Fill whatever paper the printer reports rather than the on-screen preview box. */
+  .sign-print-sheet .sign-panel {
+    max-width: none;
+    aspect-ratio: auto;
+    height: 100%;
+    min-height: 100vh;
+    border: 0;
   }
 }
 

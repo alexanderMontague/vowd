@@ -1,9 +1,11 @@
 <%
   index = local_assigns.fetch(:index)
   section = local_assigns.fetch(:section, {})
-  images = Array(section["images"]).select { |image| image["object_key"].present? || image["url"].present? }
+  prefix = "wedding[photos_page][sections][#{index}]"
+  assets = local_assigns.fetch(:assets, [])
+  legacy_images = Array(section["images"]).select { |image| image["url"].present? }
 %>
-<div class="admin-nested-row" data-nested-form-target="item" data-controller="gallery-lightbox">
+<div class="admin-nested-row" data-nested-form-target="item" data-usage-scope>
   <div class="flex justify-between items-start mb-3">
     <p class="text-sm font-medium text-neutral-700">Section</p>
     <button type="button" class="text-sm text-danger" data-action="nested-form#remove">Remove section</button>
@@ -11,57 +13,23 @@
 
   <div class="form-group">
     <label>Section title</label>
-    <input type="text" name="wedding[photos_page][sections][<%= index %>][title]" value="<%= section["title"] %>" class="form-control" placeholder="Engagement, Memories, …">
+    <input type="text" name="<%= prefix %>[title]" value="<%= section["title"] %>" class="form-control"
+      placeholder="Engagement, Memories, …"
+      data-usage-title data-action="input->asset-picker#refreshUsage">
   </div>
 
-  <div
-    data-controller="nested-form multi-asset-upload"
-    data-nested-form-placeholder-value="NEW_IMAGE_INDEX"
-    data-multi-asset-upload-purpose-value="photos"
-    data-multi-asset-upload-url-value="<%= admin_website_assets_path %>"
-    data-multi-asset-upload-placeholder-value="NEW_IMAGE_INDEX"
-  >
-    <div class="flex justify-between items-center mb-3 gap-3 flex-wrap">
-      <p class="text-xs font-semibold uppercase tracking-widest text-neutral-400">Images</p>
-      <label class="btn btn-sm btn-secondary cursor-pointer mb-0">
-        Upload photos
-        <input
-          type="file"
-          accept="image/jpeg,image/png,image/webp"
-          multiple
-          class="hidden"
-          data-multi-asset-upload-target="input"
-          data-action="change->multi-asset-upload#upload"
-        >
-      </label>
-    </div>
-
-    <div class="admin-upload-progress mb-2" hidden data-multi-asset-upload-target="progress">
-      <div class="admin-upload-progress__track">
-        <div class="admin-upload-progress__bar" data-multi-asset-upload-target="progressBar"></div>
-      </div>
-      <p class="admin-upload-progress__status" data-multi-asset-upload-target="status"></p>
-    </div>
-
-    <div class="admin-gallery-thumbs" data-nested-form-target="container" data-multi-asset-upload-target="container">
-      <% images.each_with_index do |image, image_index| %>
-        <%= render "admin/website/gallery_thumb",
-            index: image_index,
-            image: image,
-            prefix: "wedding[photos_page][sections][#{index}][images]" %>
-      <% end %>
-    </div>
-
-    <template data-nested-form-target="template" data-multi-asset-upload-target="template">
-      <%= render "admin/website/gallery_thumb",
-          index: "NEW_IMAGE_INDEX",
-          image: {},
-          prefix: "wedding[photos_page][sections][#{index}][images]" %>
-    </template>
+  <div class="form-group mb-0">
+    <label>Photos in this section</label>
+    <%= render "admin/website/asset_picker",
+        field_name: "#{prefix}[asset_ids][]",
+        assets: assets,
+        usage_prefix: "Photos page",
+        empty_text: "No photos in this section yet." %>
   </div>
 
-  <dialog class="admin-gallery-lightbox" data-gallery-lightbox-target="dialog" data-action="click->gallery-lightbox#backdropClose">
-    <button type="button" class="admin-gallery-lightbox__close" aria-label="Close" data-action="gallery-lightbox#close">&times;</button>
-    <img src="" alt="" class="admin-gallery-lightbox__image" data-gallery-lightbox-target="image">
-  </dialog>
+  <%# Images added before the photo library existed and only ever had an external url. %>
+  <% legacy_images.each_with_index do |image, image_index| %>
+    <%= hidden_field_tag "#{prefix}[images][#{image_index}][url]", image["url"], id: nil %>
+    <%= hidden_field_tag "#{prefix}[images][#{image_index}][alt]", image["alt"], id: nil %>
+  <% end %>
 </div>

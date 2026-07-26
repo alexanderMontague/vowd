@@ -1,0 +1,49 @@
+<div class="screen-only">
+  <div class="card">
+    <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between mb-6">
+      <div>
+        <h1 class="mb-2">Camera Sign</h1>
+        <p class="text-muted m-0">
+          Print this sheet for the venue, or download the code to drop into your own signage.
+        </p>
+      </div>
+      <div class="flex flex-wrap gap-3" data-controller="print">
+        <button type="button" class="btn btn-primary btn-sm" data-action="click->print#open">
+          Print Sign
+        </button>
+        <%= link_to "Download PNG",
+                    admin_dispo_sign_path(format: :png),
+                    class: "btn btn-secondary btn-sm",
+                    data: { turbo: false } %>
+        <%= link_to "Download SVG",
+                    admin_dispo_sign_path(format: :svg),
+                    class: "btn btn-secondary btn-sm",
+                    data: { turbo: false } %>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="dispo-sign-url">Scanning this code opens</label>
+      <input id="dispo-sign-url" type="text" class="form-control w-full" value="<%= @sign.url %>" readonly>
+      <p class="text-muted text-sm mt-2 mb-0">
+        Every wedding has its own address, so photos from this code can only land in your gallery.
+        <% unless current_wedding.dispo_accepting_photos? %>
+          <br>
+          <strong>The camera is currently closed</strong> — guests who scan will not be able to upload
+          until you enable it under Feature flags.
+        <% end %>
+      </p>
+    </div>
+
+    <p class="text-xs font-semibold tracking-wider uppercase text-stone-500 mb-3">Preview</p>
+    <div class="w-full max-w-[7.5in] border border-stone-200 rounded-lg overflow-hidden shadow-card">
+      <%= render "sign_panel", sign: @sign %>
+    </div>
+  </div>
+</div>
+
+<div class="print-only">
+  <div class="sign-print-sheet">
+    <%= render "sign_panel", sign: @sign %>
+  </div>
+</div>

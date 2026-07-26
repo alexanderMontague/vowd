@@ -1,0 +1,47 @@
+<section class="card mb-6">
+  <h2 class="admin-editor-panel-title">Colours</h2>
+  <p class="admin-editor-panel-copy">
+    Five colours drive the whole site. Everything else — muted text, hairlines, hover
+    states, the text sitting on top of a button — is mixed from these, so they stay
+    consistent whatever you pick.
+  </p>
+
+  <div class="theme-color-rows">
+    <% SiteThemes::COLOR_ROLES.each do |role| %>
+      <% value = theme.color(role[:key]) %>
+      <% token = "--theme-#{role[:key].tr('_', '-')}" %>
+      <% field_id = "theme_colors_#{role[:key]}" %>
+
+      <div class="theme-color-row">
+        <div class="theme-color-row__labels">
+          <%= label_tag field_id, role[:label], class: "theme-color-row__label" %>
+          <p class="theme-color-row__hint"><%= role[:hint] %></p>
+        </div>
+
+        <div class="theme-color-row__inputs">
+          <%# The picker carries the submitted value; the hex box is a second way to
+              drive it, kept in sync by the editor controller. %>
+          <%= color_field_tag "theme[colors][#{role[:key]}]", value,
+                id: field_id,
+                class: "theme-color-swatch",
+                data: {
+                  theme_role: role[:key],
+                  theme_token: token,
+                  action: "input->theme-editor#preview change->theme-editor#commit"
+                } %>
+
+          <%= text_field_tag "#{field_id}_hex", value,
+                class: "form-control theme-color-hex",
+                maxlength: 7,
+                spellcheck: false,
+                "aria-label": "#{role[:label]} hex value",
+                data: {
+                  theme_role: role[:key],
+                  theme_token: token,
+                  action: "input->theme-editor#preview change->theme-editor#commit"
+                } %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</section>

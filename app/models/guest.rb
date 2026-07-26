@@ -1,4 +1,6 @@
 class Guest < ApplicationRecord
+  include WeddingScoped
+
   belongs_to :household
   has_one :rsvp, dependent: :destroy
   has_many :invitations, dependent: :destroy
@@ -6,8 +8,9 @@ class Guest < ApplicationRecord
 
   validates :first_name, presence: true
   validates :last_name, presence: true
-  validates :invite_code, presence: true, uniqueness: true
+  validates :invite_code, presence: true, uniqueness: { scope: :wedding_id }
   validates :email, format: { with: URI::MailTo::EMAIL_REGEXP }, allow_blank: true
+  validates_same_wedding :household
 
   before_validation :set_wedding_id_from_household, on: :create
   before_validation :generate_invite_code, on: :create
@@ -30,10 +33,6 @@ class Guest < ApplicationRecord
     rsvp&.status != "pending"
   end
 
-  def wedding
-    Wedding.find(wedding_id)
-  end
-
   private
 
   def set_wedding_id_from_household
@@ -45,7 +44,7 @@ class Guest < ApplicationRecord
 
     loop do
       self.invite_code = SecureRandom.alphanumeric(10).upcase
-      break unless Guest.exists?(invite_code: invite_code)
+      break unless Guest.exists?(wedding_id: wedding_id, invite_code: invite_code)
     end
   end
 

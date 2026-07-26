@@ -1,0 +1,380 @@
+/* ==========================================================================
+   Theme — Scrolling Parallax
+
+   Painted florals, classical columns and drifting drapery. Every colour comes
+   from the shared `--theme-*` tokens, so a palette change in admin repaints the
+   ornament along with the type.
+
+   Stacking is explicit and shared by every composition in this theme:
+   media -> scrim -> ornament -> text. Ornaments are never allowed above text,
+   which is what let the original design bury the couple's names.
+
+   The `parallax-*` classes are namespaced by their prefix and only ever appear
+   in this theme's views. Only the rules that restyle a shared `.wedding-*`
+   component need the `[data-theme="parallax"]` guard.
+   ========================================================================== */
+
+@layer components {
+  [data-theme="parallax"] {
+    --parallax-layer-media: 0;
+    --parallax-layer-scrim: 10;
+    --parallax-layer-ornament: 20;
+    --parallax-layer-text: 30;
+
+    /* Ornament artwork is photographic, so it is dimmed and hue-shifted toward the
+       palette accent rather than multiplied or desaturated. */
+    --parallax-ornament-opacity: 0.9;
+    --parallax-ornament-tint: 0.3;
+
+    /* Ornaments hang past the top and bottom of their stage by this much, so they
+       can bleed toward an edge without the section clipping them away. */
+    --parallax-stage-bleed: clamp(1.25rem, 5vw, 5rem);
+  }
+
+  /* --------------------------------------------------------------------------
+     Stage — a section that can hold ornaments without clipping them
+     -------------------------------------------------------------------------- */
+
+  .parallax-stage {
+    @apply relative isolate overflow-hidden;
+  }
+
+  .parallax-stage__content {
+    @apply relative mx-auto w-full max-w-6xl px-6;
+    z-index: var(--parallax-layer-text);
+  }
+
+  /* Ornaments anchor to this box rather than the section itself; the bleed keeps
+     them clear of the edge the section would otherwise cut off. */
+  .parallax-stage__ornaments {
+    @apply pointer-events-none absolute select-none;
+    inset: calc(var(--parallax-stage-bleed) * -1) 0;
+    z-index: var(--parallax-layer-ornament);
+  }
+
+  /* --------------------------------------------------------------------------
+     Ornament
+
+     A div rather than an `img`, so the tint overlay can reuse the same artwork
+     as its mask. Placement and size stay in the markup; only the look is here.
+     -------------------------------------------------------------------------- */
+
+  .parallax-ornament {
+    @apply pointer-events-none absolute select-none bg-contain bg-center bg-no-repeat;
+    background-image: var(--parallax-ornament-src);
+    opacity: var(--parallax-ornament-opacity);
+  }
+
+  /* Tints the artwork toward the palette accent while keeping its shading, which
+     the original design lost to `grayscale` + `mix-blend-multiply`. */
+  .parallax-ornament::after {
+    @apply absolute inset-0 bg-accent content-[''];
+    mix-blend-mode: color;
+    opacity: var(--parallax-ornament-tint);
+    mask-image: var(--parallax-ornament-src);
+    mask-size: contain;
+    mask-position: center;
+    mask-repeat: no-repeat;
+  }
+
+  /* Drapery is a full-bleed backdrop, so it covers rather than fits. */
+  .parallax-ornament--cover {
+    @apply bg-cover;
+  }
+
+  .parallax-ornament--cover::after {
+    mask-size: cover;
+  }
+
+  /* --------------------------------------------------------------------------
+     Navigation — floats over the hero, solid once the page scrolls
+     -------------------------------------------------------------------------- */
+
+  [data-theme="parallax"] .wedding-nav {
+    @apply border-transparent bg-transparent shadow-none transition-all duration-500;
+  }
+
+  [data-theme="parallax"] .wedding-nav.is-lifted {
+    @apply border-hairline bg-surface/90 shadow-sm backdrop-blur-md;
+  }
+
+  /* The wide tracking is what this theme's masthead is for, but it costs a lot of
+     width, so it only opens up once there is room. */
+  [data-theme="parallax"] .wedding-nav-brand {
+    @apply tracking-[0.12em] sm:tracking-[0.35em];
+  }
+
+  [data-theme="parallax"] .wedding-section-title {
+    @apply tracking-[0.12em];
+  }
+
+  /* --------------------------------------------------------------------------
+     Hero
+     -------------------------------------------------------------------------- */
+
+  /* Content is anchored to the foot of the hero rather than its middle. That is what
+     keeps the type legible: the scrim below only has to resolve to solid surface over
+     the bottom third, so the photograph is left untouched where the couple actually
+     are, instead of being veiled to win a contrast fight in the centre. */
+  .parallax-hero {
+    @apply relative isolate flex min-h-svh items-end justify-center overflow-hidden;
+  }
+
+  .parallax-hero__backdrop {
+    @apply absolute inset-0;
+    z-index: var(--parallax-layer-media);
+  }
+
+  .parallax-hero__backdrop img {
+    @apply size-full object-cover;
+  }
+
+  .parallax-hero__scrim {
+    @apply absolute inset-0;
+    z-index: var(--parallax-layer-scrim);
+    background: linear-gradient(
+      to bottom,
+      color-mix(in srgb, var(--theme-surface) 30%, transparent) 0%,
+      transparent 20%,
+      color-mix(in srgb, var(--theme-surface) 55%, transparent) 40%,
+      color-mix(in srgb, var(--theme-surface) 94%, transparent) 55%,
+      var(--theme-surface) 68%
+    );
+  }
+
+  .parallax-hero__ornaments {
+    @apply pointer-events-none absolute inset-0 select-none;
+    z-index: var(--parallax-layer-ornament);
+  }
+
+  .parallax-hero__content {
+    @apply relative flex w-full max-w-3xl flex-col items-center px-6 pb-20 pt-[54svh] text-center;
+    z-index: var(--parallax-layer-text);
+  }
+
+  .parallax-title {
+    @apply font-theme-display text-5xl font-light leading-[1.05] tracking-[0.08em] text-ink sm:text-6xl lg:text-7xl;
+    text-wrap: balance;
+  }
+
+  .parallax-meta {
+    @apply font-theme-body text-xs font-light uppercase tracking-[0.4em] text-ink-muted sm:text-sm;
+  }
+
+  .parallax-lede {
+    @apply space-y-6 font-theme-body text-base font-light leading-loose text-ink-muted sm:text-lg;
+  }
+
+  /* --------------------------------------------------------------------------
+     Portrait
+
+     The original design floated a PNG "frame" over a photo and guessed the inset,
+     so the two never lined up — and the artwork it used has no opening to line up
+     with. The mount is drawn in CSS instead, which stays registered to the photo
+     at every size.
+     -------------------------------------------------------------------------- */
+
+  .parallax-portrait {
+    @apply relative mx-auto w-full;
+  }
+
+  /* Offset outer rule. It sits on the wrapper because the photo box clips. */
+  .parallax-portrait::before {
+    @apply pointer-events-none absolute border border-accent/35 content-[''];
+    inset: -0.75rem;
+  }
+
+  .parallax-portrait__photo {
+    @apply relative overflow-hidden bg-surface-alt;
+    aspect-ratio: 4 / 5;
+  }
+
+  .parallax-portrait__photo img {
+    @apply size-full object-cover;
+  }
+
+  /* Inner bevel, drawn inside the photo's own box so it always meets the edges. */
+  .parallax-portrait__photo::after {
+    @apply pointer-events-none absolute inset-0 content-[''];
+    box-shadow:
+      inset 0 0 0 1px color-mix(in srgb, var(--theme-surface) 70%, transparent),
+      inset 0 0 0 10px color-mix(in srgb, var(--theme-accent) 20%, transparent);
+  }
+
+  .parallax-portrait__fallback {
+    @apply grid size-full place-items-center font-theme-display text-6xl font-light text-accent;
+  }
+
+  /* --------------------------------------------------------------------------
+     Sections
+     -------------------------------------------------------------------------- */
+
+  .parallax-section {
+    @apply relative isolate overflow-hidden py-24 lg:py-36;
+  }
+
+  .parallax-section--band {
+    @apply bg-surface-alt;
+  }
+
+  /* The original story block used a fixed 80vh box with absolutely positioned
+     children, so it overlapped as soon as the text wrapped. A grid with intrinsic
+     row heights cannot collapse. */
+  .parallax-split {
+    @apply grid items-center gap-14 lg:grid-cols-2 lg:gap-20;
+  }
+
+  .parallax-split--reverse > :first-child {
+    @apply lg:order-2;
+  }
+
+  /* --------------------------------------------------------------------------
+     Cameo — the blank oval plate, carrying the couple's initials
+     -------------------------------------------------------------------------- */
+
+  .parallax-cameo {
+    @apply relative mx-auto grid size-32 place-items-center sm:size-40;
+  }
+
+  .parallax-cameo__plate {
+    @apply absolute inset-0 bg-contain bg-center bg-no-repeat;
+    background-image: var(--parallax-ornament-src);
+  }
+
+  .parallax-cameo__initials {
+    @apply relative font-theme-display text-2xl font-light tracking-[0.2em] text-ink-muted sm:text-3xl;
+  }
+
+  /* --------------------------------------------------------------------------
+     Schedule
+     -------------------------------------------------------------------------- */
+
+  .parallax-event {
+    @apply grid gap-4 border-t border-hairline py-10 sm:grid-cols-[10rem_1fr] sm:gap-10;
+  }
+
+  .parallax-event__time {
+    @apply font-theme-body text-xs font-light uppercase tracking-[0.3em] text-accent sm:pt-2;
+  }
+
+  .parallax-event__name {
+    @apply mb-3 font-theme-display text-3xl font-light text-ink;
+  }
+
+  /* --------------------------------------------------------------------------
+     Detail trio
+     -------------------------------------------------------------------------- */
+
+  .parallax-details {
+    @apply grid gap-12 text-center sm:grid-cols-3 sm:gap-8;
+  }
+
+  .parallax-details__label {
+    @apply mb-4 font-theme-body text-[0.65rem] font-light uppercase tracking-[0.35em] text-accent;
+  }
+
+  .parallax-details__value {
+    @apply font-theme-display text-2xl font-light leading-snug text-ink;
+  }
+
+  /* --------------------------------------------------------------------------
+     Gallery — a staggered grid rather than a uniform contact sheet
+     -------------------------------------------------------------------------- */
+
+  .parallax-gallery {
+    @apply grid gap-5 sm:grid-cols-2 lg:grid-cols-3;
+  }
+
+  .parallax-gallery figure {
+    @apply relative m-0 overflow-hidden bg-surface-alt;
+    aspect-ratio: 3 / 4;
+  }
+
+  .parallax-gallery img {
+    @apply size-full object-cover transition-transform duration-700 hover:scale-[1.04];
+  }
+
+  .parallax-gallery figure:nth-child(even) {
+    @apply lg:translate-y-10;
+  }
+
+  /* --------------------------------------------------------------------------
+     Wedding party
+     -------------------------------------------------------------------------- */
+
+  .parallax-party {
+    @apply grid gap-12 sm:grid-cols-2 lg:grid-cols-3;
+  }
+
+  .parallax-party__name {
+    @apply mb-2 font-theme-display text-2xl font-light text-ink;
+  }
+
+  /* --------------------------------------------------------------------------
+     Closing section — dark, so it reads as the end of the scroll
+     -------------------------------------------------------------------------- */
+
+  .parallax-closing {
+    @apply relative isolate overflow-hidden bg-ink py-28 text-ink-contrast lg:py-36;
+  }
+
+  .parallax-closing .wedding-section-title,
+  .parallax-closing .parallax-title {
+    @apply text-ink-contrast;
+  }
+
+  .parallax-closing .parallax-lede,
+  .parallax-closing .parallax-meta {
+    color: color-mix(in srgb, var(--theme-ink-contrast) 78%, var(--theme-ink));
+  }
+
+  /* Cream artwork dimmed over a near-black ground reads as a grey smudge, so on the
+     dark section the ornament is brightened and the accent tint dropped. */
+  .parallax-closing {
+    --parallax-ornament-tint: 0;
+  }
+
+  /* --------------------------------------------------------------------------
+     Countdown
+     -------------------------------------------------------------------------- */
+
+  .parallax-countdown {
+    @apply flex flex-wrap justify-center gap-8 sm:gap-14;
+  }
+
+  .parallax-countdown__value {
+    @apply block font-theme-display text-4xl font-light tabular-nums sm:text-5xl;
+  }
+
+  .parallax-countdown__label {
+    @apply mt-2 block font-theme-body text-[0.65rem] font-light uppercase tracking-[0.3em] opacity-70;
+  }
+
+  /* --------------------------------------------------------------------------
+     Scroll cue
+     -------------------------------------------------------------------------- */
+
+  .parallax-scroll-cue {
+    @apply relative mx-auto h-16 w-px overflow-hidden bg-hairline-strong;
+  }
+
+  .parallax-scroll-cue::after {
+    @apply absolute inset-x-0 top-0 h-1/2 bg-accent content-[''];
+    animation: parallax-scroll-cue 2.4s ease-in-out infinite;
+  }
+
+  @keyframes parallax-scroll-cue {
+    from {
+      transform: translateY(-100%);
+    }
+    to {
+      transform: translateY(200%);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .parallax-scroll-cue::after {
+      animation: none;
+    }
+  }
+}

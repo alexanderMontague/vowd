@@ -1,0 +1,6 @@
+<%# Only ever rendered for a signed-in admin previewing unsaved theme edits. The
+    link targets _top so it escapes the admin preview iframe. %>
+<div class="theme-preview-banner">
+  <span>Previewing unsaved theme changes. Scheduled visibility rules are ignored here.</span>
+  <%= link_to "Back to editor", admin_theme_path, target: "_top", class: "theme-preview-banner__exit" %>
+</div>

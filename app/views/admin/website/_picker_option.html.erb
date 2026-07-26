@@ -1,0 +1,13 @@
+<%
+  asset = local_assigns.fetch(:asset)
+  thumb_url = wedding_asset_thumbnail_url(asset)
+%>
+<button type="button" class="admin-picker-option" id="<%= dom_id(asset, :option) %>"
+  data-asset-picker-target="option"
+  data-asset-id="<%= asset.id %>"
+  data-thumb-url="<%= thumb_url %>"
+  data-action="asset-picker#toggle"
+  aria-pressed="false">
+  <img src="<%= thumb_url %>" alt="<%= asset.alt %>" width="96" height="96" loading="lazy" decoding="async">
+  <span class="admin-usage-overlay" data-asset-picker-target="usage" data-asset-id="<%= asset.id %>"></span>
+</button>

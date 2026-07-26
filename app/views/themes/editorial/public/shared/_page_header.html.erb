@@ -1,0 +1,15 @@
+<%# The themed masthead, shared by the photos, wedding party, FAQ and closed-RSVP
+    pages. Type only — this theme carries no ornament. %>
+<header class="editorial-shell editorial-section pb-10">
+  <div class="editorial-grid">
+    <div class="editorial-rail">
+      <p class="editorial-label"><%= local_assigns.fetch(:kicker, current_wedding.title) %></p>
+    </div>
+    <div>
+      <h1 class="editorial-headline mb-8"><%= title %></h1>
+      <% if local_assigns[:subtitle].present? %>
+        <p class="editorial-standfirst"><%= subtitle %></p>
+      <% end %>
+    </div>
+  </div>
+</header>

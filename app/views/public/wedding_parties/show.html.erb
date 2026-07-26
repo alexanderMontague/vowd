@@ -1,89 +1,25 @@
+<% party = current_wedding.wedding_party %>
+
 <div class="min-h-screen" data-controller="scroll-animate">
-  <section class="py-16 md:py-32 px-4 bg-gradient-to-b from-stone-50 via-amber-50/30 to-stone-100">
-    <div class="max-w-3xl mx-auto text-center animate-fade-in-up">
-      <%= render "public/shared/divider" %>
-      <div class="mb-8"></div>
-      <h1 class="text-6xl mb-6 tracking-wide font-display font-light text-stone-800">
-        <%= current_wedding.wedding_party["title"] %>
-      </h1>
-      <p class="text-base tracking-wider text-stone-500 font-light max-w-md mx-auto leading-relaxed">
-        <%= current_wedding.wedding_party["subtitle"] %>
-      </p>
-    </div>
-  </section>
+  <%= render "public/shared/page_header", title: party["title"], subtitle: party["subtitle"] %>
 
-  <% if current_wedding.wedding_party["bridesmaids"].present? %>
-    <section class="py-24 px-4">
+  <%# Both groups render identically, so they share one partial rather than drifting apart. %>
+  <% [["bridesmaids", "bridesmaids_title", false], ["groomsmen", "groomsmen_title", true]].each do |group, title_key, banded| %>
+    <% members = Array(party[group]) %>
+    <% next if members.empty? %>
+
+    <section class="py-24 px-4 <%= "wedding-band" if banded %>">
       <div class="max-w-6xl mx-auto">
         <%= render "public/shared/divider" %>
         <div class="mb-12"></div>
-        <%= render "public/shared/section_title", title: current_wedding.wedding_party["bridesmaids_title"], centered: true %>
+        <%= render "public/shared/section_title", title: party[title_key], centered: true %>
         <div class="mb-16"></div>
         <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-12">
-          <% current_wedding.wedding_party["bridesmaids"]&.each_with_index do |person, index| %>
-            <% delay_class = ["", "animation-delay-200", "animation-delay-400", "animation-delay-400"][index % 4] %>
-            <div class="text-center animate-on-scroll <%= delay_class %>" data-scroll-animate-target="item">
-              <div class="w-40 h-40 rounded-full overflow-hidden mx-auto mb-6 border-2 border-stone-200/50 shadow-md">
-                <% if (src = wedding_asset_url(person)).present? %>
-                  <%= image_tag src, alt: person["name"], class: "w-full h-full object-cover" %>
-                <% else %>
-                  <div class="w-full h-full bg-stone-200"></div>
-                <% end %>
-              </div>
-              <p class="text-xs tracking-[0.15em] uppercase text-stone-400 font-light mb-1">
-                <%= person["role"] %>
-              </p>
-              <h3 class="font-display text-2xl text-stone-800 mb-1">
-                <%= person["name"] %>
-              </h3>
-              <p class="text-sm text-stone-500 font-light italic">
-                <%= person["relation"] %>
-              </p>
-            </div>
+          <% members.each_with_index do |person, index| %>
+            <%= render "public/wedding_parties/member", person: person, index: index %>
           <% end %>
         </div>
       </div>
     </section>
   <% end %>
-
-  <% if current_wedding.wedding_party["groomsmen"].present? %>
-    <section class="py-24 px-4 bg-stone-100/50 border-y border-stone-200">
-      <div class="max-w-6xl mx-auto">
-        <%= render "public/shared/divider" %>
-        <div class="mb-12"></div>
-        <%= render "public/shared/section_title", title: current_wedding.wedding_party["groomsmen_title"], centered: true %>
-        <div class="mb-16"></div>
-        <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-12">
-          <% current_wedding.wedding_party["groomsmen"]&.each_with_index do |person, index| %>
-            <% delay_class = ["", "animation-delay-200", "animation-delay-400", "animation-delay-400"][index % 4] %>
-            <div class="text-center animate-on-scroll <%= delay_class %>" data-scroll-animate-target="item">
-              <div class="w-40 h-40 rounded-full overflow-hidden mx-auto mb-6 border-2 border-stone-200/50 shadow-md">
-                <% if (src = wedding_asset_url(person)).present? %>
-                  <%= image_tag src, alt: person["name"], class: "w-full h-full object-cover" %>
-                <% else %>
-                  <div class="w-full h-full bg-stone-200"></div>
-                <% end %>
-              </div>
-              <p class="text-xs tracking-[0.15em] uppercase text-stone-400 font-light mb-1">
-                <%= person["role"] %>
-              </p>
-              <h3 class="font-display text-2xl text-stone-800 mb-1">
-                <%= person["name"] %>
-              </h3>
-              <p class="text-sm text-stone-500 font-light italic">
-                <%= person["relation"] %>
-              </p>
-            </div>
-          <% end %>
-        </div>
-      </div>
-    </section>
-  <% end %>
-
-  <footer class="wedding-footer">
-    <p class="text-xs tracking-[0.2em] uppercase mb-2"><%= current_wedding.title %></p>
-    <% if current_wedding.date %>
-      <p class="text-xs font-light"><%= format_date_short(current_wedding.date) %></p>
-    <% end %>
-  </footer>
 </div>

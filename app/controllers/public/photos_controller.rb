@@ -1,5 +1,7 @@
 module Public
   class PhotosController < Public::BaseController
+    guest_page :gallery
+
     DISPO_PREVIEW_LIMIT = 12
 
     def show

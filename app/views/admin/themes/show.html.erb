@@ -1,0 +1,41 @@
+<div class="theme-editor"
+     data-controller="theme-editor"
+     data-theme-editor-preview-url-value="<%= admin_theme_preview_path %>">
+  <div class="admin-page-header">
+    <h1>Theme</h1>
+    <p>
+      Pick a look for your guest site, set its colours and type, and choose which pages
+      appear in the navigation. Everything you change here shows up in the preview
+      immediately, and stays unsaved until you press Save.
+    </p>
+  </div>
+
+  <% if @unsaved_changes %>
+    <div class="theme-editor-notice">
+      <span>You have unsaved theme changes. The preview is showing them; your guests are not.</span>
+      <%= button_to "Discard changes", admin_theme_preview_path,
+                    method: :delete,
+                    class: "btn btn-sm btn-secondary" %>
+    </div>
+  <% end %>
+
+  <div class="theme-editor-panes">
+    <%= form_with url: admin_theme_path, method: :patch,
+                  class: "theme-editor-controls",
+                  data: { theme_editor_target: "form" } do |f| %>
+      <%= render "admin/themes/theme_choices", theme: @theme %>
+      <%= render "admin/themes/type_fields", theme: @theme %>
+      <%= render "admin/themes/color_fields", theme: @theme %>
+      <%= render "admin/themes/page_toggles", theme: @theme %>
+
+      <div class="theme-editor-actions">
+        <%= f.submit "Save theme", class: "btn btn-primary" %>
+        <span class="theme-editor-status" data-theme-editor-target="status">
+          <%= @unsaved_changes ? "Previewing unsaved changes" : "Preview matches your live site" %>
+        </span>
+      </div>
+    <% end %>
+
+    <%= render "admin/themes/preview_pane", theme: @theme %>
+  </div>
+</div>

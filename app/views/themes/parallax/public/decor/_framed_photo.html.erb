@@ -1,0 +1,17 @@
+<%
+  # The shared theme lays a lace oval PNG over the photo. This theme draws its mount in
+  # CSS instead, so the mount stays registered to the photo at every size.
+  asset = local_assigns[:asset]
+  caption = local_assigns[:caption]
+%>
+<% if asset.present? %>
+  <figure class="parallax-portrait mx-auto max-w-sm <%= local_assigns.fetch(:wrapper_class, '') %>">
+    <div class="parallax-portrait__photo">
+      <%= image_tag wedding_asset_url(asset),
+          alt: wedding_asset_alt(asset), loading: "lazy", decoding: "async" %>
+    </div>
+    <% if caption.present? %>
+      <figcaption class="mt-6 text-center wedding-meta"><%= caption %></figcaption>
+    <% end %>
+  </figure>
+<% end %>

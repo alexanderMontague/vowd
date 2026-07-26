@@ -1,0 +1,14 @@
+<div class="sign-panel">
+  <p class="sign-eyebrow"><%= current_wedding.title %></p>
+  <h2 class="sign-headline">Be our photographer</h2>
+
+  <div class="sign-qr">
+    <%= qr_code_svg(sign.url, color: QrCode::INK) %>
+  </div>
+
+  <p class="sign-instruction">Point your phone camera at the code</p>
+  <p class="sign-url"><%= sign.display_url %></p>
+  <p class="sign-footnote">
+    No app to download. Every photo you take drops straight into our gallery.
+  </p>
+</div>

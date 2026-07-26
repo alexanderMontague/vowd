@@ -1,0 +1,283 @@
+<%
+  hero_src = wedding_asset_url(current_wedding.hero)
+  story = current_wedding.story
+  story_portrait = current_wedding.placement("save_the_date_portrait")
+  venue = current_wedding.venue
+%>
+
+<div data-controller="scroll-animate parallax">
+  <%# ----------------------------------------------------------------------------
+      Hero
+
+      Four explicit layers, in this order: backdrop, scrim, ornament, text. The
+      names sit on the topmost layer, so no amount of ornament can cover them.
+      ---------------------------------------------------------------------------- %>
+  <section class="parallax-hero">
+    <div class="parallax-hero__backdrop">
+      <% if hero_src.present? %>
+        <%= image_tag hero_src, alt: current_wedding.title %>
+      <% else %>
+        <%= render "public/shared/ornament",
+            name: "drapery-backdrop",
+            css_class: "parallax-ornament--cover inset-0",
+            opacity: 1 %>
+      <% end %>
+    </div>
+
+    <div class="parallax-hero__scrim"></div>
+
+    <div class="parallax-hero__ornaments">
+      <%# Drapes hang from the top corners, columns stand in the bottom ones, so the
+          centre of the frame stays clear for the type. %>
+      <%= render "public/shared/ornament",
+          name: "curtain-left",
+          css_class: "-left-6 top-0 h-[52svh] w-24 sm:w-36 lg:w-48",
+          speed: 0.05 %>
+      <%= render "public/shared/ornament",
+          name: "curtain-right",
+          css_class: "-right-6 top-0 h-[52svh] w-24 sm:w-36 lg:w-48",
+          speed: 0.05 %>
+      <%= render "public/shared/ornament",
+          name: "column-left",
+          css_class: "bottom-0 left-0 hidden h-[40svh] w-28 lg:block xl:w-36",
+          speed: 0.1,
+          opacity: 0.7 %>
+      <%= render "public/shared/ornament",
+          name: "column-right",
+          css_class: "bottom-0 right-0 hidden h-[40svh] w-28 lg:block xl:w-36",
+          speed: 0.1,
+          opacity: 0.7 %>
+    </div>
+
+    <div class="parallax-hero__content">
+      <p class="parallax-meta mb-8">
+        <%= current_wedding.hero["eyebrow"].presence || "Together with our families" %>
+      </p>
+      <h1 class="parallax-title mb-8"><%= current_wedding.title %></h1>
+      <div class="wedding-divider-horizontal mb-8 w-24"></div>
+
+      <% if current_wedding.hero["tagline"].present? %>
+        <p class="parallax-lede mb-10 max-w-xl">
+          <%= current_wedding.hero["tagline"] %>
+        </p>
+      <% end %>
+
+      <div class="space-y-3">
+        <% if current_wedding.date %>
+          <p class="parallax-meta"><%= format_date_elegant(current_wedding.date) %></p>
+        <% end %>
+        <p class="parallax-meta opacity-70"><%= full_venue_name(venue) %></p>
+      </div>
+
+      <div class="parallax-scroll-cue mt-14"></div>
+    </div>
+  </section>
+
+  <%# ----------------------------------------------------------------------------
+      Story — a grid, so a long paragraph pushes the section taller instead of
+      overlapping the portrait the way the fixed-height original did.
+      ---------------------------------------------------------------------------- %>
+  <% if story["enabled"] %>
+    <section class="parallax-section">
+      <div class="parallax-stage__ornaments">
+        <%= render "public/shared/ornament",
+            name: "roses-top-left",
+            css_class: "-left-16 top-0 hidden h-72 w-72 lg:block",
+            speed: 0.18,
+            opacity: 0.55 %>
+        <%= render "public/shared/ornament",
+            name: "bouquet",
+            css_class: "-right-20 bottom-0 hidden h-80 w-80 lg:block",
+            speed: -0.14,
+            opacity: 0.5 %>
+      </div>
+
+      <div class="parallax-stage__content">
+        <div class="parallax-split animate-on-scroll" data-scroll-animate-target="item">
+          <div class="parallax-portrait max-w-md">
+            <div class="parallax-portrait__photo">
+              <% if (portrait_src = wedding_asset_url(story_portrait)).present? %>
+                <%= image_tag portrait_src, alt: wedding_asset_alt(story_portrait), loading: "lazy" %>
+              <% else %>
+                <div class="parallax-portrait__fallback"><%= wedding_monogram(current_wedding) %></div>
+              <% end %>
+            </div>
+          </div>
+
+          <div>
+            <p class="parallax-meta mb-6">Our Story</p>
+            <%= render "public/shared/section_title", title: story["title"], centered: false %>
+            <div class="parallax-lede">
+              <% Array(story["paragraphs"]).each do |paragraph| %>
+                <p><%= paragraph %></p>
+              <% end %>
+              <% if story["closing"].present? %>
+                <p class="italic text-ink-soft"><%= story["closing"] %></p>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  <% end %>
+
+  <%# ----------------------------------------------------------------------------
+      Details — the urns are anchored inside the padded stage, so the section's
+      own clipping can no longer cut them in half.
+      ---------------------------------------------------------------------------- %>
+  <section class="parallax-section parallax-section--band parallax-stage" id="events">
+    <div class="parallax-stage__ornaments">
+      <%= render "public/shared/ornament",
+          name: "vase-left",
+          css_class: "bottom-0 left-2 hidden h-64 w-40 lg:block xl:left-10",
+          speed: 0.12,
+          opacity: 0.7 %>
+      <%= render "public/shared/ornament",
+          name: "vase-right",
+          css_class: "bottom-0 right-2 hidden h-64 w-44 lg:block xl:right-10",
+          speed: 0.12,
+          opacity: 0.7 %>
+    </div>
+
+    <div class="parallax-stage__content">
+      <div class="mb-16 text-center">
+        <%= render "public/shared/section_title", title: "The Day Itself", centered: true %>
+      </div>
+
+      <div class="parallax-details animate-on-scroll" data-scroll-animate-target="item">
+        <div>
+          <p class="parallax-details__label">Date</p>
+          <% if current_wedding.date %>
+            <p class="parallax-details__value"><%= current_wedding.date.strftime("%A") %></p>
+            <p class="parallax-details__value"><%= format_date(current_wedding.date) %></p>
+          <% end %>
+        </div>
+
+        <div>
+          <p class="parallax-details__label">Time</p>
+          <p class="parallax-details__value">Ceremony at <%= current_wedding.ceremony_time %></p>
+          <p class="mt-2 wedding-meta">Reception to follow</p>
+        </div>
+
+        <div>
+          <p class="parallax-details__label">Venue</p>
+          <p class="parallax-details__value"><%= venue["name"] %></p>
+          <p class="mt-2 wedding-meta"><%= full_venue_name(venue) %></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <%# Schedule %>
+  <% if @events.any? %>
+    <section class="parallax-section parallax-stage">
+      <div class="parallax-stage__ornaments">
+        <%= render "public/shared/ornament",
+            name: "roses-bottom-right",
+            css_class: "-right-24 bottom-0 hidden h-80 w-80 lg:block",
+            speed: 0.16,
+            opacity: 0.4 %>
+      </div>
+
+      <div class="parallax-stage__content max-w-4xl">
+        <div class="mb-14 text-center">
+          <%= render "public/shared/section_title", title: "Schedule", centered: true %>
+        </div>
+
+        <% @events.each do |event| %>
+          <div class="parallax-event animate-on-scroll" data-scroll-animate-target="item">
+            <p class="parallax-event__time">
+              <%= event.datetime&.strftime("%l:%M %p")&.strip %>
+            </p>
+            <div>
+              <h3 class="parallax-event__name"><%= event.name %></h3>
+              <% if event.location.present? %>
+                <p class="wedding-meta mb-3"><%= event.location %></p>
+              <% end %>
+              <% if event.description.present? %>
+                <p class="parallax-lede"><%= event.description %></p>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </section>
+  <% end %>
+
+  <%# Gallery preview %>
+  <% if current_wedding.homepage_gallery_visible? %>
+    <section class="parallax-section parallax-section--band">
+      <div class="parallax-stage__content max-w-7xl">
+        <div class="mb-16 text-center">
+          <%= render "public/shared/section_title",
+              title: current_wedding.gallery_content["homepage_title"],
+              centered: true %>
+        </div>
+
+        <div class="parallax-gallery">
+          <% current_wedding.homepage_gallery_images.each do |image| %>
+            <figure class="animate-on-scroll" data-scroll-animate-target="item">
+              <%= image_tag wedding_asset_url(image),
+                  alt: wedding_asset_alt(image),
+                  loading: "lazy" %>
+            </figure>
+          <% end %>
+        </div>
+
+        <% if site_navigation.visible?("gallery") %>
+          <div class="mt-20 text-center lg:mt-28">
+            <%= link_to "View All Photos", public_photos_path, class: "btn-wedding-primary" %>
+          </div>
+        <% end %>
+      </div>
+    </section>
+  <% end %>
+
+  <%# ----------------------------------------------------------------------------
+      Closing — the countdown reads from the wedding's real ceremony time rather
+      than the hardcoded figures the original design shipped with.
+      ---------------------------------------------------------------------------- %>
+  <section class="parallax-closing" id="rsvp-section">
+    <div class="parallax-stage__ornaments">
+      <%= render "public/shared/ornament",
+          name: "lace-heart",
+          css_class: "-left-16 top-8 hidden h-56 w-56 lg:block",
+          speed: 0.2,
+          opacity: 0.5 %>
+      <%= render "public/shared/ornament",
+          name: "lily-medallion",
+          css_class: "-right-14 bottom-8 hidden h-56 w-56 lg:block",
+          speed: -0.16,
+          opacity: 0.5 %>
+    </div>
+
+    <div class="parallax-stage__content max-w-2xl text-center">
+      <%= render "public/shared/ornament_cameo" %>
+
+      <% if current_wedding.date %>
+        <div class="mb-16 mt-12"
+             data-controller="countdown"
+             data-countdown-target-time-value="<%= wedding_datetime_iso(current_wedding) %>">
+          <div class="parallax-countdown" aria-live="polite" aria-label="Countdown to the wedding">
+            <% [["days", "Days"], ["hours", "Hours"], ["minutes", "Minutes"], ["seconds", "Seconds"]].each do |target, label| %>
+              <div>
+                <span class="parallax-countdown__value" data-countdown-target="<%= target %>">—</span>
+                <span class="parallax-countdown__label"><%= label %></span>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+
+      <% if site_navigation.visible?("rsvp") %>
+        <%= render "public/shared/section_title", title: current_wedding.rsvp["title"], centered: true %>
+        <p class="parallax-lede mx-auto mb-12 max-w-lg">
+          <%= current_wedding.rsvp["description"] %>
+        </p>
+        <%= link_to current_wedding.rsvp["button_text"], public_rsvp_lookup_path,
+            class: "btn-wedding-primary" %>
+        <p class="parallax-meta mt-10"><%= current_wedding.rsvp["lookup_hint"] %></p>
+      <% end %>
+    </div>
+  </section>
+</div>

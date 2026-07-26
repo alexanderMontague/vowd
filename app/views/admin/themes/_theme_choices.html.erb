@@ -1,0 +1,31 @@
+<section class="card mb-6">
+  <h2 class="admin-editor-panel-title">Theme</h2>
+  <p class="admin-editor-panel-copy">
+    Each theme is a different layout and treatment of the same content. Switching one in
+    resets the colours and type below to that theme's own palette.
+  </p>
+
+  <div class="theme-choice-grid">
+    <% SiteThemes.definitions.each do |candidate| %>
+      <% selected = candidate.key == theme.key %>
+      <label class="theme-choice <%= "is-selected" if selected %>"
+             data-theme-defaults="<%= { colors: candidate.default_colors, font: candidate.default_font }.to_json %>">
+        <%= radio_button_tag "theme[key]", candidate.key, selected,
+              class: "theme-choice__input",
+              data: { action: "change->theme-editor#selectTheme" } %>
+
+        <span class="theme-choice__swatches" aria-hidden="true">
+          <% SiteThemes::COLOR_KEYS.each do |role| %>
+            <span class="theme-choice__swatch" style="background: <%= candidate.color_default(role) %>"></span>
+          <% end %>
+        </span>
+
+        <span class="theme-choice__body">
+          <span class="theme-choice__name"><%= candidate.name %></span>
+          <span class="theme-choice__tagline"><%= candidate.tagline %></span>
+          <span class="theme-choice__description"><%= candidate.description %></span>
+        </span>
+      </label>
+    <% end %>
+  </div>
+</section>

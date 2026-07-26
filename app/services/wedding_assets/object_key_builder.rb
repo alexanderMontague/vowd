@@ -1,7 +1,8 @@
 module WeddingAssets
   class ObjectKeyBuilder
     SITE_DIRECTORY = "site".freeze
-    PURPOSES = %w[hero gallery party photos].freeze
+    PURPOSES = %w[hero gallery party photos invitation].freeze
+    VIDEO_EXTENSIONS = %w[.mp4 .webm .mov].freeze
 
     class << self
       def build(wedding_id:, purpose:, content_type:)
@@ -25,7 +26,11 @@ module WeddingAssets
         key = object_key.to_s
         raise ArgumentError, "object_key is required" if key.blank?
 
-        key.sub(/(\.[^.]+\z)/, ".thumb\\1")
+        if video_key?(key)
+          key.sub(/(\.[^.]+\z)/, ".thumb.webp")
+        else
+          key.sub(/(\.[^.]+\z)/, ".thumb\\1")
+        end
       end
 
       def content_type_for(object_key)
@@ -33,8 +38,15 @@ module WeddingAssets
         when ".jpg", ".jpeg" then "image/jpeg"
         when ".png" then "image/png"
         when ".webp" then "image/webp"
+        when ".mp4" then "video/mp4"
+        when ".webm" then "video/webm"
+        when ".mov" then "video/quicktime"
         else "application/octet-stream"
         end
+      end
+
+      def video_key?(object_key)
+        VIDEO_EXTENSIONS.include?(File.extname(object_key.to_s).downcase)
       end
 
       private
@@ -44,6 +56,9 @@ module WeddingAssets
         when "image/jpeg" then "jpg"
         when "image/png" then "png"
         when "image/webp" then "webp"
+        when "video/mp4" then "mp4"
+        when "video/webm" then "webm"
+        when "video/quicktime" then "mov"
         else
           raise ArgumentError, "Unsupported content type: #{content_type.inspect}"
         end

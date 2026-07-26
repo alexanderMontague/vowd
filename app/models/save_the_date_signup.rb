@@ -1,8 +1,10 @@
 class SaveTheDateSignup < ApplicationRecord
+  include WeddingScoped
+
   belongs_to :guest, optional: true
 
   validates :email, presence: true, format: { with: URI::MailTo::EMAIL_REGEXP }
-  validates :wedding_id, presence: true
+  validates_same_wedding :guest
 
   normalizes :email, with: ->(email) { email.strip.downcase }
 
@@ -16,9 +18,5 @@ class SaveTheDateSignup < ApplicationRecord
 
   def display_name
     name.presence || email
-  end
-
-  def wedding
-    Wedding.find(wedding_id)
   end
 end

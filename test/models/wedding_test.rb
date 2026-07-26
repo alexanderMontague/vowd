@@ -97,7 +97,74 @@ class WeddingTest < ActiveSupport::TestCase
     assert_equal %w[a.jpg b.jpg], @wedding.homepage_gallery_images.map { |image| image["object_key"] }
   end
 
+  test "gallery_sections resolves library assets ahead of legacy url entries" do
+    first = create_asset(position: 0)
+    second = create_asset(position: 1)
+    @wedding.update!(
+      photos_page: {
+        "sections" => [
+          {
+            "title" => "Engagement",
+            "asset_ids" => [second.id, first.id],
+            "images" => [{ "url" => "https://example.com/remote.jpg" }]
+          }
+        ]
+      }
+    )
+
+    images = @wedding.gallery_sections.first["images"]
+    assert_equal [second, first], images.first(2)
+    assert_equal "https://example.com/remote.jpg", images.last["url"]
+  end
+
+  test "gallery_sections drops asset ids that no longer resolve" do
+    asset = create_asset
+    @wedding.update!(
+      photos_page: { "sections" => [{ "title" => "Engagement", "asset_ids" => [asset.id, SecureRandom.uuid] }] }
+    )
+
+    assert_equal [asset], @wedding.gallery_sections.first["images"]
+  end
+
+  test "placements_for returns assets in the configured order" do
+    first = create_asset(position: 0)
+    second = create_asset(position: 1)
+    @wedding.update!(placements: { "save_the_date_floating" => [second.id, first.id] })
+
+    assert_equal [second, first], @wedding.placements_for("save_the_date_floating")
+  end
+
+  test "placements_for prunes missing ids and clamps to the slot maximum" do
+    assets = Array.new(4) { |index| create_asset(position: index) }
+    @wedding.update!(
+      placements: {
+        "save_the_date_floating" => [assets[0].id, SecureRandom.uuid, assets[1].id, assets[2].id, assets[3].id]
+      }
+    )
+
+    assert_equal assets.first(3), @wedding.placements_for("save_the_date_floating")
+  end
+
+  test "placement returns the first asset and nil for empty or unknown slots" do
+    asset = create_asset
+    @wedding.update!(placements: { "rsvp_portrait" => [asset.id] })
+
+    assert_equal asset, @wedding.placement("rsvp_portrait")
+    assert_nil @wedding.placement("save_the_date_vase")
+    assert_empty @wedding.placements_for("not_a_slot")
+  end
+
   private
+
+  def create_asset(attrs = {})
+    @wedding.wedding_assets.create!(
+      {
+        object_key: "#{Rails.env}/#{@wedding.id}/site/photos/#{SecureRandom.hex(6)}.webp",
+        content_type: "image/webp",
+        byte_size: 2048
+      }.merge(attrs)
+    )
+  end
 
   def set_style_override(value)
     WeddingMetadata.create!(

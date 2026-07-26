@@ -1,22 +1,22 @@
-<div class="min-h-screen flex items-center justify-center px-4 bg-gradient-to-b from-stone-50 to-amber-50/30">
-  <div class="max-w-md w-full bg-white shadow-xl p-12 text-center border border-stone-200/50 animate-scale-in">
+<div class="wedding-page-wash min-h-screen flex items-center justify-center px-4 py-20">
+  <div class="max-w-md w-full bg-surface-alt shadow-xl p-12 text-center border border-hairline animate-scale-in">
     <%# Check Icon %>
-    <div class="inline-flex items-center justify-center w-20 h-20 border border-stone-300 rounded-full mb-8 bg-stone-50">
+    <div class="inline-flex items-center justify-center w-20 h-20 border border-hairline-strong rounded-full mb-8 bg-surface">
       <%= render "public/shared/icon", name: "check" %>
     </div>
 
-    <h1 class="text-5xl mb-6 font-display font-light text-stone-800">
+    <h1 class="text-5xl mb-6 font-theme-display font-light text-ink">
       Thank You
     </h1>
 
-    <p class="mb-8 leading-relaxed text-stone-600 font-light">
+    <p class="mb-8 leading-relaxed wedding-prose">
       We have received your response and look forward to celebrating with you.
     </p>
 
     <%= render "public/shared/divider", height: 8 %>
     <div class="mb-8"></div>
 
-    <p class="text-sm mb-8 text-stone-500 font-light">
+    <p class="text-sm mb-8 text-ink-soft font-light">
       <%= current_wedding.title %>
       <% if current_wedding.date %>
         <br>
@@ -26,7 +26,7 @@
 
     <div class="space-y-4">
       <%= link_to "Return to Wedding Page", root_path,
-          class: "text-xs uppercase tracking-wider text-stone-600 no-underline hover:text-stone-800 transition-colors" %>
+          class: "text-xs uppercase tracking-wider text-ink-muted no-underline hover:text-ink transition-colors" %>
     </div>
   </div>
 </div>

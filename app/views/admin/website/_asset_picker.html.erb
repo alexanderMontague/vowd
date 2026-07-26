@@ -1,0 +1,28 @@
+<%
+  field_name = local_assigns.fetch(:field_name)
+  assets = Array(local_assigns.fetch(:assets, []))
+  # 0 means unlimited.
+  max = local_assigns.fetch(:max, 0).to_i
+  empty_text = local_assigns.fetch(:empty_text, "No photo chosen yet.")
+  # Names this picker on the library's "used in" badges. A section leaves the label
+  # blank and is named by its title field instead.
+  usage_prefix = local_assigns.fetch(:usage_prefix, "")
+  usage_label = local_assigns.fetch(:usage_label, "")
+%>
+<div class="admin-asset-picker" data-asset-picker-target="picker"
+  data-field-name="<%= field_name %>" data-max="<%= max %>"
+  data-usage-prefix="<%= usage_prefix %>" data-usage-label="<%= usage_label %>">
+  <%= hidden_field_tag field_name, "", id: nil %>
+
+  <div class="admin-asset-picker__selection" data-asset-picker-target="selection">
+    <% assets.each do |asset| %>
+      <%= render "admin/website/picker_selection", asset: asset, field_name: field_name %>
+    <% end %>
+  </div>
+
+  <p class="admin-asset-picker__empty"><%= empty_text %></p>
+
+  <button type="button" class="btn btn-sm btn-secondary" data-action="asset-picker#open">
+    <%= max == 1 ? "Choose photo" : "Choose photos" %>
+  </button>
+</div>

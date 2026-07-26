@@ -1,0 +1,48 @@
+<section class="theme-preview">
+  <header class="theme-preview__bar">
+    <div class="theme-preview__pages">
+      <% SitePages.definitions.each_with_index do |page, index| %>
+        <button type="button"
+                class="theme-preview__page <%= "is-active" if index.zero? %>"
+                data-theme-editor-target="pageButton"
+                data-action="theme-editor#openPage"
+                data-page="<%= page.key %>"
+                data-path="<%= site_page_path(page) %>"
+                <%= "disabled" unless theme.page_enabled?(page.key) %>>
+          <%= page.label %>
+        </button>
+      <% end %>
+    </div>
+
+    <div class="theme-preview__tools">
+      <% [["desktop", "Desktop"], ["tablet", "Tablet"], ["mobile", "Mobile"]].each do |device, label| %>
+        <button type="button"
+                class="theme-preview__device"
+                data-theme-editor-target="deviceButton"
+                data-action="theme-editor#setDevice"
+                data-device="<%= device %>">
+          <%= label %>
+        </button>
+      <% end %>
+
+      <button type="button" class="theme-preview__device" data-action="theme-editor#reload">
+        Reload
+      </button>
+    </div>
+  </header>
+
+  <div class="theme-preview__stage" data-theme-editor-target="frameStage">
+    <%# Same-origin, unsandboxed on purpose: the editor writes CSS variables straight
+        into this document for instant feedback, and the session carries the draft so
+        every link inside stays in preview. %>
+    <iframe src="<%= root_path %>"
+            title="Guest site preview"
+            class="theme-preview__frame"
+            data-theme-editor-target="frame"></iframe>
+  </div>
+
+  <p class="theme-preview__note">
+    Click through the preview like a guest. Scheduled visibility rules are ignored here
+    so you can see every page the theme defines.
+  </p>
+</section>

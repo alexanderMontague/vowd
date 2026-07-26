@@ -1,4 +1,6 @@
 class Household < ApplicationRecord
+  include WeddingScoped
+
   has_many :guests, dependent: :destroy
   accepts_nested_attributes_for :guests, allow_destroy: true, reject_if: :all_blank_guest?
 
@@ -20,10 +22,6 @@ class Household < ApplicationRecord
 
   def rsvpd?
     guests.all?(&:has_responded?)
-  end
-
-  def wedding
-    Wedding.find(wedding_id)
   end
 
   private

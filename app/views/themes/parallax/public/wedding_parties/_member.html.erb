@@ -1,0 +1,21 @@
+<% delay_class = ["", "animation-delay-200", "animation-delay-400"][index % 3] %>
+
+<%# Portraits are full rectangles rather than the shared theme's circles, so they sit
+    with the framed photography used elsewhere in this theme. %>
+<div class="animate-on-scroll <%= delay_class %>" data-scroll-animate-target="item">
+  <div class="parallax-portrait">
+    <div class="parallax-portrait__photo">
+      <% if (src = wedding_asset_url(person)).present? %>
+        <%= image_tag src, alt: person["name"], loading: "lazy" %>
+      <% else %>
+        <div class="parallax-portrait__fallback"><%= person["name"].to_s.first %></div>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="mt-8 text-center">
+    <p class="parallax-details__label"><%= person["role"] %></p>
+    <h3 class="parallax-party__name"><%= person["name"] %></h3>
+    <p class="text-sm font-light italic text-ink-soft"><%= person["relation"] %></p>
+  </div>
+</div>

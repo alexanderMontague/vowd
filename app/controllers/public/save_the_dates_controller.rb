@@ -2,6 +2,8 @@ module Public
   class SaveTheDatesController < Public::BaseController
     include WeddingHelper
 
+    guest_page :save_the_date
+
     def show
     end
 

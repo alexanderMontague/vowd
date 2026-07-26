@@ -1,30 +1,26 @@
-<div class="min-h-screen py-20 px-4 bg-gradient-to-b from-stone-50 via-amber-50/30 to-stone-100">
-  <div class="max-w-2xl mx-auto text-center">
-    <div class="mb-16 animate-fade-in-up">
-      <%= render "public/shared/divider" %>
-      <div class="mb-8"></div>
-      <h1 class="text-6xl mb-6 tracking-wide font-display font-light text-stone-800">
-        RSVP
-      </h1>
-    </div>
+<div class="min-h-screen">
+  <%= render "public/shared/page_header", title: "RSVP" %>
 
-    <div class="bg-white shadow-xl p-10 md:p-14 border border-stone-200/50 animate-fade-in-up" style="animation-delay: 0.2s;">
-      <div class="inline-flex items-center justify-center w-16 h-16 rounded-full border border-stone-300 mb-8">
-        <svg class="w-[30px] h-[30px] text-stone-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6v6l4 2m6-2a10 10 0 11-20 0 10 10 0 0120 0z"/>
-        </svg>
+  <section class="px-4 pb-24">
+    <div class="mx-auto max-w-2xl text-center">
+      <div class="bg-surface-alt shadow-xl p-10 md:p-14 border border-hairline animate-fade-in-up" style="animation-delay: 0.2s;">
+        <div class="inline-flex items-center justify-center w-16 h-16 rounded-full border border-hairline-strong mb-8">
+          <svg class="w-[30px] h-[30px] text-ink-faint" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6v6l4 2m6-2a10 10 0 11-20 0 10 10 0 0120 0z"/>
+          </svg>
+        </div>
+
+        <h2 class="text-2xl font-theme-display font-light text-ink mb-4">RSVPs Are Closed</h2>
+
+        <p class="text-base text-ink-soft font-light leading-relaxed">
+          We are no longer accepting new RSVPs for <%= current_wedding.title %>.
+          If you need assistance, please reach out to us directly.
+        </p>
       </div>
 
-      <h2 class="text-2xl font-display font-light text-stone-800 mb-4">RSVPs Are Closed</h2>
-
-      <p class="text-base text-stone-500 font-light leading-relaxed mb-8">
-        We are no longer accepting new RSVPs for <%= current_wedding.title %>.
-        If you need assistance, please reach out to us directly.
-      </p>
+      <div class="mt-10">
+        <%= link_to "← Return Home", root_path, class: "text-sm text-ink-faint font-light tracking-wider hover:text-ink-muted transition-colors" %>
+      </div>
     </div>
-
-    <div class="mt-10">
-      <%= link_to "← Return Home", root_path, class: "text-sm text-stone-400 font-light tracking-wider hover:text-stone-600 transition-colors" %>
-    </div>
-  </div>
+  </section>
 </div>

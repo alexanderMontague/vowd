@@ -1,0 +1,15 @@
+<%
+  # Decorative echoes of photos shown elsewhere, so they are hidden from assistive
+  # tech and from narrow screens where there is no room beside the invitation.
+  layers = floating_photo_layers(local_assigns.fetch(:assets, []))
+%>
+<% if layers.any? %>
+  <div class="floating-photos" aria-hidden="true" data-controller="parallax">
+    <% layers.each_with_index do |(asset, speed), index| %>
+      <figure class="floating-photo floating-photo--<%= index + 1 %>"
+        data-parallax-target="layer" data-parallax-speed="<%= speed %>">
+        <%= image_tag wedding_asset_url(asset), alt: "", loading: "lazy", decoding: "async" %>
+      </figure>
+    <% end %>
+  </div>
+<% end %>

@@ -1,0 +1,44 @@
+<% faq = current_wedding.faq %>
+
+<div data-controller="parallax">
+  <%= render "public/shared/page_header", title: faq["title"], subtitle: faq["subtitle"] %>
+
+  <section class="parallax-section parallax-stage">
+    <div class="parallax-stage__ornaments">
+      <%= render "public/shared/ornament",
+          name: "bouquet",
+          css_class: "-right-28 top-16 hidden h-72 w-72 lg:block",
+          speed: 0.16,
+          opacity: 0.3 %>
+      <%= render "public/shared/ornament",
+          name: "vase-left",
+          css_class: "-left-16 bottom-0 hidden h-72 w-48 lg:block",
+          speed: -0.12,
+          opacity: 0.35 %>
+    </div>
+
+    <div class="parallax-stage__content max-w-3xl">
+      <div class="divide-y divide-hairline border-y border-hairline">
+        <% Array(faq["questions"]).each do |item| %>
+          <details class="group">
+            <summary class="flex cursor-pointer list-none items-center justify-between gap-6 py-7">
+              <span class="font-theme-display text-xl font-light text-ink">
+                <%= item["question"] %>
+              </span>
+              <span class="shrink-0 text-accent transition-transform duration-300 group-open:rotate-45">
+                <svg class="size-5" fill="none" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" d="M12 4.5v15m7.5-7.5h-15"/>
+                </svg>
+              </span>
+            </summary>
+            <p class="parallax-lede pb-8"><%= item["answer"] %></p>
+          </details>
+        <% end %>
+      </div>
+
+      <div class="mt-14 text-center">
+        <%= link_to "← Return Home", root_path, class: "parallax-meta hover:text-ink" %>
+      </div>
+    </div>
+  </section>
+</div>

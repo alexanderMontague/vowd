@@ -48,6 +48,7 @@ module Admin
       attrs[:faq] = build_faq(permitted[:faq]) if raw.key?("faq")
       attrs[:wedding_party] = build_wedding_party(permitted[:wedding_party]) if raw.key?("wedding_party")
       attrs[:photos_page] = build_photos_page(permitted[:photos_page]) if raw.key?("photos_page")
+      attrs[:placements] = build_placements(permitted[:placements]) if raw.key?("placements")
       attrs[:notifications] = build_notifications(permitted[:notifications]) if raw.key?("notifications")
 
       attrs
@@ -75,8 +76,9 @@ module Admin
         ],
         photos_page: [
           :title, :subtitle, :homepage_enabled, :homepage_title, :homepage_limit,
-          { sections: [:title, { images: %i[object_key alt url] }] }
+          { sections: [:title, { asset_ids: [], images: %i[alt url] }] }
         ],
+        placements: SiteSlots.keys.index_with { [] },
         notifications: {
           reminders: [
             :enabled, :send_time, :audience,
@@ -149,25 +151,39 @@ module Admin
 
     def build_photos_page(raw)
       data = nested_hash(raw)
-      sections = nested_list(data[:sections]).filter_map do |section|
-        title = section[:title].to_s.strip
-        images = build_image_entries(section[:images])
-        next if title.blank? && images.empty?
-
-        { "title" => title, "images" => images }
-      end
-
-      limit = data[:homepage_limit].to_i
-      limit = Wedding::HOMEPAGE_GALLERY_DEFAULT_LIMIT unless limit.positive?
 
       {
         "title" => data[:title].to_s,
         "subtitle" => data[:subtitle].to_s,
         "homepage_enabled" => ActiveModel::Type::Boolean.new.cast(data[:homepage_enabled]),
         "homepage_title" => data[:homepage_title].to_s.presence || "Gallery",
-        "homepage_limit" => limit,
-        "sections" => sections
+        "homepage_limit" => homepage_gallery_limit(data[:homepage_limit]),
+        "sections" => build_photo_sections(data[:sections])
       }
+    end
+
+    def build_photo_sections(raw)
+      nested_list(raw).filter_map do |section|
+        title = section[:title].to_s.strip
+        asset_ids = compact_ids(section[:asset_ids])
+        images = build_image_entries(section[:images])
+        next if title.blank? && asset_ids.empty? && images.empty?
+
+        { "title" => title, "asset_ids" => asset_ids, "images" => images }
+      end
+    end
+
+    def homepage_gallery_limit(raw)
+      limit = raw.to_i
+      limit.positive? ? limit : Wedding::HOMEPAGE_GALLERY_DEFAULT_LIMIT
+    end
+
+    def build_placements(raw)
+      data = nested_hash(raw)
+      SiteSlots.definitions.each_with_object({}) do |slot, result|
+        ids = compact_ids(data[slot.key]).first(slot.max)
+        result[slot.key] = ids if ids.any?
+      end
     end
 
     def build_notifications(raw)
@@ -235,6 +251,11 @@ module Admin
         end
         member
       end
+    end
+
+    # Multi-value pickers submit a leading blank so clearing them still sends the key.
+    def compact_ids(raw)
+      Array(raw).map { |id| id.to_s.strip }.reject(&:blank?).uniq
     end
 
     def nested_hash(raw)

@@ -1,0 +1,9 @@
+<%= turbo_stream.remove dom_id(@asset) %>
+<%= turbo_stream.remove dom_id(@asset, :option) %>
+<%= turbo_stream.remove_all ".admin-picker-selection[data-asset-id='#{@asset.id}']" %>
+
+<% if @asset.video? %>
+  <%= turbo_stream.replace "envelope_open_section" do %>
+    <%= render "admin/website/envelope_section", asset: nil %>
+  <% end %>
+<% end %>

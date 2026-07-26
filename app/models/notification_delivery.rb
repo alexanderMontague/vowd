@@ -1,15 +1,17 @@
 class NotificationDelivery < ApplicationRecord
+  include WeddingScoped
+
   CHANNELS = %w[email].freeze
   STATUSES = %w[queued sent failed].freeze
 
   belongs_to :guest
 
-  validates :wedding_id, presence: true
   validates :reminder_key, presence: true
   validates :scheduled_for, presence: true
   validates :channel, inclusion: { in: CHANNELS }
   validates :status, inclusion: { in: STATUSES }
   validates :guest_id, uniqueness: { scope: %i[wedding_id reminder_key channel] }
+  validates_same_wedding :guest
 
   scope :sent, -> { where(status: "sent") }
   scope :failed, -> { where(status: "failed") }

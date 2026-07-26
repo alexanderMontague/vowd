@@ -1,0 +1,58 @@
+<%
+  slot = SiteSlots.find("invitation_envelope")
+  asset = local_assigns.fetch(:asset) { current_wedding.placement(slot.key) }
+  upload_url = admin_website_assets_path
+%>
+<div id="envelope_open_section" class="admin-envelope-section"
+  data-controller="envelope-video"
+  data-envelope-video-url-value="<%= upload_url %>"
+  data-envelope-video-purpose-value="invitation">
+
+  <p class="text-xs font-semibold uppercase tracking-widest text-neutral-400 mb-1"><%= slot.label %></p>
+  <p class="admin-editor-panel-copy"><%= slot.description %></p>
+
+  <%= hidden_field_tag "wedding[placements][#{slot.key}][]", "", id: nil %>
+  <%= hidden_field_tag "wedding[placements][#{slot.key}][]", asset&.id,
+      id: "envelope_open_asset_id",
+      data: { envelope_video_target: "assetId" } %>
+
+  <div class="admin-envelope-section__preview" data-envelope-video-target="preview" <%= tag.attributes(hidden: asset.blank?) %>>
+    <% if asset.present? %>
+      <img src="<%= wedding_asset_thumbnail_url(asset) %>" alt=""
+        class="admin-envelope-section__poster" width="320" height="180" loading="lazy" decoding="async"
+        data-envelope-video-target="poster">
+      <p class="admin-envelope-section__meta mb-0">
+        Poster captured from the first frame.
+        <span class="text-neutral-400"><%= number_to_human_size(asset.byte_size) if asset.byte_size %></span>
+      </p>
+    <% end %>
+  </div>
+
+  <p class="admin-envelope-section__empty" data-envelope-video-target="empty" <%= tag.attributes(hidden: asset.present?) %>>
+    No envelope video yet. Upload an MP4 and we’ll compress it and capture the poster.
+  </p>
+
+  <div class="admin-upload-progress mb-3" hidden data-envelope-video-target="progress">
+    <div class="admin-upload-progress__track">
+      <div class="admin-upload-progress__bar" data-envelope-video-target="progressBar"></div>
+    </div>
+    <p class="admin-upload-progress__status" data-envelope-video-target="status"></p>
+  </div>
+
+  <div class="flex flex-wrap gap-2">
+    <label class="btn btn-sm btn-secondary mb-0 cursor-pointer">
+      <%= asset.present? ? "Replace video" : "Upload video" %>
+      <input type="file" accept="video/mp4,video/webm,video/quicktime" class="hidden"
+        data-envelope-video-target="input" data-action="change->envelope-video#upload">
+    </label>
+
+    <% if asset.present? %>
+      <%= link_to "Remove", admin_website_asset_path(asset),
+          class: "btn btn-sm btn-danger",
+          data: {
+            turbo_method: :delete,
+            turbo_confirm: "Remove this envelope video?"
+          } %>
+    <% end %>
+  </div>
+</div>

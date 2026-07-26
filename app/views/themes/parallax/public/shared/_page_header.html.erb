@@ -1,0 +1,32 @@
+<%# The themed masthead. Overriding this one partial restyles the photos, wedding
+    party, FAQ and closed-RSVP pages together. %>
+<section class="parallax-stage flex min-h-[60vh] items-center">
+  <div class="parallax-hero__backdrop">
+    <%= render "public/shared/ornament",
+        name: "drapery-backdrop",
+        css_class: "parallax-ornament--cover inset-0",
+        opacity: 0.55 %>
+  </div>
+
+  <div class="parallax-hero__scrim"></div>
+
+  <%# The backdrop is itself drapery, so drapes here would only muddy it. Roses give
+      the corners definition against it instead. %>
+  <div class="parallax-hero__ornaments">
+    <%= render "public/shared/ornament",
+        name: "roses-top-left",
+        css_class: "-left-16 -top-10 hidden h-64 w-64 lg:block",
+        speed: 0.12 %>
+    <%= render "public/shared/ornament",
+        name: "roses-bottom-right",
+        css_class: "-bottom-10 -right-16 hidden h-64 w-64 lg:block",
+        speed: -0.12 %>
+  </div>
+
+  <div class="parallax-stage__content max-w-3xl py-24 text-center animate-fade-in-up">
+    <h1 class="parallax-title mb-6"><%= title %></h1>
+    <% if local_assigns[:subtitle].present? %>
+      <p class="parallax-lede mx-auto max-w-lg"><%= subtitle %></p>
+    <% end %>
+  </div>
+</section>

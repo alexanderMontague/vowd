@@ -1,0 +1,46 @@
+<%
+  assets = local_assigns.fetch(:assets)
+%>
+<div class="admin-photo-library"
+  data-controller="gallery-lightbox photo-library multi-asset-upload"
+  data-multi-asset-upload-purpose-value="photos"
+  data-multi-asset-upload-url-value="<%= admin_website_assets_path %>">
+
+  <div class="admin-photo-library__header">
+    <div>
+      <p class="text-xs font-semibold uppercase tracking-widest text-neutral-400">Photo library</p>
+      <p class="mb-0 text-sm text-neutral-500">
+        Upload every photo here once, then choose where each one appears.
+      </p>
+    </div>
+    <label class="btn btn-sm btn-secondary mb-0 cursor-pointer">
+      Upload photos
+      <input type="file" accept="image/jpeg,image/png,image/webp" multiple class="hidden"
+        data-multi-asset-upload-target="input" data-action="change->multi-asset-upload#upload">
+    </label>
+  </div>
+
+  <div class="admin-upload-progress mb-3" hidden data-multi-asset-upload-target="progress">
+    <div class="admin-upload-progress__track">
+      <div class="admin-upload-progress__bar" data-multi-asset-upload-target="progressBar"></div>
+    </div>
+    <p class="admin-upload-progress__status" data-multi-asset-upload-target="status"></p>
+  </div>
+
+  <div class="admin-photo-library__grid" id="photo_library">
+    <%= render partial: "admin/website/library_asset", collection: assets, as: :asset %>
+  </div>
+
+  <p class="admin-photo-library__empty">
+    No photos yet. Upload a few and they become available to every section and page.
+  </p>
+
+  <dialog class="admin-gallery-lightbox" data-gallery-lightbox-target="dialog" data-action="click->gallery-lightbox#backdropClose">
+    <button type="button" class="admin-gallery-lightbox__close" aria-label="Close" data-action="gallery-lightbox#close">&times;</button>
+    <figure class="admin-gallery-lightbox__figure">
+      <img src="" alt="" class="admin-gallery-lightbox__image" data-gallery-lightbox-target="image">
+      <figcaption class="admin-usage-overlay" data-asset-id=""
+        data-gallery-lightbox-target="usage" data-asset-picker-target="usage"></figcaption>
+    </figure>
+  </dialog>
+</div>

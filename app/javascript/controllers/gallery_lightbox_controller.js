@@ -2,14 +2,19 @@ import { Controller } from "@hotwired/stimulus"
 
 // Opens a full-size preview dialog from compact gallery thumbnails.
 export default class extends Controller {
-  static targets = ["dialog", "image"]
+  static targets = ["dialog", "image", "usage"]
 
   open(event) {
     event.preventDefault()
-    const url = event.currentTarget.dataset.fullUrl
-    if (!url || !this.hasDialogTarget || !this.hasImageTarget) return
+    const { fullUrl, assetId } = event.currentTarget.dataset
+    if (!fullUrl || !this.hasDialogTarget || !this.hasImageTarget) return
 
-    this.imageTarget.src = url
+    this.imageTarget.src = fullUrl
+
+    // Names the photo on show so anyone tracking placements can label the preview.
+    if (this.hasUsageTarget) this.usageTarget.dataset.assetId = assetId || ""
+    this.dispatch("opened")
+
     this.dialogTarget.showModal()
   }
 

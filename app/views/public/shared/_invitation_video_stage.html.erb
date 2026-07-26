@@ -17,12 +17,13 @@
   <div class="pointer-events-none absolute inset-0 z-10 bg-white opacity-0 transition-opacity duration-700 ease-out"
        data-invitation-video-target="whiteCurtain"
        aria-hidden="true"></div>
-  <div class="absolute inset-0 z-20 cursor-pointer bg-stone-950/30 transition-opacity duration-300"
+  <%# Fixed neutrals rather than theme tokens: this sits over the video, not the page. %>
+  <div class="absolute inset-0 z-20 cursor-pointer bg-black/30 transition-opacity duration-300"
        data-invitation-video-target="clickOverlay"
        data-action="click->invitation-video#start">
     <div class="pointer-events-none absolute inset-x-0 bottom-0 flex justify-center px-4 pb-[max(2rem,calc(0.5rem+env(safe-area-inset-bottom,0px)))] pt-3">
       <button type="button"
-              class="pointer-events-auto cursor-pointer border border-white/40 bg-transparent px-8 py-3 text-sm font-light tracking-[0.35em] text-stone-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-200/60">
+              class="pointer-events-auto cursor-pointer border border-white/40 bg-transparent px-8 py-3 text-sm font-light tracking-[0.35em] text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60">
         <span class="sm:hidden">Tap to open</span>
         <span class="hidden sm:inline">Click to open</span>
       </button>

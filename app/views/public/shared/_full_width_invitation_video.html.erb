@@ -1,11 +1,25 @@
-<% skip_video = local_assigns.fetch(:skip_video) { params["skip_video"].present? } %>
+<%# A full-screen invitation reveal. The site footer would undercut that, so pages
+    using this wrapper opt out of it. %>
+<% content_for :hide_site_footer, true %>
 
-<% video_src = local_assigns.fetch(:video_src) { asset_path("britt-alex-envelope-open.mp4") } %>
-<% poster_src = local_assigns.fetch(:poster_src) { asset_path("britt-alex-envelope-open-poster.jpg") } %>
+<% video_asset = local_assigns.fetch(:video_asset) { current_wedding.placement("invitation_envelope") } %>
+<% skip_video = local_assigns.fetch(:skip_video) { params["skip_video"].present? || video_asset.blank? } %>
+
+<% video_src = video_asset.present? ? wedding_asset_url(video_asset) : nil %>
+<% poster_src = video_asset.present? ? wedding_asset_thumbnail_url(video_asset) : nil %>
 <% controllers = ["invitation-video", local_assigns[:extra_controllers]].compact.join(" ") %>
 <% data_attrs = { controller: controllers, invitation_video_skip_video_value: skip_video }
      .deep_merge(local_assigns.fetch(:data, {})) %>
-<%= tag.div(class: "relative min-h-screen bg-gradient-to-b from-stone-50 via-amber-50/30 to-stone-100", data: data_attrs) do %>
-  <%= render "public/shared/invitation_video_stage", video_src: video_src, poster_src: poster_src %>
+<%= tag.div(class: "invitation-stage", data: data_attrs) do %>
+  <% if video_src.present? && poster_src.present? %>
+    <%= render "public/shared/invitation_video_stage", video_src: video_src, poster_src: poster_src %>
+  <% else %>
+    <%# Targets the invitation-video controller still expects when skipping. %>
+    <div class="hidden" data-invitation-video-target="videoStage" aria-hidden="true">
+      <video data-invitation-video-target="video" class="hidden"></video>
+      <div data-invitation-video-target="whiteCurtain"></div>
+      <div data-invitation-video-target="clickOverlay"></div>
+    </div>
+  <% end %>
   <%= yield %>
 <% end %>

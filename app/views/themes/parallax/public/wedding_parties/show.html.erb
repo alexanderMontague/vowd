@@ -1,0 +1,33 @@
+<% party = current_wedding.wedding_party %>
+
+<div data-controller="scroll-animate parallax">
+  <%= render "public/shared/page_header", title: party["title"], subtitle: party["subtitle"] %>
+
+  <% [["bridesmaids", "bridesmaids_title", false], ["groomsmen", "groomsmen_title", true]].each do |group, title_key, banded| %>
+    <% members = Array(party[group]) %>
+    <% next if members.empty? %>
+
+    <section class="parallax-section parallax-stage <%= "parallax-section--band" if banded %>">
+      <div class="parallax-stage__ornaments">
+        <%# A column on the side the group's heading leans toward. %>
+        <%= render "public/shared/ornament",
+            name: banded ? "column-right" : "column-left",
+            css_class: "bottom-0 hidden h-[34rem] w-28 lg:block #{banded ? '-right-10' : '-left-10'}",
+            speed: 0.1,
+            opacity: 0.45 %>
+      </div>
+
+      <div class="parallax-stage__content">
+        <div class="mb-16 text-center">
+          <%= render "public/shared/section_title", title: party[title_key], centered: true %>
+        </div>
+
+        <div class="parallax-party">
+          <% members.each_with_index do |person, index| %>
+            <%= render "public/wedding_parties/member", person: person, index: index %>
+          <% end %>
+        </div>
+      </div>
+    </section>
+  <% end %>
+</div>

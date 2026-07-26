@@ -1,0 +1,18 @@
+<%
+  asset = local_assigns[:asset]
+  caption = local_assigns[:caption]
+  wrapper_class = local_assigns.fetch(:wrapper_class, "")
+%>
+<% if asset.present? %>
+  <figure class="framed-photo <%= wrapper_class %>">
+    <%= image_tag "decor/lace-oval-frame.webp",
+        class: "framed-photo__frame", alt: "", aria: { hidden: true },
+        loading: "lazy", decoding: "async" %>
+    <%= image_tag wedding_asset_url(asset),
+        class: "framed-photo__image", alt: wedding_asset_alt(asset),
+        loading: "lazy", decoding: "async" %>
+    <% if caption.present? %>
+      <figcaption class="framed-photo__caption"><%= caption %></figcaption>
+    <% end %>
+  </figure>
+<% end %>

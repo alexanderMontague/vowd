@@ -1,0 +1,39 @@
+<section class="card mb-6">
+  <h2 class="admin-editor-panel-title">Pages</h2>
+  <p class="admin-editor-panel-copy">
+    Which pages your site has at all. These sit on top of
+    <%= link_to "feature flags", admin_settings_path, class: "text-secondary underline" %>:
+    a page needs to be switched on here <em>and</em> allowed by its flag before guests
+    can reach it.
+  </p>
+
+  <div class="theme-page-rows">
+    <% SitePages.definitions.each do |page| %>
+      <% field_id = "theme_pages_#{page.key}" %>
+
+      <div class="theme-page-row">
+        <div class="theme-page-row__labels">
+          <%= label_tag field_id, page.label, class: "theme-page-row__label" %>
+          <p class="theme-page-row__hint">
+            <%= page.description %>
+            <% if page.feature_flag.present? %>
+              <span class="theme-page-row__flag">Also gated by the <%= page.feature_flag.humanize.downcase %> flag.</span>
+            <% end %>
+          </p>
+        </div>
+
+        <div class="theme-page-row__control">
+          <% if page.toggleable %>
+            <%# Hidden field first so an unchecked box still submits a value. %>
+            <%= hidden_field_tag "theme[pages][#{page.key}]", "0", id: nil %>
+            <%= check_box_tag "theme[pages][#{page.key}]", "1", theme.page_enabled?(page.key),
+                  id: field_id,
+                  data: { theme_page: page.key, action: "change->theme-editor#commit" } %>
+          <% else %>
+            <span class="badge badge-neutral">Always on</span>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</section>

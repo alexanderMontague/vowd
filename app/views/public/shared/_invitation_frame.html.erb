@@ -1,4 +1,10 @@
+<%
+  # Floating photos live on the shell, outside the frame's own overflow clipping.
+  floating_assets = Array(local_assigns[:floating_assets])
+%>
 <div class="invitation-frame-shell mx-auto max-w-2xl">
+  <%= render decor_partial("floating_photos"), assets: floating_assets %>
+
   <div class="invitation-frame relative z-10">
     <div class="invitation-frame-botanical invitation-frame-botanical--top-left">
       <%= render "public/shared/botanical_accent", placement: "top-left" %>

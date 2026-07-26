@@ -1,7 +1,8 @@
 <%= render layout: "public/shared/full_width_invitation_video" do %>
   <div class="invitation-video-content hidden min-h-screen px-4 py-10 md:py-20"
        data-invitation-video-target="content">
-    <%= render "public/shared/invitation_frame" do %>
+    <%= render "public/shared/invitation_frame",
+        floating_assets: current_wedding.placements_for("save_the_date_floating") do %>
       <%= render "public/shared/invitation_hero",
           eyebrow: "Save the Date",
           title: current_wedding.title %>
@@ -13,7 +14,10 @@
       <% end %>
 
       <div class="space-y-10 text-center">
-        <p class="mx-auto max-w-md font-light leading-relaxed text-stone-600">
+        <%= render decor_partial("framed_photo"),
+            asset: current_wedding.placement("save_the_date_portrait") %>
+
+        <p class="mx-auto max-w-md wedding-prose">
           We are delighted to announce our wedding and would be honored to have you celebrate with us on this special day.
         </p>
 
@@ -21,12 +25,12 @@
           <div class="invitation-when"
                data-controller="countdown"
                data-countdown-target-time-value="<%= wedding_datetime_iso(current_wedding) %>">
-            <div class="border-y border-primary/20 py-8">
-              <p class="mb-2 font-display text-3xl font-light text-stone-800 md:text-4xl">
+            <div class="border-y border-accent/30 py-8">
+              <p class="mb-2 font-theme-display text-3xl font-light text-ink md:text-4xl">
                 <%= format_date_elegant(current_wedding.date) %>
               </p>
               <% if current_wedding.ceremony_time %>
-                <p class="text-lg font-light text-stone-600">
+                <p class="text-lg wedding-prose">
                   <%= current_wedding.ceremony_time %>
                 </p>
               <% end %>
@@ -55,12 +59,15 @@
 
         <% if current_wedding.venue %>
           <div class="space-y-1">
-            <p class="font-light text-stone-600"><%= current_wedding.venue['name'] %></p>
-            <p class="text-sm font-light text-stone-500">
+            <p class="wedding-prose"><%= current_wedding.venue['name'] %></p>
+            <p class="text-sm font-light text-ink-soft">
               <%= full_venue_name(current_wedding.venue) %>
             </p>
           </div>
         <% end %>
+
+        <%= render decor_partial("vase_photo"),
+            asset: current_wedding.placement("save_the_date_vase") %>
 
         <div class="space-y-4 text-center">
           <% if current_wedding&.date %>
@@ -71,15 +78,15 @@
               Add to Calendar
             <% end %>
           <% end %>
-          <p class="text-xs font-light text-stone-400">
+          <p class="text-xs font-light text-ink-faint">
             Formal invitation to follow
           </p>
         </div>
 
-        <div class="mx-auto max-w-md space-y-8 border-t border-primary/20 pt-10">
+        <div class="mx-auto max-w-md space-y-8 border-t border-accent/30 pt-10">
           <div class="space-y-2 text-center">
             <p class="invitation-eyebrow">Stay in Touch</p>
-            <p class="mx-auto max-w-sm font-light leading-relaxed text-stone-600">
+            <p class="mx-auto max-w-sm wedding-prose">
               Leave your details and we'll make sure your formal invitation reaches you.
             </p>
           </div>

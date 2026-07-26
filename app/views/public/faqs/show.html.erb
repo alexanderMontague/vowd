@@ -1,38 +1,33 @@
-<div class="min-h-screen py-10 md:py-20 px-4 bg-gradient-to-b from-stone-50 via-amber-50/30 to-stone-100">
-  <div class="max-w-3xl mx-auto">
-    <div class="text-center mb-16 animate-fade-in-up">
-      <%= render "public/shared/divider" %>
-      <div class="mb-8"></div>
-      <h1 class="text-6xl mb-6 tracking-wide font-display font-light text-stone-800">
-        <%= current_wedding.faq["title"] %>
-      </h1>
-      <p class="text-base tracking-wider text-stone-500 font-light">
-        <%= current_wedding.faq["subtitle"] %>
-      </p>
-    </div>
+<div class="min-h-screen">
+  <%= render "public/shared/page_header",
+      title: current_wedding.faq["title"],
+      subtitle: current_wedding.faq["subtitle"] %>
 
-    <div class="bg-white shadow-xl border border-stone-200/50 divide-y divide-stone-100 animate-fade-in-up" style="animation-delay: 0.2s;">
-      <% current_wedding.faq["questions"]&.each do |item| %>
-        <details class="group px-8 md:px-12">
-          <summary class="flex items-center justify-between gap-6 py-7 cursor-pointer list-none">
-            <span class="font-display text-xl font-light text-stone-800">
-              <%= item["question"] %>
-            </span>
-            <span class="flex-shrink-0 text-stone-400 transition-transform duration-300 group-open:rotate-180">
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"/>
-              </svg>
-            </span>
-          </summary>
-          <div class="pb-7 text-stone-500 font-light leading-relaxed text-base">
-            <%= item["answer"] %>
-          </div>
-        </details>
-      <% end %>
-    </div>
+  <section class="px-4 pb-24">
+    <div class="mx-auto max-w-3xl">
+      <div class="bg-surface-alt shadow-xl border border-hairline divide-y divide-hairline animate-fade-in-up" style="animation-delay: 0.2s;">
+        <% current_wedding.faq["questions"]&.each do |item| %>
+          <details class="group px-8 md:px-12">
+            <summary class="flex items-center justify-between gap-6 py-7 cursor-pointer list-none">
+              <span class="font-theme-display text-xl font-light text-ink">
+                <%= item["question"] %>
+              </span>
+              <span class="flex-shrink-0 text-ink-faint transition-transform duration-300 group-open:rotate-180">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"/>
+                </svg>
+              </span>
+            </summary>
+            <div class="pb-7 text-ink-soft font-light leading-relaxed text-base">
+              <%= item["answer"] %>
+            </div>
+          </details>
+        <% end %>
+      </div>
 
-    <div class="mt-10 text-center">
-      <%= link_to "← Return Home", root_path, class: "text-sm text-stone-400 font-light tracking-wider hover:text-stone-600 transition-colors" %>
+      <div class="mt-10 text-center">
+        <%= link_to "← Return Home", root_path, class: "text-sm text-ink-faint font-light tracking-wider hover:text-ink-muted transition-colors" %>
+      </div>
     </div>
-  </div>
+  </section>
 </div>

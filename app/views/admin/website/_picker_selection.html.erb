@@ -1,0 +1,11 @@
+<%
+  asset = local_assigns[:asset]
+  field_name = local_assigns.fetch(:field_name)
+  asset_id = local_assigns.fetch(:asset_id) { asset.id }
+  thumb_url = local_assigns.fetch(:thumb_url) { wedding_asset_thumbnail_url(asset) }
+%>
+<div class="admin-picker-selection" data-asset-picker-target="selected" data-asset-id="<%= asset_id %>">
+  <%= hidden_field_tag field_name, asset_id, id: nil %>
+  <img src="<%= thumb_url %>" alt="" width="72" height="72" loading="lazy" decoding="async">
+  <button type="button" class="admin-thumb-remove" data-action="asset-picker#deselect" aria-label="Remove photo">&times;</button>
+</div>

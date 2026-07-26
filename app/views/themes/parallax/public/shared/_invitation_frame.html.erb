@@ -1,0 +1,29 @@
+<%
+  # The card that carries the save the date and every RSVP step. Overriding it swaps
+  # the shared theme's line-art corners for this theme's painted roses, so all four
+  # pages pick up the treatment without their own overrides.
+  floating_assets = Array(local_assigns[:floating_assets])
+%>
+<div class="invitation-frame-shell mx-auto max-w-2xl" data-controller="parallax">
+  <%= render decor_partial("floating_photos"), assets: floating_assets %>
+
+  <%# The roses sit outside the card so its overflow clipping cannot crop them. %>
+  <div class="pointer-events-none absolute -inset-6 hidden lg:block">
+    <%= render "public/shared/ornament",
+        name: "roses-top-left",
+        css_class: "-left-20 -top-16 h-56 w-56",
+        speed: 0.14,
+        opacity: 0.7 %>
+    <%= render "public/shared/ornament",
+        name: "roses-bottom-right",
+        css_class: "-bottom-16 -right-20 h-56 w-56",
+        speed: -0.14,
+        opacity: 0.7 %>
+  </div>
+
+  <div class="invitation-frame relative z-10">
+    <div class="invitation-frame-content relative z-10">
+      <%= yield %>
+    </div>
+  </div>
+</div>

@@ -62,15 +62,17 @@ module Public
     private
 
     def set_guest
-      @guest = Guest.find_by!(invite_code: params[:code])
+      @guest = current_wedding.guests.find_by!(invite_code: params[:code])
     end
 
     def rsvp_params
       params.require(:rsvps).permit!
     end
 
+    # The RSVP page explains itself rather than 404ing, so it consults navigation
+    # directly instead of declaring a `guest_page`.
     def check_rsvp_open
-      return if current_wedding.rsvp_visible?
+      return if site_navigation.visible?("rsvp")
 
       respond_to do |format|
         format.html { render :closed, status: :not_found }

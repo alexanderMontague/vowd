@@ -1,0 +1,299 @@
+/* ==========================================================================
+   Theme — Editorial
+
+   The counterweight to the other two: a wedding issue rather than a wedding
+   card. Oversized didone headlines, numbered section markers, hairline rules
+   and an asymmetric grid. No ornament at all — structure carries the design, so
+   there are no decorative assets to load and nothing to overlap.
+
+   Colours and faces come from the shared `--theme-*` tokens. The `editorial-*`
+   classes are namespaced by their prefix; only rules that restyle a shared
+   `.wedding-*` component need the `[data-theme="editorial"]` guard.
+   ========================================================================== */
+
+@layer components {
+  [data-theme="editorial"] {
+    /* Comfortable measure for running text, in the body face. */
+    --editorial-measure: 34rem;
+    --editorial-rule: color-mix(in srgb, var(--theme-ink) 18%, var(--theme-surface));
+  }
+
+  /* --------------------------------------------------------------------------
+     Navigation — a hairline masthead rather than a floating bar
+     -------------------------------------------------------------------------- */
+
+  [data-theme="editorial"] .wedding-nav {
+    @apply border-b bg-surface shadow-none backdrop-blur-none;
+    border-color: var(--editorial-rule);
+  }
+
+  [data-theme="editorial"] .wedding-nav-brand {
+    @apply font-theme-display text-2xl font-medium uppercase tracking-[0.2em];
+  }
+
+  [data-theme="editorial"] .wedding-nav-link {
+    @apply text-[0.7rem] uppercase tracking-[0.2em];
+  }
+
+  /* The shared dividers and botanicals are ornamental; this theme numbers its
+     sections instead, so they are suppressed rather than restyled. */
+  [data-theme="editorial"] .wedding-divider,
+  [data-theme="editorial"] .wedding-divider-horizontal,
+  [data-theme="editorial"] .botanical-accent,
+  [data-theme="editorial"] .botanical-ornament {
+    @apply hidden;
+  }
+
+  /* The tinted wash the shared pages use would read as a colour cast against this
+     theme's flat paper. */
+  [data-theme="editorial"] .wedding-page-wash,
+  [data-theme="editorial"] .wedding-band {
+    @apply bg-surface;
+    background-image: none;
+  }
+
+  /* Everything in this theme is set to a left margin, including copy the shared
+     templates centre. */
+  [data-theme="editorial"] .invitation-lead,
+  [data-theme="editorial"] .invitation-frame-content .text-center {
+    @apply text-left;
+  }
+
+  /* --------------------------------------------------------------------------
+     Type
+     -------------------------------------------------------------------------- */
+
+  .editorial-headline {
+    @apply font-theme-display font-normal leading-[0.92] tracking-[-0.02em] text-ink;
+    font-size: clamp(2.75rem, 9vw, 8rem);
+    text-wrap: balance;
+  }
+
+  .editorial-title {
+    @apply font-theme-display font-normal leading-[1.02] tracking-[-0.01em] text-ink;
+    font-size: clamp(2rem, 4.5vw, 3.75rem);
+    text-wrap: balance;
+  }
+
+  .editorial-standfirst {
+    @apply font-theme-body text-lg font-light leading-relaxed text-ink-muted sm:text-xl;
+    max-width: var(--editorial-measure);
+  }
+
+  .editorial-body {
+    @apply space-y-5 font-theme-body text-base font-light leading-[1.75] text-ink-muted;
+    max-width: var(--editorial-measure);
+  }
+
+  /* Small caps label used for kickers, credits and field labels. */
+  .editorial-label {
+    @apply font-theme-body text-[0.65rem] font-medium uppercase tracking-[0.28em] text-accent;
+  }
+
+  /* Captions carry real content here (event notes, venue lines, the story's closing
+     remark), so they use the muted ink rather than the faint one, which is reserved
+     for decorative type. */
+  .editorial-caption {
+    @apply font-theme-body text-xs font-light leading-relaxed text-ink-muted;
+  }
+
+  /* --------------------------------------------------------------------------
+     Section marker — the numbered rule that opens each section
+     -------------------------------------------------------------------------- */
+
+  .editorial-marker {
+    @apply mb-10 flex items-baseline gap-5 border-t pt-5;
+    border-color: var(--editorial-rule);
+  }
+
+  .editorial-marker__number {
+    @apply font-theme-display text-sm tabular-nums text-accent;
+  }
+
+  .editorial-marker__label {
+    @apply font-theme-body text-[0.65rem] font-medium uppercase tracking-[0.28em] text-ink-faint;
+  }
+
+  /* --------------------------------------------------------------------------
+     Grid
+
+     One asymmetric grid drives every section: a narrow left rail for markers and
+     metadata, a wide right column for content. It collapses to a single column
+     below `lg`, so nothing can overlap.
+     -------------------------------------------------------------------------- */
+
+  .editorial-shell {
+    @apply mx-auto w-full max-w-6xl px-6 lg:px-10;
+  }
+
+  .editorial-section {
+    @apply py-20 lg:py-28;
+  }
+
+  .editorial-grid {
+    @apply grid gap-x-12 gap-y-8 lg:grid-cols-[14rem_1fr];
+  }
+
+  /* A grid item's automatic minimum size is its content, so a horizontally scrolling
+     child would widen the track instead of scrolling inside it. */
+  .editorial-grid > * {
+    @apply min-w-0;
+  }
+
+  .editorial-rail {
+    @apply lg:sticky lg:top-32 lg:self-start;
+  }
+
+  .editorial-rule {
+    @apply border-t;
+    border-color: var(--editorial-rule);
+  }
+
+  /* --------------------------------------------------------------------------
+     Cover
+     -------------------------------------------------------------------------- */
+
+  .editorial-cover {
+    @apply relative border-b bg-surface;
+    border-color: var(--editorial-rule);
+  }
+
+  .editorial-cover__frame {
+    @apply relative overflow-hidden bg-surface-alt;
+    aspect-ratio: 16 / 9;
+  }
+
+  .editorial-cover__frame img {
+    @apply size-full object-cover;
+  }
+
+  /* The masthead sits under the photograph rather than over it, so the type never
+     depends on what the photograph happens to contain. */
+  .editorial-cover__masthead {
+    @apply grid gap-x-12 gap-y-6 py-12 lg:grid-cols-[1fr_auto] lg:items-end;
+  }
+
+  .editorial-colophon {
+    @apply flex flex-wrap gap-x-10 gap-y-4 border-t py-6;
+    border-color: var(--editorial-rule);
+  }
+
+  /* --------------------------------------------------------------------------
+     Full-bleed plate
+     -------------------------------------------------------------------------- */
+
+  .editorial-plate {
+    @apply relative overflow-hidden bg-surface-alt;
+    aspect-ratio: 21 / 9;
+  }
+
+  .editorial-plate img {
+    @apply size-full object-cover;
+  }
+
+  /* --------------------------------------------------------------------------
+     Schedule — a running list, not cards
+     -------------------------------------------------------------------------- */
+
+  .editorial-listing {
+    @apply grid gap-4 border-t py-7 sm:grid-cols-[7rem_1fr_auto] sm:gap-8;
+    border-color: var(--editorial-rule);
+  }
+
+  .editorial-listing__time {
+    @apply font-theme-body text-sm font-medium tabular-nums text-ink;
+  }
+
+  .editorial-listing__name {
+    @apply font-theme-display text-2xl font-normal text-ink;
+  }
+
+  /* --------------------------------------------------------------------------
+     Gallery — a horizontal-scrolling filmstrip on wide screens
+     -------------------------------------------------------------------------- */
+
+  .editorial-filmstrip {
+    @apply flex snap-x snap-mandatory gap-4 overflow-x-auto pb-6;
+    scrollbar-width: thin;
+  }
+
+  .editorial-filmstrip figure {
+    @apply relative m-0 shrink-0 snap-start overflow-hidden bg-surface-alt;
+    width: min(80vw, 34rem);
+    aspect-ratio: 3 / 2;
+  }
+
+  .editorial-filmstrip img {
+    @apply size-full object-cover;
+  }
+
+  /* A plain grid reads better than a sideways scroll on a phone. */
+  @media (width < 40rem) {
+    .editorial-filmstrip {
+      @apply grid grid-cols-1 gap-4 overflow-visible;
+    }
+
+    .editorial-filmstrip figure {
+      @apply w-full;
+    }
+  }
+
+  /* --------------------------------------------------------------------------
+     Contributors — the wedding party, credited like a masthead
+     -------------------------------------------------------------------------- */
+
+  .editorial-contributors {
+    @apply grid gap-x-10 gap-y-12 sm:grid-cols-2 lg:grid-cols-3;
+  }
+
+  .editorial-contributor__portrait {
+    @apply relative mb-5 overflow-hidden bg-surface-alt;
+    aspect-ratio: 1 / 1;
+  }
+
+  .editorial-contributor__portrait img {
+    @apply size-full object-cover;
+  }
+
+  .editorial-contributor__initial {
+    @apply grid size-full place-items-center font-theme-display text-4xl text-ink-faint;
+  }
+
+  .editorial-contributor__name {
+    @apply font-theme-display text-xl font-normal text-ink;
+  }
+
+  /* --------------------------------------------------------------------------
+     Questions
+     -------------------------------------------------------------------------- */
+
+  .editorial-question {
+    @apply border-t py-6;
+    border-color: var(--editorial-rule);
+  }
+
+  .editorial-question summary {
+    @apply flex cursor-pointer list-none items-baseline gap-5;
+  }
+
+  .editorial-question__number {
+    @apply font-theme-body text-xs tabular-nums text-accent;
+  }
+
+  .editorial-question__prompt {
+    @apply flex-1 font-theme-display text-xl font-normal text-ink;
+  }
+
+  /* --------------------------------------------------------------------------
+     Call to action
+     -------------------------------------------------------------------------- */
+
+  .editorial-cta {
+    @apply border-y bg-surface-alt py-20 lg:py-28;
+    border-color: var(--editorial-rule);
+  }
+
+  [data-theme="editorial"] .btn-wedding-primary {
+    @apply rounded-none px-10 py-4 text-[0.7rem] uppercase tracking-[0.28em];
+  }
+}

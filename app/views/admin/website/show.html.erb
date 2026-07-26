@@ -17,6 +17,8 @@
   groomsmen = [{}] if groomsmen.empty?
   photo_sections = Array(photos_page["sections"])
   photo_sections = [{}] if photo_sections.empty?
+  library_assets = @wedding.wedding_assets.images.ordered.to_a
+  library_index = library_assets.index_by { |asset| asset.id.to_s }
 %>
 
 <% if setup_mode %>
@@ -85,12 +87,12 @@
         <% end %>
 
         <p class="admin-editor-nav-label">Homepage</p>
-        <% [["hero", "Hero"], ["story", "Our story"], ["gallery", "Gallery"], ["rsvp", "RSVP copy"]].each do |id, label| %>
+        <% [["hero", "Hero"], ["story", "Our story"], ["rsvp", "RSVP copy"]].each do |id, label| %>
           <button type="button" class="admin-editor-nav-link" role="tab" data-tabs-target="tab" data-tabs-id-param="<%= id %>" data-action="tabs#select"><%= label %></button>
         <% end %>
 
         <p class="admin-editor-nav-label">Pages</p>
-        <% [["faq", "FAQ"], ["party", "Wedding party"]].each do |id, label| %>
+        <% [["photos", "Photos"], ["faq", "FAQ"], ["party", "Wedding party"]].each do |id, label| %>
           <button type="button" class="admin-editor-nav-link" role="tab" data-tabs-target="tab" data-tabs-id-param="<%= id %>" data-action="tabs#select"><%= label %></button>
         <% end %>
 
@@ -180,12 +182,21 @@
           </div>
         </div>
 
-        <div class="card mb-6" data-tabs-target="panel" data-tabs-id-param="gallery" role="tabpanel" hidden>
-          <h2 class="admin-editor-panel-title">Gallery</h2>
+        <div class="card mb-6" data-tabs-target="panel" data-tabs-id-param="photos" role="tabpanel" hidden
+          data-controller="asset-picker"
+          data-action="nested-form:removed->asset-picker#refreshUsage
+                       gallery-lightbox:opened->asset-picker#refreshUsage">
+          <h2 class="admin-editor-panel-title">Photos</h2>
           <p class="admin-editor-panel-copy">
-            Organize photos into sections for the gallery page. A subset can also appear on the homepage.
+            One library for every photo on your site. Group them into sections for the photos page,
+            then place individual photos on the save the date and RSVP pages.
           </p>
 
+          <%= render "admin/website/photo_library", assets: library_assets %>
+
+          <div class="admin-editor-divider"></div>
+
+          <p class="text-xs font-semibold uppercase tracking-widest text-neutral-400 mb-3">Photos page</p>
           <div class="grid gap-0 md:grid-cols-2 md:gap-x-6">
             <div class="form-group md:col-span-2">
               <label class="inline-flex items-center gap-2 font-semibold text-secondary-600">
@@ -202,11 +213,11 @@
               <%= number_field_tag "wedding[photos_page][homepage_limit]", photos_page["homepage_limit"], class: "form-control", id: "wedding_photos_page_homepage_limit", min: 1, max: 24 %>
             </div>
             <div class="form-group">
-              <%= label_tag "wedding_photos_page_title", "Gallery page title" %>
+              <%= label_tag "wedding_photos_page_title", "Photos page title" %>
               <%= text_field_tag "wedding[photos_page][title]", photos_page["title"], class: "form-control", id: "wedding_photos_page_title" %>
             </div>
             <div class="form-group">
-              <%= label_tag "wedding_photos_page_subtitle", "Gallery page subtitle" %>
+              <%= label_tag "wedding_photos_page_subtitle", "Photos page subtitle" %>
               <%= text_field_tag "wedding[photos_page][subtitle]", photos_page["subtitle"], class: "form-control", id: "wedding_photos_page_subtitle" %>
             </div>
           </div>
@@ -218,13 +229,64 @@
             </div>
             <div class="grid gap-3" data-nested-form-target="container">
               <% photo_sections.each_with_index do |section, index| %>
-                <%= render "admin/website/photos_section", index: index, section: section %>
+                <%= render "admin/website/photos_section",
+                    index: index,
+                    section: section,
+                    assets: Array(section["asset_ids"]).filter_map { |id| library_index[id.to_s] } %>
               <% end %>
             </div>
             <template data-nested-form-target="template">
-              <%= render "admin/website/photos_section", index: "NEW_SECTION_INDEX", section: {} %>
+              <%= render "admin/website/photos_section", index: "NEW_SECTION_INDEX", section: {}, assets: [] %>
             </template>
           </div>
+
+          <div class="admin-editor-divider"></div>
+
+          <%= render "admin/website/envelope_section" %>
+
+          <div class="admin-editor-divider"></div>
+
+          <p class="text-xs font-semibold uppercase tracking-widest text-neutral-400 mb-1">Photos on other pages</p>
+          <p class="admin-editor-panel-copy">
+            Personal touches beside the decorative accents. Leave a spot empty to hide it.
+          </p>
+
+          <% SiteSlots.photo_slots_by_page.each do |page, slots| %>
+            <p class="admin-editor-subheading"><%= SiteSlots.page_label(page) %></p>
+            <% slots.each do |slot| %>
+              <div class="form-group">
+                <label><%= slot.label %></label>
+                <p class="admin-field-hint"><%= slot.description %></p>
+                <%= render "admin/website/asset_picker",
+                    field_name: "wedding[placements][#{slot.key}][]",
+                    assets: @wedding.placements_for(slot.key),
+                    max: slot.max,
+                    usage_prefix: SiteSlots.page_label(page),
+                    usage_label: slot.label %>
+              </div>
+            <% end %>
+          <% end %>
+
+          <dialog class="admin-picker-dialog" data-asset-picker-target="dialog" data-action="click->asset-picker#backdropClose">
+            <div class="admin-picker-dialog__header">
+              <div>
+                <p class="admin-picker-dialog__title">Choose from your library</p>
+                <p class="admin-picker-dialog__hint" data-asset-picker-target="hint"></p>
+              </div>
+              <button type="button" class="btn btn-sm btn-primary" data-action="asset-picker#close">Done</button>
+            </div>
+            <div class="admin-picker-dialog__options" id="photo_library_options">
+              <%= render partial: "admin/website/picker_option", collection: library_assets, as: :asset %>
+            </div>
+            <p class="admin-picker-dialog__empty">Upload photos to your library first.</p>
+          </dialog>
+
+          <template data-asset-picker-target="itemTemplate">
+            <%= render "admin/website/picker_selection",
+                field_name: "__FIELD_NAME__",
+                asset_id: "__ASSET_ID__",
+                thumb_url: "__THUMB_URL__" %>
+          </template>
         </div>
 
         <div class="card mb-6" data-tabs-target="panel" data-tabs-id-param="rsvp" role="tabpanel" hidden>

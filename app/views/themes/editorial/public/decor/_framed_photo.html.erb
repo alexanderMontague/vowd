@@ -1,0 +1,17 @@
+<%
+  # A plain plate. This theme has no decorative frames, so the lace oval the shared
+  # partial overlays would be out of place.
+  asset = local_assigns[:asset]
+  caption = local_assigns[:caption]
+%>
+<% if asset.present? %>
+  <figure class="m-0 <%= local_assigns.fetch(:wrapper_class, '') %>">
+    <div class="editorial-plate">
+      <%= image_tag wedding_asset_url(asset),
+          alt: wedding_asset_alt(asset), loading: "lazy", decoding: "async" %>
+    </div>
+    <% if (text = caption.presence || wedding_asset_alt(asset).presence) %>
+      <figcaption class="editorial-caption mt-4"><%= text %></figcaption>
+    <% end %>
+  </figure>
+<% end %>

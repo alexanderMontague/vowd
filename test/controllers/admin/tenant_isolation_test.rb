@@ -32,5 +32,28 @@ module Admin
       assert_nil session[:admin_id]
       assert_equal "You do not have access to this wedding", flash[:alert]
     end
+
+    test "admin cannot move a guest into another wedding's household" do
+      household_a = Household.create!(wedding_id: @wedding_a.id, name: "Household A")
+      household_b = Household.create!(wedding_id: @wedding_b.id, name: "Household B")
+      guest = Guest.create!(household: household_a, first_name: "Ada", last_name: "Lovelace")
+
+      sign_in_admin(@admin_a)
+      patch admin_guest_path(guest), params: { guest: { household_id: household_b.id } }
+
+      assert_response :unprocessable_content
+      assert_equal household_a.id, guest.reload.household_id
+      assert_equal @wedding_a.id, guest.wedding_id
+    end
+
+    test "admin cannot load another wedding's guest by id" do
+      household_b = Household.create!(wedding_id: @wedding_b.id, name: "Household B")
+      guest_b = Guest.create!(household: household_b, first_name: "Grace", last_name: "Hopper")
+
+      sign_in_admin(@admin_a)
+      get edit_admin_guest_path(guest_b)
+
+      assert_response :not_found
+    end
   end
 end

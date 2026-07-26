@@ -1,0 +1,40 @@
+<% faq = current_wedding.faq %>
+
+<div>
+  <%= render "public/shared/page_header",
+      title: faq["title"],
+      subtitle: faq["subtitle"],
+      kicker: "Notes" %>
+
+  <section class="editorial-shell editorial-section">
+    <div class="editorial-grid">
+      <div class="editorial-rail">
+        <%= render "public/shared/marker", number: 1, label: "Questions" %>
+      </div>
+
+      <div>
+        <% Array(faq["questions"]).each_with_index do |item, index| %>
+          <details class="editorial-question group">
+            <summary>
+              <span class="editorial-question__number"><%= format("%02d", index + 1) %></span>
+              <span class="editorial-question__prompt"><%= item["question"] %></span>
+              <span class="editorial-label shrink-0 text-ink-faint">
+                <span class="group-open:hidden">Open</span>
+                <span class="hidden group-open:inline">Close</span>
+              </span>
+            </summary>
+            <div class="editorial-body mt-5 pl-0 sm:pl-[3.25rem]">
+              <p><%= item["answer"] %></p>
+            </div>
+          </details>
+        <% end %>
+        <div class="editorial-rule"></div>
+
+        <div class="mt-12">
+          <%= link_to "Back to the cover", root_path,
+              class: "editorial-label border-b border-accent pb-1 text-ink hover:text-accent" %>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
