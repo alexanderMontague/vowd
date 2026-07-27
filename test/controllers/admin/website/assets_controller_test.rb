@@ -111,6 +111,31 @@ module Admin
         assert_equal "On the pier", asset.reload.alt
       end
 
+      test "destroys selected library photos" do
+        one = create_asset!
+        two = create_asset!
+        keep = create_asset!
+
+        assert_difference -> { @wedding.wedding_assets.count }, -2 do
+          delete destroy_selected_admin_website_assets_path,
+                 params: { asset_ids: [one.id, two.id] },
+                 headers: { "Accept" => "text/vnd.turbo-stream.html" }
+        end
+
+        assert_response :success
+        assert_not WeddingAsset.exists?(one.id)
+        assert_not WeddingAsset.exists?(two.id)
+        assert WeddingAsset.exists?(keep.id)
+        assert_includes response.body, %(action="remove")
+      end
+
+      test "destroy selected with nothing chosen redirects with an alert" do
+        delete destroy_selected_admin_website_assets_path, params: { asset_ids: [] }
+
+        assert_redirected_to admin_theme_section_path(section: "photos")
+        assert_equal "Select at least one photo to delete", flash[:alert]
+      end
+
       test "destroys an asset" do
         asset = create_asset!
 

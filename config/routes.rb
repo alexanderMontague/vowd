@@ -67,13 +67,27 @@ Rails.application.routes.draw do
       end
       resource :dispo_sign, only: :show, controller: "dispo_signs"
       resource :settings, only: %i[show update]
-      resource :theme, only: %i[show update], controller: "themes" do
-        # update is accepted so a leaked `_method=patch` from the Save form cannot 404
-        # the live preview POST the editor issues against this same path.
+
+      get "theme", to: "themes#show"
+      # Preview must be declared before :section or PATCH /theme/preview is stolen.
+      resource :theme, only: [], controller: "themes" do
         resource :preview, only: %i[create update destroy], module: :themes, controller: "previews"
       end
-      resource :website, only: %i[show update], controller: "website" do
-        resources :assets, only: %i[create update destroy], module: :website
+      scope path: "theme", as: "theme", controller: "themes" do
+        get ":section", action: :show, as: :section, constraints: { section: ThemeSections.constraint }
+        patch ":section", action: :update
+      end
+
+      get "website", to: "website#show"
+      patch "website", to: "website#update"
+      scope path: "website", as: "website", controller: "website" do
+        get ":section", action: :show, as: :section, constraints: { section: WebsiteSections.constraint }
+        patch ":section", action: :update
+        resources :assets, only: %i[create update destroy], module: :website do
+          collection do
+            delete :destroy_selected
+          end
+        end
       end
     end
 

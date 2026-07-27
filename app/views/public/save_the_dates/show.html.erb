@@ -1,10 +1,11 @@
 <%= render layout: "public/shared/full_width_invitation_video" do %>
+  <% copy = current_wedding.save_the_date %>
   <div class="invitation-video-content hidden min-h-screen px-4 py-10 md:py-20"
        data-invitation-video-target="content">
     <%= render "public/shared/invitation_frame",
         floating_assets: current_wedding.placements_for("save_the_date_floating") do %>
       <%= render "public/shared/invitation_hero",
-          eyebrow: "Save the Date",
+          eyebrow: copy["eyebrow"],
           title: current_wedding.title %>
 
       <% if flash[:notice].present? || flash[:alert].present? %>
@@ -17,9 +18,11 @@
         <%= render decor_partial("framed_photo"),
             asset: current_wedding.placement("save_the_date_portrait") %>
 
-        <p class="mx-auto max-w-md wedding-prose">
-          We are delighted to announce our wedding and would be honored to have you celebrate with us on this special day.
-        </p>
+        <% if copy["announcement"].present? %>
+          <p class="mx-auto max-w-md wedding-prose">
+            <%= copy["announcement"] %>
+          </p>
+        <% end %>
 
         <% if current_wedding.date %>
           <div class="invitation-when"
@@ -75,20 +78,26 @@
                 target: "_blank",
                 rel: "noopener noreferrer",
                 class: "btn-wedding-primary inline-block" do %>
-              Add to Calendar
+              <%= copy["calendar_button_text"].presence || "Add to Calendar" %>
             <% end %>
           <% end %>
-          <p class="text-xs font-light text-ink-faint">
-            Formal invitation to follow
-          </p>
+          <% if copy["formal_note"].present? %>
+            <p class="text-xs font-light text-ink-faint">
+              <%= copy["formal_note"] %>
+            </p>
+          <% end %>
         </div>
 
         <div class="mx-auto max-w-md space-y-8 border-t border-accent/30 pt-10">
           <div class="space-y-2 text-center">
-            <p class="invitation-eyebrow">Stay in Touch</p>
-            <p class="mx-auto max-w-sm wedding-prose">
-              Leave your details and we'll make sure your formal invitation reaches you.
-            </p>
+            <% if copy["signup_eyebrow"].present? %>
+              <p class="invitation-eyebrow"><%= copy["signup_eyebrow"] %></p>
+            <% end %>
+            <% if copy["signup_prompt"].present? %>
+              <p class="mx-auto max-w-sm wedding-prose">
+                <%= copy["signup_prompt"] %>
+              </p>
+            <% end %>
           </div>
 
           <%= form_with url: public_save_the_date_signup_path,
@@ -122,7 +131,7 @@
             </div>
 
             <div class="pt-2 flex justify-center">
-              <%= f.submit "Share My Details", class: "btn-wedding-primary" %>
+              <%= f.submit copy["submit_button_text"].presence || "Share My Details", class: "btn-wedding-primary" %>
             </div>
           <% end %>
         </div>

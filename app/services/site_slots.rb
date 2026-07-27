@@ -7,6 +7,14 @@ class SiteSlots
 
   DEFINITIONS = [
     Slot.new(
+      key: "homepage_hero",
+      label: "Hero image",
+      description: "The full-bleed photo at the top of your homepage.",
+      page: :homepage,
+      max: 1,
+      treatment: :hero
+    ),
+    Slot.new(
       key: "invitation_envelope",
       label: "Envelope open video",
       description: "The reveal animation guests see before the save the date and RSVP pages. The first frame becomes the poster.",
@@ -57,6 +65,7 @@ class SiteSlots
   ].freeze
 
   PAGE_LABELS = {
+    homepage: "Homepage",
     invitation: "Invitation",
     save_the_date: "Save the Date",
     rsvp: "RSVP"
@@ -85,6 +94,16 @@ class SiteSlots
 
     def photo_slots_by_page
       photo_slots.group_by(&:page)
+    end
+
+    # Slots whose picker lives on the Photos tab. Homepage hero is chosen on the
+    # Hero tab (alongside the tagline) so it is excluded here.
+    def page_placement_slots
+      photo_slots.reject { |slot| slot.page == :homepage }
+    end
+
+    def page_placement_slots_by_page
+      page_placement_slots.group_by(&:page)
     end
 
     def page_label(page)

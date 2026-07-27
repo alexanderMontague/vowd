@@ -1,0 +1,32 @@
+<%# Fixed viewport toasts for admin flash — always visible regardless of scroll. %>
+<% notices = Array(flash[:notice]).reject(&:blank?) %>
+<% alerts = Array(flash[:alert]).reject(&:blank?) %>
+<% if notices.any? || alerts.any? %>
+  <div class="admin-toast-stack print:hidden" aria-live="polite">
+    <% notices.each do |message| %>
+      <div class="admin-toast admin-toast--success"
+           data-controller="toast"
+           data-toast-delay-value="4000"
+           role="status">
+        <p class="admin-toast__message"><%= message %></p>
+        <button type="button"
+                class="admin-toast__dismiss"
+                data-action="toast#dismiss"
+                aria-label="Dismiss">&times;</button>
+      </div>
+    <% end %>
+
+    <% alerts.each do |message| %>
+      <div class="admin-toast admin-toast--error"
+           data-controller="toast"
+           data-toast-delay-value="7000"
+           role="alert">
+        <p class="admin-toast__message"><%= message %></p>
+        <button type="button"
+                class="admin-toast__dismiss"
+                data-action="toast#dismiss"
+                aria-label="Dismiss">&times;</button>
+      </div>
+    <% end %>
+  </div>
+<% end %>

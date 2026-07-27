@@ -10,8 +10,14 @@ export default class extends Controller {
   connect() {
     this.refreshBound = () => this.refresh()
     this.syncFromMasterBound = () => this.syncFromMaster()
+    this.onChangeBound = (event) => {
+      if (event.target.matches?.(this.checkboxSelectorValue)) this.refresh()
+    }
 
-    this.checkboxElements().forEach((cb) => cb.addEventListener("change", this.refreshBound))
+    // Delegated so checkboxes added via Turbo streams stay wired.
+    this.element.addEventListener("change", this.onChangeBound)
+    document.addEventListener("turbo:after-stream-render", this.refreshBound)
+
     if (this.hasMasterTarget) {
       this.masterTarget.addEventListener("change", this.syncFromMasterBound)
     }
@@ -19,7 +25,8 @@ export default class extends Controller {
   }
 
   disconnect() {
-    this.checkboxElements().forEach((cb) => cb.removeEventListener("change", this.refreshBound))
+    this.element.removeEventListener("change", this.onChangeBound)
+    document.removeEventListener("turbo:after-stream-render", this.refreshBound)
     if (this.hasMasterTarget) {
       this.masterTarget.removeEventListener("change", this.syncFromMasterBound)
     }

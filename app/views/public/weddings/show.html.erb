@@ -1,7 +1,7 @@
 <div class="min-h-screen" data-controller="scroll-animate">
   <%# Hero Section %>
   <section class="wedding-hero">
-    <% hero_src = wedding_asset_url(current_wedding.hero) %>
+    <% hero_src = wedding_asset_url(current_wedding.hero_image) %>
     <% if hero_src.present? %>
       <%= image_tag hero_src,
           alt: current_wedding.title,

@@ -1,0 +1,10 @@
+<%
+  gallery_active = request.path.start_with?(admin_disposable_photos_path)
+  sign_active = request.path.start_with?(admin_dispo_sign_path)
+%>
+<nav class="admin-hub-nav print:hidden" aria-label="Disposable camera sections">
+  <%= link_to "Gallery", admin_disposable_photos_path,
+      class: class_names("admin-hub-nav-link", "admin-hub-nav-link-active" => gallery_active) %>
+  <%= link_to "Sign", admin_dispo_sign_path,
+      class: class_names("admin-hub-nav-link", "admin-hub-nav-link-active" => sign_active) %>
+</nav>

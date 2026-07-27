@@ -45,9 +45,16 @@ class SiteMetaTest < ActiveSupport::TestCase
   end
 
   test "the hero photo is the first image candidate" do
+    hero_asset = create_asset
+    place("homepage_hero", hero_asset)
+    place("save_the_date_portrait", create_asset)
+
+    assert_equal hero_asset, meta.image_candidates.first
+  end
+
+  test "a legacy inline hero photo is still a candidate" do
     hero = { "tagline" => "Hello", "object_key" => "hero.webp" }
     @wedding.update!(hero: hero)
-    place("save_the_date_portrait", create_asset)
 
     assert_equal hero, meta.image_candidates.first
   end

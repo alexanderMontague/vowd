@@ -5,71 +5,44 @@
       } do %>
   <div class="invitation-video-content hidden min-h-screen px-4 py-10 md:py-20"
        data-invitation-video-target="content">
-    <%= render "public/shared/invitation_frame" do %>
+    <%= render "public/shared/invitation_frame",
+        floating_assets: current_wedding.placements_for("rsvp_floating") do %>
       <%= render "public/shared/invitation_hero",
           eyebrow: "RSVP",
           title: current_wedding.title %>
 
       <%= render "public/shared/flash_messages" %>
 
-      <div class="space-y-10 text-center">
-        <div class="space-y-4">
-          <p class="invitation-eyebrow">You're Invited</p>
-          <h2 class="invitation-party-name"><%= @household.display_name %></h2>
-        </div>
+      <%= render decor_partial("framed_photo"),
+          asset: current_wedding.placement("rsvp_portrait"),
+          wrapper_class: "mb-10" %>
 
-        <div class="space-y-4">
-          <% if current_wedding.date %>
-            <p class="font-theme-display text-2xl font-light text-ink md:text-3xl">
-              <%= format_date_elegant(current_wedding.date) %>
-            </p>
-          <% end %>
-          <% if current_wedding.venue %>
-            <div class="space-y-1">
-              <p class="wedding-prose"><%= current_wedding.venue['name'] %></p>
-              <p class="text-sm font-light text-ink-soft">
-                <%= full_venue_name(current_wedding.venue) %>
-              </p>
-            </div>
-          <% end %>
-        </div>
-
-        <div>
-          <button type="button"
-                  data-action="click->invitation-video#showForm"
-                  class="btn-wedding-primary">
-            Respond Now
-          </button>
-        </div>
-      </div>
-    <% end %>
-  </div>
-
-  <div class="hidden" data-invitation-video-target="form">
-    <div class="rsvp-form-card mx-auto max-w-2xl px-4 pb-20 animate-fade-in-up">
-      <div class="mb-12">
-        <h2 class="mb-2 font-theme-display text-3xl font-light text-ink">
-          <%= @household.display_name %>
-        </h2>
+      <div class="mb-10 space-y-3 text-center">
+        <p class="invitation-eyebrow">You're Invited</p>
+        <h2 class="invitation-party-name"><%= @household.display_name %></h2>
         <p class="font-light text-ink-soft">
           Please respond for each guest in your party
         </p>
         <% if current_wedding.rsvp_deadline %>
-          <p class="mt-2 text-sm font-light text-ink-faint">
+          <p class="text-sm font-light text-ink-faint">
             Kindly respond by <%= format_date(current_wedding.rsvp_deadline) %>
           </p>
         <% end %>
       </div>
 
-      <%= form_with url: public_rsvp_path(@guest.invite_code), method: :patch, data: { turbo: false } do |f| %>
-        <% @guests.each_with_index do |guest, index| %>
-          <%= render "public/rsvps/guest_fields", guest: guest, index: index %>
-        <% end %>
+      <%= render "public/shared/botanical_ornament" %>
 
-        <div class="pt-12">
-          <%= f.submit "Submit Response", class: "rsvp-submit" %>
-        </div>
-      <% end %>
-    </div>
+      <div class="mx-auto max-w-xl pt-8 text-left">
+        <%= form_with url: public_rsvp_path(@guest.invite_code), method: :patch, data: { turbo: false } do |f| %>
+          <% @guests.each_with_index do |guest, index| %>
+            <%= render "public/rsvps/guest_fields", guest: guest, index: index %>
+          <% end %>
+
+          <div class="flex justify-center pt-12">
+            <%= f.submit "Submit Response", class: "btn-wedding-primary" %>
+          </div>
+        <% end %>
+      </div>
+    <% end %>
   </div>
 <% end %>

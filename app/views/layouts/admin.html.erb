@@ -21,11 +21,11 @@
         </div>
 
         <nav class="admin-side-nav-links">
-          <%= admin_nav_link("Wedding", admin_website_path, exact: true) %>
+          <%= admin_nav_link("Wedding", admin_website_path, active_prefixes: ["/admin/website"]) %>
 
           <% if current_wedding&.configured? %>
             <%= admin_nav_link("Dashboard", admin_root_path, exact: true) %>
-            <%= admin_nav_link("Theme", admin_theme_path, exact: true) %>
+            <%= admin_nav_link("Theme", admin_theme_section_path(section: ThemeSections::DEFAULT_KEY), active_prefixes: ["/admin/theme"]) %>
 
             <%= admin_nav_section("Guests") %>
             <%= admin_nav_link(
@@ -41,8 +41,11 @@
 
             <%= admin_nav_section("Day of") %>
             <%= admin_nav_link("Events", admin_events_path, active_prefixes: [admin_events_path]) %>
-            <%= admin_nav_link("Photos", admin_disposable_photos_path, active_prefixes: [admin_disposable_photos_path]) %>
-            <%= admin_nav_link("Camera sign", admin_dispo_sign_path, exact: true) %>
+            <%= admin_nav_link(
+                  "Disposable camera",
+                  admin_disposable_photos_path,
+                  active_prefixes: [admin_disposable_photos_path, admin_dispo_sign_path]
+                ) %>
 
             <%= admin_nav_section("System") %>
             <%= admin_nav_link("Feature flags", admin_settings_path, exact: true) %>
@@ -56,19 +59,11 @@
         <%= button_to "Log out", admin_logout_path, method: :delete, class: "btn btn-sm btn-danger w-full mt-8" %>
       </aside>
 
-      <main class="admin-main">
-        <div class="print:hidden">
-          <% if flash[:notice] %>
-            <div class="alert alert-success"><%= flash[:notice] %></div>
-          <% end %>
-
-          <% if flash[:alert] %>
-            <div class="alert alert-error"><%= flash[:alert] %></div>
-          <% end %>
-        </div>
-
+      <main class="admin-main" data-controller="scroll-preservation">
         <%= yield %>
       </main>
     </div>
+
+    <%= render "admin/shared/toasts" %>
   </body>
 </html>

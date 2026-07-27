@@ -5,7 +5,7 @@
 <div class="animate-on-scroll <%= delay_class %>" data-scroll-animate-target="item">
   <div class="parallax-portrait">
     <div class="parallax-portrait__photo">
-      <% if (src = wedding_asset_url(person)).present? %>
+      <% if (src = wedding_asset_url(current_wedding.party_member_image(person))).present? %>
         <%= image_tag src, alt: person["name"], loading: "lazy" %>
       <% else %>
         <div class="parallax-portrait__fallback"><%= person["name"].to_s.first %></div>

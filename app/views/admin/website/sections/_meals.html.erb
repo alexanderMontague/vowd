@@ -1,0 +1,10 @@
+<h2 class="admin-editor-panel-title">Meal options</h2>
+<p class="admin-editor-panel-copy">Choices shown on the RSVP form.</p>
+<div class="form-group">
+  <%= label_tag "wedding_meal_options_text", "Options (comma-separated)" %>
+  <%= text_field_tag "wedding[meal_options_text]",
+      params.dig(:wedding, :meal_options_text).presence || Array(wedding.meal_options).join(", "),
+      class: "form-control",
+      id: "wedding_meal_options_text",
+      placeholder: "Chicken, Beef, Vegetarian, Vegan" %>
+</div>

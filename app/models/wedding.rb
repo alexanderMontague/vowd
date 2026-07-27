@@ -21,9 +21,7 @@ class Wedding < ApplicationRecord
   }.freeze
 
   DEFAULT_HERO = {
-    "tagline" => "Request the Honour of Your Presence",
-    "object_key" => nil,
-    "image_url" => ""
+    "tagline" => "Request the Honour of Your Presence"
   }.freeze
 
   DEFAULT_GALLERY = {
@@ -37,6 +35,16 @@ class Wedding < ApplicationRecord
     "description" => "We would be delighted to have you celebrate with us. Please let us know if you can attend.",
     "button_text" => "RSVP Now",
     "lookup_hint" => "Or use the personalized link in your invitation"
+  }.freeze
+
+  DEFAULT_SAVE_THE_DATE_COPY = {
+    "eyebrow" => "Save the Date",
+    "announcement" => "We are delighted to announce our wedding and would be honored to have you celebrate with us on this special day.",
+    "formal_note" => "Formal invitation to follow",
+    "signup_eyebrow" => "Stay in Touch",
+    "signup_prompt" => "Leave your details and we'll make sure your formal invitation reaches you.",
+    "calendar_button_text" => "Add to Calendar",
+    "submit_button_text" => "Share My Details"
   }.freeze
 
   DEFAULT_FAQ = {
@@ -167,6 +175,10 @@ class Wedding < ApplicationRecord
     rsvp_copy.presence || DEFAULT_RSVP_COPY.deep_dup
   end
 
+  def save_the_date
+    DEFAULT_SAVE_THE_DATE_COPY.deep_dup.merge((save_the_date_copy.presence || {}).deep_dup)
+  end
+
   # Canonical gallery content (sections + homepage preview settings).
   # Falls back to legacy `gallery` JSON when photos_page has no sections yet.
   def gallery_content
@@ -212,6 +224,21 @@ class Wedding < ApplicationRecord
 
   def placement(slot_key)
     placements_for(slot_key).first
+  end
+
+  # Homepage hero photo: library placement first, then a legacy inline hero entry.
+  def hero_image
+    placement("homepage_hero").presence || (self.class.image_entry?(hero) ? hero : nil)
+  end
+
+  # Party member photo: library asset id first, then a legacy inline entry.
+  def party_member_image(member)
+    data = member.to_h
+    if (id = data["asset_id"].presence)
+      return asset_library_index[id.to_s]
+    end
+
+    self.class.image_entry?(data) ? data : nil
   end
 
   def homepage_gallery_visible?
@@ -336,6 +363,7 @@ class Wedding < ApplicationRecord
     self.hero = DEFAULT_HERO.deep_dup if hero.blank?
     self.gallery = DEFAULT_GALLERY.deep_dup if gallery.blank?
     self.rsvp_copy = DEFAULT_RSVP_COPY.deep_dup if rsvp_copy.blank?
+    self.save_the_date_copy = DEFAULT_SAVE_THE_DATE_COPY.deep_dup if save_the_date_copy.blank?
     self.faq = DEFAULT_FAQ.deep_dup if faq.blank?
     self.wedding_party = DEFAULT_WEDDING_PARTY.deep_dup if wedding_party.blank?
     self.photos_page = DEFAULT_PHOTOS_PAGE.deep_dup if photos_page.blank?

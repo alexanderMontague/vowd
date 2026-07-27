@@ -17,7 +17,7 @@ module Admin
       def destroy
         clear_theme_preview
 
-        redirect_to admin_theme_path, notice: "Preview discarded."
+        redirect_to admin_theme_section_path(section: ThemeSections::DEFAULT_KEY), notice: "Preview discarded."
       end
 
       private

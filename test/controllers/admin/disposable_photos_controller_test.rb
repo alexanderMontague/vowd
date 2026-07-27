@@ -35,7 +35,7 @@ module Admin
       get admin_disposable_photos_path
 
       assert_response :success
-      assert_includes response.body, "Disposable Photos"
+      assert_includes response.body, "Gallery"
       assert_includes response.body, "Delete Selected"
       assert_includes response.body, @guest.full_name
     end

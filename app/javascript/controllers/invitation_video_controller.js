@@ -9,7 +9,6 @@ export default class extends Controller {
     "clickOverlay",
     "whiteCurtain",
     "content",
-    "form",
   ];
 
   static values = {
@@ -89,22 +88,5 @@ export default class extends Controller {
         this.contentTarget.classList.add("invitation-video-content--visible");
       });
     }, WHITE_FADE_MS);
-  }
-
-  showForm(event) {
-    event.preventDefault();
-    event.stopPropagation();
-    if (!this.hasFormTarget) return;
-
-    this.contentTarget.style.transition =
-      "opacity 0.4s ease, transform 0.4s ease";
-    this.contentTarget.style.opacity = "0";
-    this.contentTarget.style.transform = "translateY(-20px)";
-
-    window.setTimeout(() => {
-      this.contentTarget.classList.add("hidden");
-      this.formTarget.classList.remove("hidden");
-      this.formTarget.scrollIntoView({ behavior: "smooth", block: "start" });
-    }, 400);
   }
 }

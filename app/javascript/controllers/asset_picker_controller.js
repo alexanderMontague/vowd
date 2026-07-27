@@ -11,6 +11,9 @@ const UNTITLED_SECTION = "Untitled section"
 // hidden inputs for its slot or section; the dialog only reads and writes them.
 export default class extends Controller {
   static targets = ["dialog", "option", "picker", "selection", "selected", "hint", "itemTemplate", "usage"]
+  // Saved placements across every page. Live pickers on this panel override their
+  // own labels so badges stay truthful before save.
+  static values = { usage: Object }
 
   connect() {
     this.activePicker = null
@@ -77,8 +80,8 @@ export default class extends Controller {
     this.refreshUsage()
   }
 
-  // Badges answer "where does this photo appear?" from the live picker state, so
-  // they stay truthful before the form is saved.
+  // Badges answer "where does this photo appear?" across every page. Live picker
+  // state on this panel replaces the saved labels for those same placements.
   refreshUsage() {
     const labels = this.usageLabels()
 
@@ -88,7 +91,14 @@ export default class extends Controller {
   }
 
   usageLabels() {
-    return this.pickerTargets.reduce((labels, picker) => {
+    const labels = this.baselineUsage()
+    const liveLabels = new Set(this.pickerTargets.map((picker) => this.pickerLabel(picker)))
+
+    for (const [assetId, placed] of labels) {
+      labels.set(assetId, placed.filter((label) => !liveLabels.has(label)))
+    }
+
+    this.pickerTargets.forEach((picker) => {
       const label = this.pickerLabel(picker)
 
       picker.querySelectorAll("[data-asset-picker-target='selected']").forEach(({ dataset }) => {
@@ -96,9 +106,20 @@ export default class extends Controller {
         if (!placed.includes(label)) placed.push(label)
         labels.set(dataset.assetId, placed)
       })
+    })
 
-      return labels
-    }, new Map())
+    return labels
+  }
+
+  baselineUsage() {
+    const map = new Map()
+    const raw = this.hasUsageValue ? this.usageValue : {}
+
+    Object.entries(raw).forEach(([assetId, placed]) => {
+      map.set(assetId, [...placed])
+    })
+
+    return map
   }
 
   // Slots carry a fixed label; a section is named by its title field as it is typed.

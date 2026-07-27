@@ -1,0 +1,67 @@
+<%
+  wedding_party = wedding.wedding_party.presence || Wedding::DEFAULT_WEDDING_PARTY
+  bridesmaids = Array(wedding_party["bridesmaids"])
+  bridesmaids = [{}] if bridesmaids.empty?
+  groomsmen = Array(wedding_party["groomsmen"])
+  groomsmen = [{}] if groomsmen.empty?
+%>
+
+<h2 class="admin-editor-panel-title">Wedding party</h2>
+<p class="admin-editor-panel-copy">Names, roles, and photos. Photos come from your library.</p>
+
+<div class="grid gap-0 md:grid-cols-2 md:gap-x-6">
+  <div class="form-group md:col-span-2">
+    <%= label_tag "wedding_wedding_party_title", "Title" %>
+    <%= text_field_tag "wedding[wedding_party][title]", wedding_party["title"], class: "form-control", id: "wedding_wedding_party_title" %>
+  </div>
+  <div class="form-group md:col-span-2">
+    <%= label_tag "wedding_wedding_party_subtitle", "Subtitle" %>
+    <%= text_field_tag "wedding[wedding_party][subtitle]", wedding_party["subtitle"], class: "form-control", id: "wedding_wedding_party_subtitle" %>
+  </div>
+  <div class="form-group">
+    <%= label_tag "wedding_wedding_party_bridesmaids_title", "Bridesmaids heading" %>
+    <%= text_field_tag "wedding[wedding_party][bridesmaids_title]", wedding_party["bridesmaids_title"], class: "form-control", id: "wedding_wedding_party_bridesmaids_title" %>
+  </div>
+  <div class="form-group">
+    <%= label_tag "wedding_wedding_party_groomsmen_title", "Groomsmen heading" %>
+    <%= text_field_tag "wedding[wedding_party][groomsmen_title]", wedding_party["groomsmen_title"], class: "form-control", id: "wedding_wedding_party_groomsmen_title" %>
+  </div>
+</div>
+
+<div class="mt-6" data-controller="nested-form">
+  <div class="flex justify-between items-center mb-3">
+    <p class="text-xs font-semibold uppercase tracking-widest text-neutral-400">Bridesmaids</p>
+    <button type="button" class="btn btn-sm btn-secondary" data-action="nested-form#add">Add person</button>
+  </div>
+  <div class="grid gap-3" data-nested-form-target="container">
+    <% bridesmaids.each_with_index do |member, index| %>
+      <%= render "admin/website/party_member_row",
+          index: index,
+          member: member,
+          group: "bridesmaids",
+          assets: Array(member["asset_id"]).filter_map { |id| library_index[id.to_s] } %>
+    <% end %>
+  </div>
+  <template data-nested-form-target="template">
+    <%= render "admin/website/party_member_row", index: "NEW_INDEX", member: {}, group: "bridesmaids", assets: [] %>
+  </template>
+</div>
+
+<div class="mt-8" data-controller="nested-form">
+  <div class="flex justify-between items-center mb-3">
+    <p class="text-xs font-semibold uppercase tracking-widest text-neutral-400">Groomsmen</p>
+    <button type="button" class="btn btn-sm btn-secondary" data-action="nested-form#add">Add person</button>
+  </div>
+  <div class="grid gap-3" data-nested-form-target="container">
+    <% groomsmen.each_with_index do |member, index| %>
+      <%= render "admin/website/party_member_row",
+          index: index,
+          member: member,
+          group: "groomsmen",
+          assets: Array(member["asset_id"]).filter_map { |id| library_index[id.to_s] } %>
+    <% end %>
+  </div>
+  <template data-nested-form-target="template">
+    <%= render "admin/website/party_member_row", index: "NEW_INDEX", member: {}, group: "groomsmen", assets: [] %>
+  </template>
+</div>

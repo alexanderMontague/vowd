@@ -1,0 +1,69 @@
+<%
+  hero = wedding.hero.presence || Wedding::DEFAULT_HERO
+  story = wedding.story.presence || Wedding::DEFAULT_STORY
+  photos_page = wedding.gallery_content
+%>
+
+<h2 class="admin-editor-panel-title">Home</h2>
+<p class="admin-editor-panel-copy">Hero, story, and homepage gallery preview.</p>
+
+<div class="form-group">
+  <%= label_tag "wedding_hero_tagline", "Hero tagline" %>
+  <%= text_field_tag "wedding[hero][tagline]", hero["tagline"], class: "form-control", id: "wedding_hero_tagline" %>
+</div>
+
+<div class="form-group">
+  <label>Hero image</label>
+  <p class="admin-field-hint">Choose from your photo library (upload under Photos).</p>
+  <%= render "admin/website/asset_picker",
+      field_name: "wedding[placements][homepage_hero][]",
+      assets: wedding.placements_for("homepage_hero"),
+      max: 1,
+      usage_prefix: SiteSlots.page_label(:homepage),
+      usage_label: SiteSlots.find("homepage_hero").label,
+      empty_text: "No hero photo chosen yet." %>
+</div>
+
+<div class="admin-editor-divider"></div>
+
+<p class="text-xs font-semibold uppercase tracking-widest text-neutral-400 mb-3">Our story</p>
+<div class="form-group">
+  <label class="inline-flex items-center gap-2 font-semibold text-secondary-600">
+    <%= check_box_tag "wedding[story][enabled]", "1", ActiveModel::Type::Boolean.new.cast(story["enabled"]), class: "rounded border-border" %>
+    Show story section
+  </label>
+</div>
+<div class="form-group">
+  <%= label_tag "wedding_story_title", "Title" %>
+  <%= text_field_tag "wedding[story][title]", story["title"], class: "form-control", id: "wedding_story_title" %>
+</div>
+<div class="form-group">
+  <%= label_tag "wedding_story_paragraphs_text", "Paragraphs (one per line)" %>
+  <%= text_area_tag "wedding[story][paragraphs_text]",
+      Array(story["paragraphs"]).join("\n"),
+      class: "form-control",
+      id: "wedding_story_paragraphs_text",
+      rows: 6 %>
+</div>
+<div class="form-group">
+  <%= label_tag "wedding_story_closing", "Closing line" %>
+  <%= text_field_tag "wedding[story][closing]", story["closing"], class: "form-control", id: "wedding_story_closing" %>
+</div>
+
+<div class="admin-editor-divider"></div>
+
+<p class="text-xs font-semibold uppercase tracking-widest text-neutral-400 mb-3">Homepage gallery</p>
+<div class="form-group">
+  <label class="inline-flex items-center gap-2 font-semibold text-secondary-600">
+    <%= check_box_tag "wedding[photos_page][homepage_enabled]", "1", ActiveModel::Type::Boolean.new.cast(photos_page["homepage_enabled"]), class: "rounded border-border" %>
+    Show photo preview on homepage
+  </label>
+</div>
+<div class="form-group">
+  <%= label_tag "wedding_photos_page_homepage_title", "Section title" %>
+  <%= text_field_tag "wedding[photos_page][homepage_title]", photos_page["homepage_title"], class: "form-control", id: "wedding_photos_page_homepage_title" %>
+</div>
+<div class="form-group">
+  <%= label_tag "wedding_photos_page_homepage_limit", "Photo count" %>
+  <%= number_field_tag "wedding[photos_page][homepage_limit]", photos_page["homepage_limit"], class: "form-control", id: "wedding_photos_page_homepage_limit", min: 1, max: 24 %>
+</div>

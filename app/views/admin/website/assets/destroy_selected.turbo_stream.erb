@@ -1,0 +1,5 @@
+<% @assets.each do |asset| %>
+  <%= turbo_stream.remove dom_id(asset) %>
+  <%= turbo_stream.remove dom_id(asset, :option) %>
+  <%= turbo_stream.remove_all ".admin-picker-selection[data-asset-id='#{asset.id}']" %>
+<% end %>

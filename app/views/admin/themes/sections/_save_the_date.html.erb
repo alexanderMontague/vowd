@@ -1,0 +1,53 @@
+<% copy = wedding.save_the_date %>
+
+<h2 class="admin-editor-panel-title">Save the Date</h2>
+<p class="admin-editor-panel-copy">Announcement copy and page photos.</p>
+
+<div class="form-group">
+  <%= label_tag "wedding_std_eyebrow", "Eyebrow" %>
+  <%= text_field_tag "wedding[save_the_date_copy][eyebrow]", copy["eyebrow"], class: "form-control", id: "wedding_std_eyebrow" %>
+</div>
+<div class="form-group">
+  <%= label_tag "wedding_std_announcement", "Announcement" %>
+  <%= text_area_tag "wedding[save_the_date_copy][announcement]", copy["announcement"], class: "form-control", id: "wedding_std_announcement", rows: 4 %>
+</div>
+<div class="form-group">
+  <%= label_tag "wedding_std_formal_note", "Formal note" %>
+  <%= text_field_tag "wedding[save_the_date_copy][formal_note]", copy["formal_note"], class: "form-control", id: "wedding_std_formal_note" %>
+</div>
+<div class="form-group">
+  <%= label_tag "wedding_std_calendar", "Calendar button" %>
+  <%= text_field_tag "wedding[save_the_date_copy][calendar_button_text]", copy["calendar_button_text"], class: "form-control", id: "wedding_std_calendar" %>
+</div>
+
+<div class="admin-editor-divider"></div>
+<p class="text-xs font-semibold uppercase tracking-widest text-neutral-400 mb-3">Signup</p>
+<div class="form-group">
+  <%= label_tag "wedding_std_signup_eyebrow", "Signup eyebrow" %>
+  <%= text_field_tag "wedding[save_the_date_copy][signup_eyebrow]", copy["signup_eyebrow"], class: "form-control", id: "wedding_std_signup_eyebrow" %>
+</div>
+<div class="form-group">
+  <%= label_tag "wedding_std_signup_prompt", "Signup prompt" %>
+  <%= text_area_tag "wedding[save_the_date_copy][signup_prompt]", copy["signup_prompt"], class: "form-control", id: "wedding_std_signup_prompt", rows: 3 %>
+</div>
+<div class="form-group">
+  <%= label_tag "wedding_std_submit", "Submit button" %>
+  <%= text_field_tag "wedding[save_the_date_copy][submit_button_text]", copy["submit_button_text"], class: "form-control", id: "wedding_std_submit" %>
+</div>
+
+<div class="admin-editor-divider"></div>
+<p class="text-xs font-semibold uppercase tracking-widest text-neutral-400 mb-1">Photos</p>
+<p class="admin-editor-panel-copy">Leave a spot empty to hide it.</p>
+
+<% SiteSlots.photo_slots.select { |slot| slot.page == :save_the_date }.each do |slot| %>
+  <div class="form-group">
+    <label><%= slot.label %></label>
+    <p class="admin-field-hint"><%= slot.description %></p>
+    <%= render "admin/website/asset_picker",
+        field_name: "wedding[placements][#{slot.key}][]",
+        assets: wedding.placements_for(slot.key),
+        max: slot.max,
+        usage_prefix: SiteSlots.page_label(slot.page),
+        usage_label: slot.label %>
+  </div>
+<% end %>

@@ -1,0 +1,32 @@
+<%
+  faq = wedding.faq.presence || Wedding::DEFAULT_FAQ
+  faq_questions = Array(faq["questions"])
+  faq_questions = [{}] if faq_questions.empty?
+%>
+
+<h2 class="admin-editor-panel-title">FAQ</h2>
+<p class="admin-editor-panel-copy">Questions guests ask most often.</p>
+
+<div class="form-group">
+  <%= label_tag "wedding_faq_title", "Title" %>
+  <%= text_field_tag "wedding[faq][title]", faq["title"], class: "form-control", id: "wedding_faq_title" %>
+</div>
+<div class="form-group">
+  <%= label_tag "wedding_faq_subtitle", "Subtitle" %>
+  <%= text_field_tag "wedding[faq][subtitle]", faq["subtitle"], class: "form-control", id: "wedding_faq_subtitle" %>
+</div>
+
+<div data-controller="nested-form">
+  <div class="flex justify-between items-center mb-3">
+    <p class="text-xs font-semibold uppercase tracking-widest text-neutral-400">Questions</p>
+    <button type="button" class="btn btn-sm btn-secondary" data-action="nested-form#add">Add question</button>
+  </div>
+  <div class="grid gap-3" data-nested-form-target="container">
+    <% faq_questions.each_with_index do |question, index| %>
+      <%= render "admin/website/faq_row", index: index, question: question %>
+    <% end %>
+  </div>
+  <template data-nested-form-target="template">
+    <%= render "admin/website/faq_row", index: "NEW_INDEX", question: {} %>
+  </template>
+</div>

@@ -71,6 +71,35 @@ module WeddingAssets
       assert_equal 1, @wedding.photos_page["sections"].first["asset_ids"].size
     end
 
+    test "imports a hero object key into the library and homepage_hero placement" do
+      @wedding.update!(hero: { "tagline" => "Hello", "object_key" => key("hero.webp") })
+
+      assert_equal 1, LibraryImporter.call(wedding: @wedding)
+
+      asset = @wedding.wedding_assets.sole
+      assert_equal key("hero.webp"), asset.object_key
+      assert_equal [asset.id], @wedding.placements["homepage_hero"]
+      assert_equal "Hello", @wedding.hero["tagline"]
+      assert_nil @wedding.hero["object_key"]
+      assert_equal asset, @wedding.hero_image
+    end
+
+    test "imports party member photos as library asset ids" do
+      @wedding.update!(wedding_party: {
+                         "title" => "Party",
+                         "bridesmaids" => [{ "name" => "Sam", "object_key" => key("sam.webp") }],
+                         "groomsmen" => []
+                       })
+
+      assert_equal 1, LibraryImporter.call(wedding: @wedding)
+
+      member = @wedding.wedding_party["bridesmaids"].first
+      asset = @wedding.wedding_assets.sole
+      assert_equal asset.id, member["asset_id"]
+      assert_nil member["object_key"]
+      assert_equal asset, @wedding.party_member_image(member)
+    end
+
     test "leaves weddings without photos untouched" do
       assert_equal 0, LibraryImporter.call(wedding: @wedding)
       assert_empty @wedding.wedding_assets

@@ -1,0 +1,38 @@
+<% rsvp_copy = wedding.rsvp_copy.presence || Wedding::DEFAULT_RSVP_COPY %>
+
+<h2 class="admin-editor-panel-title">RSVP</h2>
+<p class="admin-editor-panel-copy">Wording for the RSVP call-to-action and page photos.</p>
+
+<div class="form-group">
+  <%= label_tag "wedding_rsvp_copy_title", "Title" %>
+  <%= text_field_tag "wedding[rsvp_copy][title]", rsvp_copy["title"], class: "form-control", id: "wedding_rsvp_copy_title" %>
+</div>
+<div class="form-group">
+  <%= label_tag "wedding_rsvp_copy_description", "Description" %>
+  <%= text_area_tag "wedding[rsvp_copy][description]", rsvp_copy["description"], class: "form-control", id: "wedding_rsvp_copy_description", rows: 4 %>
+</div>
+<div class="form-group">
+  <%= label_tag "wedding_rsvp_copy_button_text", "Button text" %>
+  <%= text_field_tag "wedding[rsvp_copy][button_text]", rsvp_copy["button_text"], class: "form-control", id: "wedding_rsvp_copy_button_text" %>
+</div>
+<div class="form-group">
+  <%= label_tag "wedding_rsvp_copy_lookup_hint", "Lookup hint" %>
+  <%= text_field_tag "wedding[rsvp_copy][lookup_hint]", rsvp_copy["lookup_hint"], class: "form-control", id: "wedding_rsvp_copy_lookup_hint" %>
+</div>
+
+<div class="admin-editor-divider"></div>
+<p class="text-xs font-semibold uppercase tracking-widest text-neutral-400 mb-1">Photos</p>
+<p class="admin-editor-panel-copy">Leave a spot empty to hide it.</p>
+
+<% SiteSlots.photo_slots.select { |slot| slot.page == :rsvp }.each do |slot| %>
+  <div class="form-group">
+    <label><%= slot.label %></label>
+    <p class="admin-field-hint"><%= slot.description %></p>
+    <%= render "admin/website/asset_picker",
+        field_name: "wedding[placements][#{slot.key}][]",
+        assets: wedding.placements_for(slot.key),
+        max: slot.max,
+        usage_prefix: SiteSlots.page_label(slot.page),
+        usage_label: slot.label %>
+  </div>
+<% end %>

@@ -45,7 +45,6 @@ export default class extends Controller {
   // A committed change: persist the draft, then re-render the frame from the server.
   commit() {
     this.setStatus("Updating preview…")
-    this.syncPageButtons()
 
     clearTimeout(this.persistTimer)
     this.persistTimer = setTimeout(() => this.persist({ reload: true }), PERSIST_DEBOUNCE_MS)
@@ -83,6 +82,8 @@ export default class extends Controller {
     event.preventDefault()
 
     const path = event.currentTarget.dataset.path
+    if (!path || !this.hasFrameTarget) return
+
     this.pageButtonTargets.forEach((button) => {
       button.classList.toggle("is-active", button === event.currentTarget)
     })
@@ -143,8 +144,10 @@ export default class extends Controller {
       .forEach((input) => { input.value = source.value })
   }
 
-  // A page switched off has nothing to preview, so its jump button goes with it.
+  // Kept for compatibility if page jump buttons are reintroduced later.
   syncPageButtons() {
+    if (!this.hasPageButtonTarget) return
+
     this.pageButtonTargets.forEach((button) => {
       const toggle = this.formTarget.querySelector(`[data-theme-page="${button.dataset.page}"]`)
       if (toggle) button.disabled = !toggle.checked

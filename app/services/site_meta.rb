@@ -42,7 +42,7 @@ class SiteMeta
   def image_candidates
     return [] if wedding.blank?
 
-    [wedding.hero, *fallback_slot_photos, first_gallery_photo].select { |entry| Wedding.image_entry?(entry) }
+    [wedding.hero_image, *fallback_slot_photos, first_gallery_photo].select { |entry| Wedding.image_entry?(entry) }
   end
 
   private

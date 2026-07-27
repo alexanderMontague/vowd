@@ -14,7 +14,7 @@ Conventions for this Rails app. Prefer matching existing patterns over introduci
 - **`Wedding`** is an **ActiveRecord** model (`app/models/wedding.rb`). The string primary key is the site **slug** (subdomain). Site copy and settings live in typed columns plus JSON fields (`story`, `hero`, `faq`, etc.).
 - **`TenantResolver`** + **`AppHost`** resolve the tenant from the request host: `{slug}.{APP_BASE_DOMAIN}` or a wedding’s `custom_domain`. Apex `APP_BASE_DOMAIN` is the platform (marketing, signup, login).
 - **`WeddingConcern`** exposes request-scoped **`current_wedding`** (never a process-global memo). One **`AdminUser`** owns exactly one wedding (`admin_users.wedding_id`).
-- Edit guest-facing content in admin **Website**; feature flags remain under admin **Settings**.
+- Edit guest-facing content in admin **Theme** (page sections with live preview). Feature flags remain under admin **Settings**. Essentials, meals, domain, and notifications stay under admin **Wedding**.
 
 ## Application structure
 
@@ -23,6 +23,8 @@ Conventions for this Rails app. Prefer matching existing patterns over introduci
 - **`Platform::`** — marketing landing, signup, and login on the apex host.
 - **`Public::`** — guest-facing wedding site (save the date, RSVP, root) on a wedding host.
 - **`Admin::`** — staff UI on a wedding host; inherits **`Admin::BaseController`** (auth + ownership + `WeddingConcern`, **`layout "admin"`**).
+  - **Wedding** (`/admin/website/:section`) — essentials, meals, domain, notifications.
+  - **Theme** (`/admin/theme/:section`) — look & feel plus guest-page copy, photos, and placements beside a live preview.
 - **`Dispo::`** — disposable camera experience under the `/dispo` scope on a wedding host.
 
 Keep new features in the namespace that matches their audience and routing.

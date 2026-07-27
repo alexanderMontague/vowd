@@ -36,6 +36,30 @@ module Admin
         end
       end
 
+      def destroy_selected
+        ids = Array(params[:asset_ids]).map(&:to_s).uniq
+        @assets = current_wedding.wedding_assets.where(id: ids).to_a
+
+        if @assets.empty?
+          redirect_to admin_theme_section_path(section: "photos"),
+                      alert: "Select at least one photo to delete"
+          return
+        end
+
+        @assets.each do |asset|
+          clear_envelope_placement! if envelope_asset?(asset)
+          asset.destroy!
+        end
+
+        respond_to do |format|
+          format.turbo_stream
+          format.html do
+            redirect_to admin_theme_section_path(section: "photos"),
+                        notice: "#{@assets.size} #{'photo'.pluralize(@assets.size)} deleted"
+          end
+        end
+      end
+
       private
 
       def upload!

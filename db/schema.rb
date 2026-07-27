@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_07_25_110000) do
+ActiveRecord::Schema[7.1].define(version: 2026_07_27_010000) do
   create_table "admin_users", force: :cascade do |t|
     t.string "email", null: false
     t.string "password_digest", null: false
@@ -177,6 +177,7 @@ ActiveRecord::Schema[7.1].define(version: 2026_07_25_110000) do
     t.datetime "updated_at", null: false
     t.json "placements", default: {}, null: false
     t.json "theme", default: {}, null: false
+    t.json "save_the_date_copy", default: {}, null: false
     t.index ["custom_domain"], name: "index_weddings_on_custom_domain", unique: true
   end
 

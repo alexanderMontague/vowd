@@ -1,0 +1,14 @@
+<h2 class="admin-editor-panel-title">Custom domain</h2>
+<p class="admin-editor-panel-copy">Optional. Your subdomain always works.</p>
+<div class="form-group">
+  <%= f.label :custom_domain, "Custom domain" %>
+  <%= f.text_field :custom_domain, class: "form-control", placeholder: "wedding.example.com" %>
+</div>
+<div class="rounded-md border border-border bg-neutral-50 px-4 py-3 text-sm text-neutral-600">
+  <p class="font-medium text-neutral-800 mb-1">DNS</p>
+  <p>
+    Point a CNAME to
+    <code class="text-neutral-800"><%= subdomain_host %></code>
+    (base domain: <code class="text-neutral-800"><%= AppHost.base_domain %></code>).
+  </p>
+</div>

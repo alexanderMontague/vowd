@@ -2,8 +2,10 @@
   index = local_assigns.fetch(:index)
   member = local_assigns.fetch(:member, {})
   group = local_assigns.fetch(:group)
+  assets = Array(local_assigns.fetch(:assets, []))
+  group_label = group == "bridesmaids" ? "Bridesmaid" : "Groomsman"
 %>
-<div class="admin-nested-row" data-nested-form-target="item">
+<div class="admin-nested-row" data-nested-form-target="item" data-usage-scope>
   <div class="flex justify-between items-start mb-3">
     <p class="text-sm font-medium text-neutral-700">Person</p>
     <button type="button" class="text-sm text-danger" data-action="nested-form#remove">Remove</button>
@@ -12,7 +14,8 @@
   <div class="grid gap-0 md:grid-cols-2 md:gap-x-6">
     <div class="form-group">
       <label>Name</label>
-      <input type="text" name="wedding[wedding_party][<%= group %>][<%= index %>][name]" value="<%= member["name"] %>" class="form-control">
+      <input type="text" name="wedding[wedding_party][<%= group %>][<%= index %>][name]" value="<%= member["name"] %>"
+        class="form-control" data-usage-title data-action="input->asset-picker#refreshUsage">
     </div>
     <div class="form-group">
       <label>Role</label>
@@ -26,11 +29,13 @@
 
   <div class="form-group mb-0">
     <label>Photo</label>
-    <%= render "admin/website/asset_upload",
-        purpose: "party",
-        object_key_name: "wedding[wedding_party][#{group}][#{index}][object_key]",
-        object_key: member["object_key"],
-        image_url_name: "wedding[wedding_party][#{group}][#{index}][image_url]",
-        image_url: member["image_url"] %>
+    <p class="admin-field-hint">Choose from your photo library.</p>
+    <%= render "admin/website/asset_picker",
+        field_name: "wedding[wedding_party][#{group}][#{index}][asset_id][]",
+        assets: assets,
+        max: 1,
+        usage_prefix: group_label,
+        usage_label: "",
+        empty_text: "No photo chosen yet." %>
   </div>
 </div>

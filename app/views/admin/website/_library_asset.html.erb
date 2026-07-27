@@ -1,9 +1,19 @@
 <%
   asset = local_assigns.fetch(:asset)
+  bulk_form_id = local_assigns.fetch(:bulk_form_id, "photo_library_bulk_delete")
   full_url = wedding_asset_url(asset)
   thumb_url = wedding_asset_thumbnail_url(asset)
 %>
 <div class="admin-library-asset" id="<%= dom_id(asset) %>">
+  <label class="admin-library-asset__select">
+    <input type="checkbox"
+      name="asset_ids[]"
+      value="<%= asset.id %>"
+      form="<%= bulk_form_id %>"
+      class="library-select-checkbox"
+      aria-label="Select photo">
+  </label>
+
   <button type="button" class="admin-thumb-button" data-action="gallery-lightbox#open"
     data-full-url="<%= full_url %>" data-asset-id="<%= asset.id %>" aria-label="View photo">
     <img src="<%= thumb_url %>" data-full-url="<%= full_url %>"

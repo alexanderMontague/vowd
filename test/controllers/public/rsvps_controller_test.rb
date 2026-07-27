@@ -51,6 +51,35 @@ module Public
       assert_includes response.body, "song_request"
     end
 
+    test "edit opens the response form without an interim respond screen" do
+      get public_rsvp_path(@guest.invite_code)
+
+      assert_response :success
+      assert_select "form[action=?]", public_rsvp_path(@guest.invite_code)
+      assert_select "input[type=submit][value='Submit Response']"
+      assert_select "button", text: "Respond Now", count: 0
+      assert_select ".invitation-frame"
+      assert_select ".botanical-accent"
+      assert_select ".botanical-ornament"
+    end
+
+    test "edit renders the framed portrait and floating photos when placed" do
+      portrait = create_asset(alt: "Us at sunset")
+      floating = Array.new(3) { create_asset }
+      @wedding.update!(
+        placements: {
+          "rsvp_portrait" => [portrait.id],
+          "rsvp_floating" => floating.map(&:id)
+        }
+      )
+
+      get public_rsvp_path(@guest.invite_code)
+
+      assert_response :success
+      assert_select ".framed-photo img.framed-photo__image[alt='Us at sunset']"
+      assert_select "[data-controller=parallax] .floating-photo", 3
+    end
+
     test "update persists song request and message then redirects to thanks" do
       patch public_rsvp_path(@guest.invite_code), params: {
         rsvps: {

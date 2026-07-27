@@ -12,15 +12,9 @@
 
   <body class="font-sans m-0 bg-gradient-to-br from-primary-400 to-secondary min-h-screen flex items-center justify-center">
     <div class="bg-bg-card p-12 rounded-xl shadow-2xl w-full max-w-form mx-4">
-      <% if flash[:notice] %>
-        <div class="alert alert-success"><%= flash[:notice] %></div>
-      <% end %>
-
-      <% if flash[:alert] %>
-        <div class="alert alert-error"><%= flash[:alert] %></div>
-      <% end %>
-
       <%= yield %>
     </div>
+
+    <%= render "admin/shared/toasts" %>
   </body>
 </html>
