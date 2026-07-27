@@ -187,7 +187,7 @@ See `config/cron.example`.
 - **Local disk** in development/test → `public/uploads/disposable_camera/`
 - **S3-compatible (R2)** in production
 
-Override with `DISPOSABLE_CAMERA_STORAGE=local|s3`. Bucket env vars: `BUCKET_NAME`, `R2_ACCOUNT_ID`, `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_REGION=auto`.
+Override with `DISPOSABLE_CAMERA_STORAGE=local|s3`. With `BUCKET_NAME` and AWS keys set, development uses the bucket automatically; tests stay on local disk. Bucket env vars: `BUCKET_NAME`, `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_REGION=auto`, `AWS_ENDPOINT_URL_S3` (or `R2_ACCOUNT_ID`).
 
 ## Contributing
 

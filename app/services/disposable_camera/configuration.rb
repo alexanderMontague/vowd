@@ -12,14 +12,25 @@ module DisposableCamera
     S3_BACKEND = "s3".freeze
 
     class << self
-      # Local disk in development/test, S3-compatible bucket in production.
-      # Override explicitly with DISPOSABLE_CAMERA_STORAGE=local|s3.
+      # Uses the S3-compatible bucket whenever credentials are configured (or in
+      # production). Force disk with DISPOSABLE_CAMERA_STORAGE=local, or the bucket
+      # with DISPOSABLE_CAMERA_STORAGE=s3.
       def local_storage?
         case ENV[STORAGE_BACKEND_ENV_KEY].presence&.downcase
         when LOCAL_BACKEND then true
         when S3_BACKEND then false
-        else !Rails.env.production?
+        else
+          return true if Rails.env.test?
+          return false if Rails.env.production?
+
+          !bucket_credentials?
         end
+      end
+
+      def bucket_credentials?
+        ENV[BUCKET_ENV_KEY].present? &&
+          ENV["AWS_ACCESS_KEY_ID"].present? &&
+          ENV["AWS_SECRET_ACCESS_KEY"].present?
       end
 
       def bucket

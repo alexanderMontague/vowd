@@ -38,14 +38,48 @@ module DisposableCamera
       end
     end
 
-    test "uses local storage outside production by default" do
-      with_env("DISPOSABLE_CAMERA_STORAGE" => nil) do
+    test "uses local storage outside production when bucket credentials are absent" do
+      with_env(
+        "DISPOSABLE_CAMERA_STORAGE" => nil,
+        "BUCKET_NAME" => nil,
+        "AWS_ACCESS_KEY_ID" => nil,
+        "AWS_SECRET_ACCESS_KEY" => nil
+      ) do
+        assert Configuration.local_storage?
+      end
+    end
+
+    test "uses bucket storage outside production when credentials are configured" do
+      with_env(
+        "DISPOSABLE_CAMERA_STORAGE" => nil,
+        "BUCKET_NAME" => "vowd",
+        "AWS_ACCESS_KEY_ID" => "key",
+        "AWS_SECRET_ACCESS_KEY" => "secret"
+      ) do
+        Rails.stub(:env, ActiveSupport::StringInquirer.new("development")) do
+          assert_not Configuration.local_storage?
+        end
+      end
+    end
+
+    test "keeps test env on local disk even when credentials are configured" do
+      with_env(
+        "DISPOSABLE_CAMERA_STORAGE" => nil,
+        "BUCKET_NAME" => "vowd",
+        "AWS_ACCESS_KEY_ID" => "key",
+        "AWS_SECRET_ACCESS_KEY" => "secret"
+      ) do
         assert Configuration.local_storage?
       end
     end
 
     test "uses bucket storage in production by default" do
-      with_env("DISPOSABLE_CAMERA_STORAGE" => nil) do
+      with_env(
+        "DISPOSABLE_CAMERA_STORAGE" => nil,
+        "BUCKET_NAME" => nil,
+        "AWS_ACCESS_KEY_ID" => nil,
+        "AWS_SECRET_ACCESS_KEY" => nil
+      ) do
         Rails.stub(:env, ActiveSupport::StringInquirer.new("production")) do
           assert_not Configuration.local_storage?
         end
@@ -53,7 +87,12 @@ module DisposableCamera
     end
 
     test "honors explicit local backend override" do
-      with_env("DISPOSABLE_CAMERA_STORAGE" => "local") do
+      with_env(
+        "DISPOSABLE_CAMERA_STORAGE" => "local",
+        "BUCKET_NAME" => "vowd",
+        "AWS_ACCESS_KEY_ID" => "key",
+        "AWS_SECRET_ACCESS_KEY" => "secret"
+      ) do
         Rails.stub(:env, ActiveSupport::StringInquirer.new("production")) do
           assert Configuration.local_storage?
         end
