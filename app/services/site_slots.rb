@@ -41,9 +41,9 @@ class SiteSlots
     Slot.new(
       key: "save_the_date_floating",
       label: "Floating photos",
-      description: "Up to three photos that drift alongside the invitation as guests scroll.",
+      description: "Up to five photos that drift alongside the invitation as guests scroll.",
       page: :save_the_date,
-      max: 3,
+      max: 5,
       treatment: :floating
     ),
     Slot.new(
@@ -65,9 +65,9 @@ class SiteSlots
     Slot.new(
       key: "rsvp_floating",
       label: "Floating photos",
-      description: "Up to three photos that drift alongside the form as guests scroll.",
+      description: "Up to five photos that drift alongside the form as guests scroll.",
       page: :rsvp,
-      max: 3,
+      max: 5,
       treatment: :floating
     )
   ].freeze

@@ -22,11 +22,10 @@ module Public
     end
 
     def calendar
-      return head :not_found unless current_wedding&.date
+      start_time = current_wedding&.event_starts_at
+      end_time = current_wedding&.event_ends_at
+      return head :not_found unless start_time && end_time
 
-      wedding_date = current_wedding.date
-      start_time = wedding_date.beginning_of_day
-      end_time = wedding_date.end_of_day
       title = current_wedding.title
       description = "Join us for our wedding celebration!"
       location = current_wedding.venue ? full_venue_name(current_wedding.venue) : ""

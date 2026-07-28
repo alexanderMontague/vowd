@@ -157,14 +157,42 @@ class WeddingTest < ActiveSupport::TestCase
   end
 
   test "placements_for prunes missing ids and clamps to the slot maximum" do
-    assets = Array.new(4) { |index| create_asset(position: index) }
+    assets = Array.new(6) { |index| create_asset(position: index) }
     @wedding.update!(
       placements: {
-        "save_the_date_floating" => [assets[0].id, SecureRandom.uuid, assets[1].id, assets[2].id, assets[3].id]
+        "save_the_date_floating" => [assets[0].id, SecureRandom.uuid, *assets[1..5].map(&:id)]
       }
     )
 
-    assert_equal assets.first(3), @wedding.placements_for("save_the_date_floating")
+    assert_equal assets.first(5), @wedding.placements_for("save_the_date_floating")
+  end
+
+  test "event_starts_at uses ceremony_time when present" do
+    @wedding.update!(date: Date.new(2027, 5, 10), ceremony_time: "5:30 PM", timezone: "America/Los_Angeles")
+
+    start = @wedding.event_starts_at
+    assert_equal 17, start.hour
+    assert_equal 30, start.min
+    assert_equal "America/Los_Angeles", start.time_zone.name
+  end
+
+  test "event_starts_at defaults to mid-afternoon when ceremony_time is blank" do
+    @wedding.update!(date: Date.new(2027, 5, 10), ceremony_time: nil, timezone: "America/Los_Angeles")
+
+    start = @wedding.event_starts_at
+    assert_equal 16, start.hour
+    assert_equal 0, start.min
+  end
+
+  test "event_ends_at is duration hours after the start" do
+    @wedding.update!(
+      date: Date.new(2027, 5, 10),
+      ceremony_time: "4:00 PM",
+      wedding_duration_hours: 5,
+      timezone: "America/Los_Angeles"
+    )
+
+    assert_equal @wedding.event_starts_at + 5.hours, @wedding.event_ends_at
   end
 
   test "placement returns the first asset and nil for empty or unknown slots" do

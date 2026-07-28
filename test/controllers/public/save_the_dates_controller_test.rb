@@ -59,6 +59,16 @@ module Public
       assert_equal @wedding.id, SaveTheDateSignup.last.wedding_id
     end
 
+    test "show spells the elegant date and ceremony time" do
+      @wedding.update!(date: Date.new(2027, 5, 10), ceremony_time: "4:30 PM")
+
+      get public_save_the_date_path, params: { skip_video: "1" }
+
+      assert_response :success
+      assert_select ".invitation-when", text: /Monday, 10 May 2027/
+      assert_select ".invitation-when", text: /four thirty in the afternoon/
+    end
+
     test "photo compositions are absent while their slots are empty" do
       get public_save_the_date_path
 

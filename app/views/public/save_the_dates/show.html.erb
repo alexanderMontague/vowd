@@ -33,9 +33,9 @@
               <%= editor_essentials(tag: :p, css_class: "mb-2 font-theme-display text-3xl font-light text-ink md:text-4xl") do %>
                 <%= format_date_elegant(current_wedding.date) %>
               <% end %>
-              <% if current_wedding.ceremony_time %>
+              <% if current_wedding.ceremony_time.present? %>
                 <%= editor_essentials(tag: :p, css_class: "text-lg wedding-prose") do %>
-                  <%= current_wedding.ceremony_time %>
+                  <%= format_time_elegant(current_wedding.ceremony_time) || current_wedding.ceremony_time %>
                 <% end %>
               <% end %>
             </div>

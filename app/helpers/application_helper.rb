@@ -1,7 +1,29 @@
 module ApplicationHelper
   # Drift speeds for the floating photo positions defined in the stylesheet.
   # Alternating signs give the cluster a sense of depth.
-  FLOATING_PHOTO_SPEEDS = [0.16, -0.11, 0.22].freeze
+  FLOATING_PHOTO_SPEEDS = [0.16, -0.11, 0.22, -0.14, 0.18].freeze
+
+  HOUR_WORDS = {
+    1 => "one", 2 => "two", 3 => "three", 4 => "four", 5 => "five", 6 => "six",
+    7 => "seven", 8 => "eight", 9 => "nine", 10 => "ten", 11 => "eleven", 12 => "twelve"
+  }.freeze
+
+  MINUTE_WORDS = {
+    1 => "one", 2 => "two", 3 => "three", 4 => "four", 5 => "five", 6 => "six",
+    7 => "seven", 8 => "eight", 9 => "nine", 10 => "ten", 11 => "eleven", 12 => "twelve",
+    13 => "thirteen", 14 => "fourteen", 15 => "fifteen", 16 => "sixteen", 17 => "seventeen",
+    18 => "eighteen", 19 => "nineteen", 20 => "twenty", 21 => "twenty-one", 22 => "twenty-two",
+    23 => "twenty-three", 24 => "twenty-four", 25 => "twenty-five", 26 => "twenty-six",
+    27 => "twenty-seven", 28 => "twenty-eight", 29 => "twenty-nine", 30 => "thirty",
+    31 => "thirty-one", 32 => "thirty-two", 33 => "thirty-three", 34 => "thirty-four",
+    35 => "thirty-five", 36 => "thirty-six", 37 => "thirty-seven", 38 => "thirty-eight",
+    39 => "thirty-nine", 40 => "forty", 41 => "forty-one", 42 => "forty-two",
+    43 => "forty-three", 44 => "forty-four", 45 => "forty-five", 46 => "forty-six",
+    47 => "forty-seven", 48 => "forty-eight", 49 => "forty-nine", 50 => "fifty",
+    51 => "fifty-one", 52 => "fifty-two", 53 => "fifty-three", 54 => "fifty-four",
+    55 => "fifty-five", 56 => "fifty-six", 57 => "fifty-seven", 58 => "fifty-eight",
+    59 => "fifty-nine"
+  }.freeze
 
   def page_title(title = nil)
     base_title = current_wedding&.title || "Wedding"
@@ -39,32 +61,32 @@ module ApplicationHelper
     date.strftime("%m.%d.%Y")
   end
 
+  # Weekday spelled out; day, month, and year numeric — e.g. "Saturday, 10 May 2027".
   def format_date_elegant(date)
     raise "Missing date" if date.blank?
 
     date = Date.parse(date) if date.is_a?(String)
 
-    day_words = {
-      1 => "First", 2 => "Second", 3 => "Third", 4 => "Fourth", 5 => "Fifth",
-      6 => "Sixth", 7 => "Seventh", 8 => "Eighth", 9 => "Ninth", 10 => "Tenth",
-      11 => "Eleventh", 12 => "Twelfth", 13 => "Thirteenth", 14 => "Fourteenth", 15 => "Fifteenth",
-      16 => "Sixteenth", 17 => "Seventeenth", 18 => "Eighteenth", 19 => "Nineteenth", 20 => "Twentieth",
-      21 => "Twenty-First", 22 => "Twenty-Second", 23 => "Twenty-Third", 24 => "Twenty-Fourth", 25 => "Twenty-Fifth",
-      26 => "Twenty-Sixth", 27 => "Twenty-Seventh", 28 => "Twenty-Eighth", 29 => "Twenty-Ninth", 30 => "Thirtieth",
-      31 => "Thirty-First"
-    }
+    "#{date.strftime('%A')}, #{date.day} #{date.strftime('%B')} #{date.year}"
+  end
 
-    year_words = (2024..2035).to_h do |y|
-      ones = %w[Twenty Twenty-One Twenty-Two Twenty-Three Twenty-Four Twenty-Five Twenty-Six Twenty-Seven Twenty-Eight
-                Twenty-Nine Thirty Thirty-One Thirty-Two Thirty-Three Thirty-Four Thirty-Five]
-      [y, "Two Thousand #{ones[y - 2020]}"]
-    end
+  # Spells ceremony times for invitation surfaces — e.g. "four thirty in the afternoon".
+  def format_time_elegant(time_value)
+    time = parse_display_time(time_value)
+    return if time.nil?
 
-    month = date.strftime("%B")
-    day = day_words[date.day] || date.day.to_s
-    year = year_words[date.year] || date.year.to_s
+    hour = time.hour % 12
+    hour = 12 if hour.zero?
+    hour_word = HOUR_WORDS.fetch(hour)
+    period = time_of_day_period(time.hour)
 
-    "#{month} #{day}, #{year}"
+    clock = if time.min.zero?
+              "#{hour_word} o'clock"
+            else
+              "#{hour_word} #{MINUTE_WORDS.fetch(time.min)}"
+            end
+
+    "#{clock} in the #{period}"
   end
 
   def rsvp_status_badge(status)
@@ -78,7 +100,7 @@ module ApplicationHelper
   end
 
   def calendar_url
-    return "#" unless current_wedding&.date
+    return "#" unless current_wedding&.event_starts_at
 
     user_agent = request&.user_agent&.to_s&.downcase || ""
 
@@ -173,16 +195,38 @@ module ApplicationHelper
   end
 
   def google_calendar_url
-    wedding_date = current_wedding.date
+    start_time = current_wedding.event_starts_at
+    end_time = current_wedding.event_ends_at
+    return "#" unless start_time && end_time
+
     title = ERB::Util.url_encode(current_wedding.title)
     details = ERB::Util.url_encode("Join us for our wedding celebration!")
     location = current_wedding.venue ? ERB::Util.url_encode(full_venue_name(current_wedding.venue)) : ""
-
-    start_time = wedding_date.beginning_of_day
-    end_time = wedding_date.end_of_day
-
     dates = "#{start_time.strftime('%Y%m%dT%H%M%S')}/#{end_time.strftime('%Y%m%dT%H%M%S')}"
 
     "https://calendar.google.com/calendar/render?action=TEMPLATE&text=#{title}&dates=#{dates}&details=#{details}&location=#{location}"
+  end
+
+  def parse_display_time(value)
+    case value
+    when Time, ActiveSupport::TimeWithZone then value
+    when DateTime then value.to_time
+    when String
+      stripped = value.to_s.strip
+      return if stripped.blank?
+
+      Time.zone.parse(stripped)
+    end
+  rescue ArgumentError, TypeError
+    nil
+  end
+
+  def time_of_day_period(hour)
+    case hour
+    when 0...12 then "morning"
+    when 12...17 then "afternoon"
+    when 17...21 then "evening"
+    else "night"
+    end
   end
 end

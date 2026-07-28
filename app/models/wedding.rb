@@ -4,6 +4,8 @@ class Wedding < ApplicationRecord
   PHOTO_STYLES = %w[original retro bw].freeze
   DEFAULT_PHOTO_STYLE = "retro".freeze
   PHOTO_STYLE_METADATA_KEY = "dispo_photo_style".freeze
+  # Used for countdown, calendar invites, and related timing when ceremony_time is blank.
+  DEFAULT_CEREMONY_TIME = "4:00 PM".freeze
 
   SLUG_FORMAT = /\A[a-z0-9]+(?:-[a-z0-9]+)*\z/
 
@@ -301,16 +303,34 @@ class Wedding < ApplicationRecord
     partner1.present? && partner2.present? && date.present?
   end
 
+  # Ceremony start in the wedding timezone. Falls back to mid-afternoon so calendar
+  # invites land in the day rather than at midnight (which shifts to evening in
+  # western zones when serialized as UTC).
+  def event_starts_at
+    return if date.blank?
+
+    tz = ActiveSupport::TimeZone[timezone] || Time.zone
+    time_str = ceremony_time.presence || DEFAULT_CEREMONY_TIME
+    tz.parse("#{date} #{time_str}")
+  rescue ArgumentError, TypeError
+    nil
+  end
+
+  def event_ends_at
+    start = event_starts_at
+    return if start.blank?
+
+    hours = wedding_duration_hours.to_i
+    hours = 1 if hours < 1
+    start + hours.hours
+  end
+
   def dispo_camera_closes_at
     tz = ActiveSupport::TimeZone[timezone] || Time.zone
-    return fallback_dispo_closes_at(tz) if date.blank?
+    start = event_starts_at
+    return fallback_dispo_closes_at(tz) if start.blank?
 
-    parsed = tz.parse("#{date} #{ceremony_time}")
-    return fallback_dispo_closes_at(tz) if parsed.blank?
-
-    parsed + wedding_duration_hours.to_i.hours
-  rescue ArgumentError, TypeError
-    fallback_dispo_closes_at(tz)
+    start + wedding_duration_hours.to_i.hours
   end
 
   def dispo_camera_locked?

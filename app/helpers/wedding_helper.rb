@@ -17,12 +17,6 @@ module WeddingHelper
   end
 
   def wedding_datetime_iso(wedding)
-    return unless wedding&.date
-
-    tz = ActiveSupport::TimeZone[wedding.timezone] || Time.zone
-    time_str = wedding.ceremony_time.presence || "12:00 PM"
-    tz.parse("#{wedding.date} #{time_str}").iso8601
-  rescue ArgumentError, TypeError
-    wedding.date.beginning_of_day.in_time_zone(tz).iso8601
+    wedding&.event_starts_at&.iso8601
   end
 end

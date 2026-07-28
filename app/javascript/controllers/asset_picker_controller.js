@@ -149,10 +149,44 @@ export default class extends Controller {
   }
 
   syncOptions() {
+    const orderById = this.selectionOrder()
+
     this.optionTargets.forEach((option) => {
-      const selected = Boolean(this.selectedItem(this.activePicker, option.dataset.assetId))
+      const order = orderById.get(option.dataset.assetId)
+      const selected = Number.isInteger(order)
       option.setAttribute("aria-pressed", selected ? "true" : "false")
+      this.syncOrderBadge(option, order)
     })
+  }
+
+  selectionOrder() {
+    const orderById = new Map()
+    const selection = this.activePicker && this.selection()
+    if (!selection) return orderById
+
+    Array.from(selection.querySelectorAll("[data-asset-picker-target='selected']")).forEach((item, index) => {
+      orderById.set(item.dataset.assetId, index + 1)
+    })
+
+    return orderById
+  }
+
+  syncOrderBadge(option, order) {
+    let badge = option.querySelector("[data-asset-picker-order]")
+
+    if (!Number.isInteger(order)) {
+      badge?.remove()
+      return
+    }
+
+    if (!badge) {
+      badge = document.createElement("span")
+      badge.dataset.assetPickerOrder = ""
+      badge.className = "admin-picker-option__order"
+      option.appendChild(badge)
+    }
+
+    badge.textContent = String(order)
   }
 
   itemHtml(assetId, thumbUrl) {

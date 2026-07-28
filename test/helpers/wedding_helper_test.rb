@@ -23,6 +23,17 @@ class WeddingHelperTest < ActionView::TestCase
     assert_equal "", wedding_monogram(nil)
   end
 
+  test "wedding_datetime_iso uses the wedding event start" do
+    wedding = create_wedding(date: Date.new(2027, 5, 10), ceremony_time: "4:30 PM", timezone: "America/Toronto")
+    assert_equal wedding.event_starts_at.iso8601, wedding_datetime_iso(wedding)
+  end
+
+  test "wedding_datetime_iso defaults to four pm without a ceremony time" do
+    wedding = create_wedding(date: Date.new(2027, 5, 10), ceremony_time: nil, timezone: "America/Toronto")
+    assert_equal 16, wedding.event_starts_at.hour
+    assert_equal wedding.event_starts_at.iso8601, wedding_datetime_iso(wedding)
+  end
+
   private
 
   def monogram_for(title)
