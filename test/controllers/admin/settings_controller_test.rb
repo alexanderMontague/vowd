@@ -17,6 +17,8 @@ module Admin
 
       assert_response :success
       assert_includes response.body, "Photo Display Style"
+      assert_includes response.body, "form-autosave"
+      assert_includes response.body, "Changes save automatically"
     end
 
     test "shows settings when wedding date is blank" do
@@ -27,10 +29,13 @@ module Admin
       assert_redirected_to admin_website_path
     end
 
-    test "persists a valid photo style override" do
-      patch admin_settings_path, params: { dispo_photo_style: "bw" }
+    test "json update autosaves settings without redirect" do
+      patch admin_settings_path,
+            params: { dispo_photo_style: "bw", flags: { "rsvp_visible" => "true" } },
+            as: :json
 
-      assert_redirected_to admin_settings_path
+      assert_response :success
+      assert_equal true, response.parsed_body["ok"]
       assert_equal "bw", @wedding.reload.dispo_photo_style
     end
 

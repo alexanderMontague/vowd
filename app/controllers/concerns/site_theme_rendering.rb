@@ -38,7 +38,9 @@ module SiteThemeRendering
     @site_navigation ||= SiteNavigation.new(
       wedding: current_wedding,
       theme: site_theme,
-      preview: theme_preview_active?
+      # Theme editor iframe (and look-draft preview) must reach every theme page
+      # even when Save the Date mode collapses the public site.
+      preview: theme_preview_active? || site_editor_active?
     )
   end
 

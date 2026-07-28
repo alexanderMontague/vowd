@@ -6,24 +6,29 @@
 #
 # Hotspots must never appear on a normal top-level visit — even for a signed-in
 # admin browsing the public site. We require Sec-Fetch-Dest: iframe so only the
-# Theme preview embed gets editor chrome. Preview navigations use full page loads
-# (turbo disabled in editor mode), which keep that iframe destination header.
+# Theme preview embed gets editor chrome.
+#
+# Turbo is disabled for the whole site_editor session (iframe + any top-level
+# public tab open beside Theme). Full document loads keep Sec-Fetch-Dest:
+# iframe on preview navigations so the parent can sync the admin URL from the
+# iframe's load events.
 module SiteEditor
   extend ActiveSupport::Concern
 
   SESSION_KEY = "site_editor".freeze
 
   included do
-    helper_method :site_editor_active? if respond_to?(:helper_method)
+    helper_method :site_editor_active?, :site_editor_session? if respond_to?(:helper_method)
   end
 
   private
 
-  def site_editor_active?
-    return false if session[:admin_id].blank?
-    return false unless session[SESSION_KEY] == current_wedding&.id
+  def site_editor_session?
+    session[:admin_id].present? && session[SESSION_KEY] == current_wedding&.id
+  end
 
-    request.headers["Sec-Fetch-Dest"] == "iframe"
+  def site_editor_active?
+    site_editor_session? && request.headers["Sec-Fetch-Dest"] == "iframe"
   end
 
   def activate_site_editor!

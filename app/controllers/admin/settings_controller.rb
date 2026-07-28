@@ -13,10 +13,18 @@ module Admin
         persist_photo_style
       end
 
-      redirect_to admin_settings_path, notice: "Settings updated."
+      respond_to do |format|
+        format.json { render json: { ok: true } }
+        format.html { redirect_to admin_settings_path, notice: "Settings updated." }
+      end
     rescue ActiveRecord::RecordInvalid => e
-      flash[:alert] = e.message
-      redirect_to admin_settings_path
+      respond_to do |format|
+        format.json { render json: { ok: false, error: e.message }, status: :unprocessable_entity }
+        format.html do
+          flash[:alert] = e.message
+          redirect_to admin_settings_path
+        end
+      end
     end
 
     private

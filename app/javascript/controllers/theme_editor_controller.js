@@ -103,6 +103,7 @@ export default class extends Controller {
     this.pickerSnapshot = null
     this.drawerMode = "page"
     this.ensuringSkipVideo = false
+    this.lastSyncedPath = null
     this.currentPanel = this.defaultPanelFor(this.sectionValue)
     this.boundMessage = this.onFrameMessage.bind(this)
     this.boundFrameLoad = this.onFrameLoad.bind(this)
@@ -111,11 +112,13 @@ export default class extends Controller {
     this.setDeviceWidth("desktop")
     this.restoreSkipVideoPreference()
     this.updateSkipVideoControl(this.sectionValue)
+    this.framePathTimer = window.setInterval(() => this.syncFromFrameLocation(), 600)
   }
 
   disconnect() {
     clearTimeout(this.persistTimer)
     clearTimeout(this.autosaveTimer)
+    clearInterval(this.framePathTimer)
     window.removeEventListener("message", this.boundMessage)
     if (this.hasFrameTarget) this.frameTarget.removeEventListener("load", this.boundFrameLoad)
     document.body.classList.remove("theme-editor-drawer-open")
@@ -288,9 +291,19 @@ export default class extends Controller {
   onFrameLoad() {
     this.hideFrameLoading()
     this.ensuringSkipVideo = false
+    this.syncFromFrameLocation({ force: true })
+  }
+
+  syncFromFrameLocation({ force = false } = {}) {
+    if (!this.hasFrameTarget) return
+
     try {
       const path = this.frameTarget.contentWindow?.location?.pathname
-      if (path) this.syncFromPreviewPath(path)
+      if (!path) return
+      if (!force && path === this.lastSyncedPath) return
+
+      this.lastSyncedPath = path
+      this.syncFromPreviewPath(path)
     } catch (_error) {
       // Cross-origin should not happen on same-origin preview.
     }
@@ -303,6 +316,7 @@ export default class extends Controller {
 
     switch (data.type) {
       case "preview-ready":
+        this.lastSyncedPath = data.path
         this.syncFromPreviewPath(data.path)
         break
       case "save-text":
@@ -323,19 +337,15 @@ export default class extends Controller {
   }
 
   syncFromPreviewPath(path) {
-    const pages = this.hasPagesValue ? this.pagesValue : {}
-    let section = pages[path]
+    if (!path) return
 
-    if (!section) {
-      const match = Object.entries(pages).find(([prefix]) => prefix !== "/" && path.startsWith(`${prefix}/`))
-      section = match?.[1]
-    }
-    if (!section && path === "/") section = "home"
+    const section = this.sectionForPath(path)
+    this.updateSkipVideoControl(section || this.sectionValue)
+
     if (!section) return
 
     this.currentPanel = this.defaultPanelFor(section)
     this.syncAdminUrl(section)
-    this.updateSkipVideoControl(section)
 
     if (this.drawerTarget.classList.contains("is-open") && this.drawerMode === "page") {
       this.showPanel(this.currentPanel)
@@ -420,13 +430,13 @@ export default class extends Controller {
     const url = urls[section]
     if (!url) return
 
+    this.sectionValue = section
+    this.saveUrlValue = url
+
     const nextPath = new URL(url, window.location.origin).pathname
     if (window.location.pathname !== nextPath) {
       history.replaceState({ themeSection: section }, "", url)
     }
-
-    this.sectionValue = section
-    this.saveUrlValue = urls[section] || this.saveUrlValue
   }
 
   defaultPanelFor(section) {

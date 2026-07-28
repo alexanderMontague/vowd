@@ -41,7 +41,9 @@
     </div>
   <% end %>
 
-  <%= render "admin/themes/preview_pane", preview_path: preview_path %>
+  <%= render "admin/themes/preview_pane",
+      preview_path: preview_path,
+      show_skip_video: %w[save_the_date rsvp].include?(@section.key) %>
 
   <div class="theme-editor-drawer__backdrop"
        data-theme-editor-target="backdrop"

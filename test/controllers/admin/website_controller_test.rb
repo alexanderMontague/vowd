@@ -20,7 +20,8 @@ module Admin
       assert_response :success
       assert_includes response.body, "Original Title"
       assert_includes response.body, "Essentials"
-      assert_includes response.body, "Save changes"
+      assert_includes response.body, "Changes save automatically"
+      assert_includes response.body, "form-autosave"
       assert_not_includes response.body, "Hero tagline"
       assert_not_includes response.body, "gallery_images_json"
     end
@@ -46,6 +47,16 @@ module Admin
 
       assert_redirected_to admin_website_section_path(section: "essentials")
       assert_equal "Updated Title", @wedding.reload.title
+    end
+
+    test "json update autosaves essentials without redirect" do
+      patch admin_website_section_path(section: "essentials"),
+            params: { wedding: { title: "Autosaved Title" } },
+            as: :json
+
+      assert_response :success
+      assert_equal true, response.parsed_body["ok"]
+      assert_equal "Autosaved Title", @wedding.reload.title
     end
 
     test "update persists notifications on the notifications section" do

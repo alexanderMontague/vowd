@@ -1,4 +1,6 @@
-<div class="card">
-  <h1>New Event</h1>
-  <%= render "form", event: @event %>
-</div>
+<%= render layout: "admin/website/hub", locals: { active: "events" } do %>
+  <div class="card">
+    <h1>New Event</h1>
+    <%= render "form", event: @event %>
+  </div>
+<% end %>

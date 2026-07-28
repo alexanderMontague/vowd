@@ -1,37 +1,34 @@
 # Attribute helpers for Shopify-style click-to-edit hotspots on the guest site.
-# All helpers no-op for real guests — attributes are only emitted in editor mode.
+# Tag + css_class are always rendered — they ARE the public markup. Editor data
+# attributes are only added inside the Theme iframe.
 module SiteEditorHelper
   def editor_text(field, tag: :span, css_class: nil, multiline: false, &block)
     content = capture(&block)
-    return content unless site_editor_active?
-
-    content_tag(
-      tag,
-      content,
-      class: css_class,
-      data: {
+    options = { class: css_class }
+    if site_editor_active?
+      options[:data] = {
         site_editor_target: "hotspot",
         kind: "text",
         field: field,
         multiline: multiline.presence
       }.compact
-    )
+    end
+
+    content_tag(tag, content, options)
   end
 
   def editor_essentials(tag: :span, css_class: nil, &block)
     content = capture(&block)
-    return content unless site_editor_active?
-
-    content_tag(
-      tag,
-      content,
-      class: css_class,
-      data: {
+    options = { class: css_class }
+    if site_editor_active?
+      options[:data] = {
         site_editor_target: "hotspot",
         kind: "essentials",
         href: admin_website_section_path(section: "essentials")
       }
-    )
+    end
+
+    content_tag(tag, content, options)
   end
 
   def editor_slot(slot_key, tag: :div, css_class: nil, &block)

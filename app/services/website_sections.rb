@@ -1,4 +1,4 @@
-# Sections of the Wedding (essentials) editor.
+# Form sections of the Wedding editor. Events lives beside these as its own CRUD.
 class WebsiteSections
   Section = Data.define(:key, :label)
 

@@ -1,5 +1,6 @@
 <%
   preview_path = local_assigns.fetch(:preview_path) { root_path }
+  show_skip_video = local_assigns.fetch(:show_skip_video, false)
 %>
 <section class="theme-preview theme-preview--canvas">
   <header class="theme-preview__bar">
@@ -60,7 +61,9 @@
 
       <span class="theme-preview__tools-divider" aria-hidden="true"></span>
 
-      <label class="theme-preview__skip-video" data-theme-editor-target="skipVideoControl" hidden>
+      <label class="theme-preview__skip-video"
+             data-theme-editor-target="skipVideoControl"
+             <%= "hidden" unless show_skip_video %>>
         <input type="checkbox"
                data-theme-editor-target="skipVideo"
                data-action="theme-editor#toggleSkipVideo">

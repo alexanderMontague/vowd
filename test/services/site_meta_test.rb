@@ -52,6 +52,23 @@ class SiteMetaTest < ActiveSupport::TestCase
     assert_equal hero_asset, meta.image_candidates.first
   end
 
+  test "an explicit share image overrides the hero for link previews" do
+    hero_asset = create_asset
+    share_asset = create_asset
+    place("homepage_hero", hero_asset)
+    place("share_image", share_asset)
+
+    assert_equal share_asset, meta.image_candidates.first
+  end
+
+  test "share image falls back to the hero when unset" do
+    hero_asset = create_asset
+    place("homepage_hero", hero_asset)
+
+    assert_equal hero_asset, @wedding.share_image
+    assert_equal hero_asset, meta.image_candidates.first
+  end
+
   test "a legacy inline hero photo is still a candidate" do
     hero = { "tagline" => "Hello", "object_key" => "hero.webp" }
     @wedding.update!(hero: hero)

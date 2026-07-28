@@ -1,6 +1,12 @@
-<%# Only ever rendered for a signed-in admin previewing unsaved theme edits. The
-    link targets _top so it escapes the admin preview iframe. %>
-<div class="theme-preview-banner">
-  <span>Previewing unsaved theme changes. Scheduled visibility rules are ignored here.</span>
-  <%= link_to "Back to editor", admin_theme_path, target: "_top", class: "theme-preview-banner__exit" %>
-</div>
+<%# Admin Theme iframe only — never shown to guests. %>
+<% if site_editor_active? && current_wedding.save_the_date_mode? %>
+  <div class="theme-preview-banner">
+    <span>Save the Date mode is on for guests — they only see that page. You’re previewing the full site here.</span>
+    <%= link_to "Feature flags", admin_settings_path, target: "_top", class: "theme-preview-banner__exit" %>
+  </div>
+<% elsif theme_preview_active? %>
+  <div class="theme-preview-banner">
+    <span>Previewing unsaved theme changes. Scheduled visibility rules are ignored here.</span>
+    <%= link_to "Back to editor", admin_theme_path, target: "_top", class: "theme-preview-banner__exit" %>
+  </div>
+<% end %>

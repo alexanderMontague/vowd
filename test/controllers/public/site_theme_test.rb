@@ -153,6 +153,40 @@ class Public::SiteThemeTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select "[data-controller='site-editor']", count: 0
     assert_select "[data-site-editor-target='hotspot']", count: 0
+    # Turbo stays off for the editor session so iframe nav keeps full loads,
+    # but hotspots still require Sec-Fetch-Dest: iframe.
+    assert_select "meta[name='turbo'][content='false']"
+    assert_select "html[data-turbo='false']"
+  end
+
+  test "invitation pages keep display typography for guests and in the theme iframe" do
+    admin = create_admin_for(@wedding)
+    sign_in_admin(admin)
+    get admin_theme_section_path(section: "save_the_date")
+
+    {
+      public_save_the_date_path => /Save the Date/i,
+      public_rsvp_lookup_path => /RSVP/i
+    }.each do |path, eyebrow|
+      get path, params: { skip_video: "1" }
+      assert_response :success, "expected guest markup on #{path}"
+      assert_select "h1.invitation-title", text: @wedding.title
+      assert_select "p.invitation-eyebrow", text: eyebrow
+      assert_select "h1.invitation-title[data-site-editor-target='hotspot']", count: 0
+
+      get_iframe path, params: { skip_video: "1" }
+      assert_response :success, "expected editor markup on #{path}"
+      assert_select "h1.invitation-title[data-site-editor-target='hotspot']", text: @wedding.title
+      assert_select "meta[name='turbo'][content='false']"
+    end
+  end
+
+  test "home hero typography survives outside the theme iframe" do
+    get root_path
+
+    assert_response :success
+    assert_select "h1.wedding-hero-title", minimum: 1
+    assert_select "h1.wedding-hero-title[data-site-editor-target='hotspot']", count: 0
   end
 
   test "site editor stays active across iframe preview navigations" do
@@ -255,7 +289,13 @@ class Public::SiteThemeTest < ActionDispatch::IntegrationTest
     post admin_theme_preview_path, params: { theme: { key: "parallax" } }
 
     get root_path
-    assert_select "html[data-theme='parallax']", 1, "the admin who owns the draft should see it"
+    assert_select "html[data-theme='#{SiteThemes::DEFAULT_KEY}']",
+                  1,
+                  "a top-level public visit must use the saved theme, not the draft"
+    assert_select ".theme-preview-banner", count: 0
+
+    get_iframe root_path
+    assert_select "html[data-theme='parallax']", 1, "the Theme iframe should still see the draft"
     assert_select ".theme-preview-banner"
 
     delete admin_logout_path
@@ -268,14 +308,26 @@ class Public::SiteThemeTest < ActionDispatch::IntegrationTest
   test "a preview reaches pages the schedule would hide" do
     admin = create_admin_for(@wedding)
     sign_in_admin(admin)
-    post admin_theme_preview_path, params: { theme: { key: "classic" } }
+    get admin_theme_section_path(section: "home")
     WeddingMetadata.create!(wedding_id: @wedding.id, key: "save_the_date_mode", value: "true")
 
-    get public_faq_path
-    assert_response :success, "save the date mode should not collapse an admin preview"
+    get_iframe public_faq_path
+    assert_response :success, "save the date mode should not collapse the Theme editor preview"
+    assert_select ".theme-preview-banner", text: /Save the Date mode/
   end
 
   test "save the date mode still collapses the site for guests" do
+    WeddingMetadata.create!(wedding_id: @wedding.id, key: "save_the_date_mode", value: "true")
+
+    get public_faq_path
+
+    assert_redirected_to public_save_the_date_path
+  end
+
+  test "save the date mode still collapses top-level visits for a signed-in admin" do
+    admin = create_admin_for(@wedding)
+    sign_in_admin(admin)
+    get admin_theme_section_path(section: "home")
     WeddingMetadata.create!(wedding_id: @wedding.id, key: "save_the_date_mode", value: "true")
 
     get public_faq_path

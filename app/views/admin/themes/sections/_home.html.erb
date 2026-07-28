@@ -21,6 +21,20 @@
         empty_text: "No hero photo yet." %>
   </div>
 
+  <div class="form-group">
+    <label>Share image</label>
+    <p class="admin-field-hint">
+      Used for link previews (iMessage, Instagram, etc.). Leave empty to inherit the hero.
+    </p>
+    <%= render "admin/website/asset_picker",
+        field_name: "wedding[placements][share_image][]",
+        assets: wedding.placements_for("share_image"),
+        max: 1,
+        usage_prefix: SiteSlots.page_label(:homepage),
+        usage_label: SiteSlots.find("share_image").label,
+        empty_text: "Uses hero image when empty." %>
+  </div>
+
   <div class="admin-editor-divider"></div>
 
   <div class="form-group">

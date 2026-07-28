@@ -38,6 +38,27 @@ class Public::SiteMetaTest < ActionDispatch::IntegrationTest
     assert_meta_property "og:url", absolute_url(public_faq_path)
   end
 
+  test "an explicit share image is preferred over the hero for og:image" do
+    hero = @wedding.wedding_assets.create!(
+      object_key: "#{Rails.env}/#{@wedding.id}/site/photos/hero.webp",
+      content_type: "image/webp",
+      byte_size: 2048
+    )
+    share = @wedding.wedding_assets.create!(
+      object_key: "#{Rails.env}/#{@wedding.id}/site/photos/share.webp",
+      content_type: "image/webp",
+      byte_size: 2048
+    )
+    @wedding.update!(placements: {
+                       "homepage_hero" => [hero.id],
+                       "share_image" => [share.id]
+                     })
+
+    get root_path
+
+    assert_meta_property "og:image", absolute_url(public_site_asset_path(object_key: share.object_key))
+  end
+
   test "a site with no photos still advertises itself, without an image tag" do
     get root_path
 

@@ -2,16 +2,19 @@
 <%# The theme's authored tokens land on the root element, where the derived tokens in
     the stylesheet's `:root` block pick them up. `data-theme` opts into that theme's
     scoped layer. %>
-<html data-theme="<%= site_theme.key %>" style="<%= site_theme.style_attribute %>">
+<html data-theme="<%= site_theme.key %>"
+      style="<%= site_theme.style_attribute %>"
+      <% if site_editor_session? %>data-turbo="false"<% end %>>
   <head>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <%= render "layouts/public/meta_tags" %>
     <%= favicon_link_tag '/favicon.png', type: 'image/png' %>
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
-    <%# Preview iframe loads use full documents (turbo off) so Sec-Fetch-Dest
-        stays "iframe" and editor hotspots never leak onto top-level public visits. %>
-    <% if site_editor_active? %>
+    <%# Full document loads while the Theme editor session is open so the
+        preview iframe keeps Sec-Fetch-Dest: iframe across nav clicks (Turbo
+        Drive would send "empty" and drop editor mode + parent URL sync). %>
+    <% if site_editor_session? %>
       <meta name="turbo" content="false">
     <% end %>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -28,6 +31,6 @@
       <%= yield %>
     </main>
     <%= render "layouts/public/footer" unless content_for?(:hide_site_footer) %>
-    <%= render "layouts/public/theme_preview_banner" if theme_preview_active? %>
+    <%= render "layouts/public/theme_preview_banner" %>
   </body>
 </html>

@@ -91,6 +91,34 @@ class Admin::ThemesControllerTest < ActionDispatch::IntegrationTest
     assert_select "form.theme-editor-form[data-action*='autosaveForm']"
   end
 
+  test "skip intro toggle is visible on invitation page sections" do
+    %w[save_the_date rsvp].each do |section|
+      get admin_theme_section_path(section: section)
+
+      assert_response :success
+      assert_select "[data-theme-editor-target='skipVideoControl']:not([hidden])"
+      assert_select "[data-action='theme-editor#toggleSkipVideo']"
+    end
+  end
+
+  test "theme editor exposes page path maps so iframe navigation can sync the admin URL" do
+    get admin_theme_section_path(section: "home")
+
+    assert_response :success
+    assert_select "[data-theme-editor-pages-value]"
+    assert_select "[data-theme-editor-section-urls-value]"
+
+    pages = JSON.parse(css_select("[data-theme-editor-pages-value]").first["data-theme-editor-pages-value"])
+    urls = JSON.parse(css_select("[data-theme-editor-section-urls-value]").first["data-theme-editor-section-urls-value"])
+
+    assert_equal "home", pages[root_path]
+    assert_equal "save_the_date", pages[public_save_the_date_path]
+    assert_equal "rsvp", pages[public_rsvp_lookup_path]
+    assert_equal admin_theme_section_path(section: "save_the_date"), urls["save_the_date"]
+    assert_equal admin_theme_section_path(section: "rsvp"), urls["rsvp"]
+    assert_equal admin_theme_section_path(section: "wedding_party"), urls["wedding_party"]
+  end
+
   test "content save url never points at look" do
     get admin_theme_section_path(section: "look")
 

@@ -1,0 +1,11 @@
+<% active_key = local_assigns.fetch(:active).to_s %>
+<aside class="admin-editor-nav" aria-label="Wedding sections">
+  <% WebsiteSections.definitions.each do |section| %>
+    <%= link_to section.label,
+        admin_website_section_path(section: section.key),
+        class: class_names("admin-editor-nav-link", "admin-editor-nav-link-active" => section.key == active_key) %>
+  <% end %>
+  <%= link_to "Events",
+      admin_events_path,
+      class: class_names("admin-editor-nav-link", "admin-editor-nav-link-active" => active_key == "events") %>
+</aside>

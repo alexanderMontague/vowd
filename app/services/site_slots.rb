@@ -15,6 +15,14 @@ class SiteSlots
       treatment: :hero
     ),
     Slot.new(
+      key: "share_image",
+      label: "Share image",
+      description: "Shown when someone shares your site link. Leave empty to use the hero image.",
+      page: :homepage,
+      max: 1,
+      treatment: :share
+    ),
+    Slot.new(
       key: "invitation_envelope",
       label: "Envelope open video",
       description: "The reveal animation guests see before the save the date and RSVP pages. The first frame becomes the poster.",

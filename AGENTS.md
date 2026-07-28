@@ -23,7 +23,7 @@ Conventions for this Rails app. Prefer matching existing patterns over introduci
 - **`Platform::`** — marketing landing, signup, and login on the apex host.
 - **`Public::`** — guest-facing wedding site (save the date, RSVP, root) on a wedding host.
 - **`Admin::`** — staff UI on a wedding host; inherits **`Admin::BaseController`** (auth + ownership + `WeddingConcern`, **`layout "admin"`**).
-  - **Wedding** (`/admin/website/:section`) — essentials, meals, domain, notifications.
+  - **Wedding** (`/admin/website/:section`, plus Events) — essentials, meals, domain, notifications, and day-of events.
   - **Theme** (`/admin/theme/:section`) — look & feel plus guest-page copy, photos, and placements beside a live preview.
 - **`Dispo::`** — disposable camera experience under the `/dispo` scope on a wedding host.
 

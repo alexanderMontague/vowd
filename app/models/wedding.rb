@@ -231,6 +231,11 @@ class Wedding < ApplicationRecord
     placement("homepage_hero").presence || (self.class.image_entry?(hero) ? hero : nil)
   end
 
+  # Link-preview photo: an explicit share placement, otherwise the hero.
+  def share_image
+    placement("share_image").presence || hero_image
+  end
+
   # Party member photo: library asset id first, then a legacy inline entry.
   def party_member_image(member)
     data = member.to_h

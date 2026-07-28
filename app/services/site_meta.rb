@@ -38,11 +38,12 @@ class SiteMeta
   end
 
   # Photos ranked best first, so a couple who has filled in only one part of their
-  # site still gets a picture on the card.
+  # site still gets a picture on the card. Share image wins when set; otherwise the
+  # hero (and then the usual page/gallery fallbacks).
   def image_candidates
     return [] if wedding.blank?
 
-    [wedding.hero_image, *fallback_slot_photos, first_gallery_photo].select { |entry| Wedding.image_entry?(entry) }
+    [wedding.share_image, *fallback_slot_photos, first_gallery_photo].select { |entry| Wedding.image_entry?(entry) }
   end
 
   private

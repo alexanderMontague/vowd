@@ -37,19 +37,7 @@
     <% end %>
   </div>
 <% else %>
-  <div class="max-w-3xl">
-    <div class="admin-page-header">
-      <h1>Wedding</h1>
-      <p>
-        Essentials and logistics for
-        <a href="<%= root_url(host: subdomain_host) %>" class="text-secondary underline" target="_blank" rel="noopener">
-          <%= subdomain_host %>
-        </a>.
-        Site pages and look are edited under
-        <%= link_to "Theme", admin_theme_section_path(section: ThemeSections::DEFAULT_KEY), class: "text-secondary underline" %>.
-      </p>
-    </div>
-
+  <%= render layout: "admin/website/hub", locals: { active: @section.key } do %>
     <% if @wedding.errors.any? %>
       <div class="alert alert-error mb-6">
         <h3><%= pluralize(@wedding.errors.count, "error") %> prohibited this wedding from being saved:</h3>
@@ -61,28 +49,19 @@
       </div>
     <% end %>
 
-    <div class="admin-editor">
-      <aside class="admin-editor-nav" aria-label="Wedding sections">
-        <% WebsiteSections.definitions.each do |section| %>
-          <%= link_to section.label,
-              admin_website_section_path(section: section.key),
-              class: class_names("admin-editor-nav-link", "admin-editor-nav-link-active" => section.key == @section.key) %>
-        <% end %>
-      </aside>
+    <%= form_with model: @wedding,
+        url: admin_website_section_path(section: @section.key),
+        method: :patch,
+        data: {
+          controller: "form-autosave",
+          action: "change->form-autosave#queue input->form-autosave#queue",
+          form_autosave_toast_value: "Saved"
+        } do |f| %>
+      <div class="card mb-6">
+        <%= render "admin/website/sections/#{@section.key}", f: f, wedding: @wedding, subdomain_host: subdomain_host %>
+      </div>
 
-      <%= form_with model: @wedding,
-          url: admin_website_section_path(section: @section.key),
-          method: :patch,
-          class: "admin-editor-body" do |f| %>
-        <div class="card mb-6">
-          <%= render "admin/website/sections/#{@section.key}", f: f, wedding: @wedding, subdomain_host: subdomain_host %>
-        </div>
-
-        <div class="flex items-center gap-3">
-          <%= f.submit "Save changes", class: "btn btn-primary" %>
-          <p class="text-xs text-muted">Changes apply immediately.</p>
-        </div>
-      <% end %>
-    </div>
-  </div>
+      <p class="text-xs text-muted">Changes save automatically.</p>
+    <% end %>
+  <% end %>
 <% end %>

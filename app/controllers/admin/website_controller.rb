@@ -26,11 +26,24 @@ module Admin
       end
 
       if @wedding.update(attrs)
-        redirect_to admin_website_section_path(section: @section.key),
-                    notice: "Wedding details saved."
+        respond_to do |format|
+          format.json { render json: { ok: true } }
+          format.html do
+            redirect_to admin_website_section_path(section: @section.key),
+                        notice: "Wedding details saved."
+          end
+        end
       else
-        flash.now[:alert] = @wedding.errors.full_messages.to_sentence
-        render :show, status: :unprocessable_entity
+        respond_to do |format|
+          format.json do
+            render json: { ok: false, error: @wedding.errors.full_messages.to_sentence },
+                   status: :unprocessable_entity
+          end
+          format.html do
+            flash.now[:alert] = @wedding.errors.full_messages.to_sentence
+            render :show, status: :unprocessable_entity
+          end
+        end
       end
     end
 

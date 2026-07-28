@@ -38,6 +38,15 @@ module Public
       assert_select "input[name='save_the_date_signup[email]']"
     end
 
+    test "show keeps display typography for the invitation hero" do
+      get public_save_the_date_path, params: { skip_video: "1" }
+
+      assert_response :success
+      assert_select "p.invitation-eyebrow", text: /Save the Date/i
+      assert_select "h1.invitation-title", text: @wedding.title
+      assert_select "[data-site-editor-target='hotspot']", count: 0
+    end
+
     test "signup stores a contact signup and redirects with a notice" do
       assert_difference("SaveTheDateSignup.count", 1) do
         post public_save_the_date_signup_path, params: {

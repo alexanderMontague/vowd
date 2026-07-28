@@ -6,7 +6,12 @@
     </p>
   </div>
 
-  <%= form_with url: admin_settings_path, method: :patch do |f| %>
+  <%= form_with url: admin_settings_path, method: :patch,
+      data: {
+        controller: "form-autosave",
+        action: "change->form-autosave#queue",
+        form_autosave_toast_value: "Settings saved"
+      } do |f| %>
     <% @flag_definitions.each do |category, flags| %>
       <div class="card mb-6">
         <h2 class="text-xs font-semibold uppercase tracking-widest text-neutral-400 mb-5">
@@ -73,9 +78,8 @@
       </div>
     </div>
 
-    <div class="flex items-center gap-3">
-      <%= f.submit "Save Settings", class: "btn btn-primary" %>
-      <p class="text-xs text-muted">Changes take effect immediately.</p>
+    <div class="text-xs text-muted">
+      Changes save automatically.
     </div>
   <% end %>
 </div>
