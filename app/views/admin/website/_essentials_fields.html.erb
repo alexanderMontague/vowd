@@ -50,17 +50,22 @@
   </div>
 
   <div class="form-group">
-    <%= f.label :venue_name %>
-    <%= f.text_field :venue_name, class: "form-control" %>
+    <%= f.label :venue_name, "Venue name" %>
+    <%= f.text_field :venue_name, class: "form-control", placeholder: "Liberty Grand" %>
+  </div>
+
+  <div class="form-group md:col-span-2">
+    <%= f.label :venue_address, "Venue address" %>
+    <%= f.text_field :venue_address, class: "form-control", placeholder: "25 British Columbia Rd" %>
   </div>
 
   <div class="form-group">
-    <%= f.label :venue_city %>
-    <%= f.text_field :venue_city, class: "form-control" %>
+    <%= f.label :venue_city, "City" %>
+    <%= f.text_field :venue_city, class: "form-control", placeholder: "Toronto" %>
   </div>
 
   <div class="form-group">
-    <%= f.label :venue_region %>
-    <%= f.text_field :venue_region, class: "form-control" %>
+    <%= f.label :venue_region, "Region" %>
+    <%= f.text_field :venue_region, class: "form-control", placeholder: "Ontario" %>
   </div>
 </div>

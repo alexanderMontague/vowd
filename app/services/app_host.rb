@@ -35,8 +35,24 @@ module AppHost
     slug
   end
 
-  # Always the slug subdomain — session cookies are scoped to APP_BASE_DOMAIN
-  # and will not stick on a wedding's custom_domain.
+  # Session cookie Domain attribute for this request host.
+  # - Platform apex + wedding subdomains share `.APP_BASE_DOMAIN` so login
+  #   survives redirects between them.
+  # - Custom domains get a host-only cookie (`nil`). A Domain=.APP_BASE_DOMAIN
+  #   cookie is rejected by the browser on those hosts, which breaks CSRF on
+  #   guest forms (save the date, RSVP, etc.).
+  def session_cookie_domain(host)
+    normalized = normalize_host(host)
+    base = base_domain
+    return nil if base.blank? || %w[localhost 127.0.0.1].include?(base)
+
+    if normalized == base || normalized == "www.#{base}" || normalized.end_with?(".#{base}")
+      ".#{base}"
+    end
+  end
+
+  # Always the slug subdomain — session cookies for APP_BASE_DOMAIN hosts are
+  # shared across that tree; custom domains use a separate host-only cookie.
   def wedding_admin_url(wedding, path: "/admin")
     absolute_url(host: subdomain_host(wedding.id), path: path)
   end

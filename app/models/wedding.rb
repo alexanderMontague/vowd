@@ -7,8 +7,6 @@ class Wedding < ApplicationRecord
 
   SLUG_FORMAT = /\A[a-z0-9]+(?:-[a-z0-9]+)*\z/
 
-  VENUE_LABEL_PARTS = %w[name city region].freeze
-
   # Where a stored image entry can carry its source: a library asset's key, an
   # uploaded object key, or a legacy absolute url.
   IMAGE_ENTRY_KEYS = %w[object_key url image_url].freeze
@@ -145,18 +143,22 @@ class Wedding < ApplicationRecord
   end
 
   def venue
-    return {} if venue_name.blank? && venue_city.blank? && venue_region.blank?
+    return {} if venue_name.blank? && venue_address.blank? && venue_city.blank? && venue_region.blank?
 
     {
       "name" => venue_name,
+      "address" => venue_address,
       "city" => venue_city,
       "region" => venue_region
     }
   end
 
-  # "The Grand Hall, Toronto, Ontario" — the venue as a single readable line.
+  # Street address (or name when address is blank), city, and region —
+  # e.g. "25 British Columbia Rd, Toronto, Ontario".
   def self.venue_label(venue_hash)
-    venue_hash.to_h.values_at(*VENUE_LABEL_PARTS).compact_blank.join(", ")
+    hash = venue_hash.to_h.with_indifferent_access
+    primary = hash[:address].presence || hash[:name]
+    [primary, hash[:city], hash[:region]].compact_blank.join(", ")
   end
 
   # True when an entry actually points at a photo, whatever shape it is stored in.

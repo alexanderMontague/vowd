@@ -34,6 +34,28 @@ class WeddingTest < ActiveSupport::TestCase
     assert unconfigured.configured?
   end
 
+  test "venue_label prefers address over name for the location line" do
+    @wedding.update!(
+      venue_name: "Liberty Grand",
+      venue_address: "25 British Columbia Rd",
+      venue_city: "Toronto",
+      venue_region: "Ontario"
+    )
+
+    assert_equal "25 British Columbia Rd, Toronto, Ontario", @wedding.venue_label
+  end
+
+  test "venue_label falls back to name when address is blank" do
+    @wedding.update!(
+      venue_name: "Liberty Grand",
+      venue_address: nil,
+      venue_city: "Toronto",
+      venue_region: "Ontario"
+    )
+
+    assert_equal "Liberty Grand, Toronto, Ontario", @wedding.venue_label
+  end
+
   test "dispo_camera_closes_at is safe when date is blank" do
     wedding = create_wedding(date: nil, ceremony_time: nil)
 

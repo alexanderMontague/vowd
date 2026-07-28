@@ -101,6 +101,30 @@ module Public
       assert flash[:alert].present?
     end
 
+    test "signup on a custom domain accepts a CSRF-protected POST" do
+      @wedding.update!(custom_domain: "acme.example.com")
+      host! @wedding.custom_domain
+
+      ActionController::Base.allow_forgery_protection = true
+
+      get public_save_the_date_path, params: { skip_video: "1" }
+      assert_response :success
+
+      token = css_select("input[name=authenticity_token]").first["value"]
+      assert token.present?
+
+      assert_difference("SaveTheDateSignup.count", 1) do
+        post public_save_the_date_signup_path, params: {
+          authenticity_token: token,
+          save_the_date_signup: { name: "Alex", email: "alex@custom.test", phone_number: "" }
+        }
+      end
+
+      assert_redirected_to public_save_the_date_path(skip_video: 1)
+    ensure
+      ActionController::Base.allow_forgery_protection = false
+    end
+
     private
 
     def create_asset(attrs = {})

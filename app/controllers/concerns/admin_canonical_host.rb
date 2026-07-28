@@ -1,5 +1,6 @@
-# Admin sessions are cookie-scoped to APP_BASE_DOMAIN. Custom-domain hosts
-# cannot receive that cookie, so admin traffic always uses the slug subdomain.
+# Admin sessions share the APP_BASE_DOMAIN cookie tree. Custom-domain hosts
+# use a separate host-only cookie, so admin traffic always uses the slug
+# subdomain where that shared session lives.
 module AdminCanonicalHost
   extend ActiveSupport::Concern
 

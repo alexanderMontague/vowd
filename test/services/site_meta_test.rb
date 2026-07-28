@@ -25,8 +25,14 @@ class SiteMetaTest < ActiveSupport::TestCase
     assert_equal "Join us on Saturday, July 10, 2027 at The Grand Hall, Toronto, Ontario.", meta.description
   end
 
+  test "the description uses the street address when set" do
+    @wedding.update!(venue_address: "25 British Columbia Rd")
+
+    assert_equal "Join us on Saturday, July 10, 2027 at 25 British Columbia Rd, Toronto, Ontario.", meta.description
+  end
+
   test "the description keeps whichever of date and venue exists" do
-    @wedding.update!(venue_name: nil, venue_city: nil, venue_region: nil)
+    @wedding.update!(venue_name: nil, venue_address: nil, venue_city: nil, venue_region: nil)
     assert_equal "Join us on Saturday, July 10, 2027.", meta.description
 
     @wedding.update!(date: nil, venue_name: "The Grand Hall")
@@ -34,7 +40,7 @@ class SiteMetaTest < ActiveSupport::TestCase
   end
 
   test "the description falls back to the hero tagline, then to a generic line" do
-    @wedding.update!(date: nil, venue_name: nil, venue_city: nil, venue_region: nil,
+    @wedding.update!(date: nil, venue_name: nil, venue_address: nil, venue_city: nil, venue_region: nil,
                      hero: { "tagline" => "Request the Honour of Your Presence" })
 
     assert_equal "Request the Honour of Your Presence", meta.description

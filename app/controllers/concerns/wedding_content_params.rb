@@ -6,7 +6,7 @@ module WeddingContentParams
   CORE_FIELDS = %i[
     title partner1 partner2 initials last_name
     date ceremony_time wedding_duration_hours timezone rsvp_deadline
-    venue_name venue_city venue_region custom_domain
+    venue_name venue_address venue_city venue_region custom_domain
   ].freeze
 
   private
