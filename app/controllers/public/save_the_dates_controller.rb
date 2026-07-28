@@ -70,7 +70,7 @@ module Public
         DTSTAMP:#{Time.current.utc.strftime('%Y%m%dT%H%M%SZ')}
         DTSTART:#{start_time.utc.strftime('%Y%m%dT%H%M%SZ')}
         DTEND:#{end_time.utc.strftime('%Y%m%dT%H%M%SZ')}
-        SUMMARY:#{escape_ics_text(title)}
+        SUMMARY:#{escape_ics_text("#{title} Wedding")}
         DESCRIPTION:#{escape_ics_text(description)}
         LOCATION:#{escape_ics_text(location)}
         STATUS:CONFIRMED
