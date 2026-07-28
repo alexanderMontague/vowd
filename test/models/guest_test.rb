@@ -64,6 +64,68 @@ class GuestTest < ActiveSupport::TestCase
     assert_includes guest.errors[:wedding_id], "can't be blank"
   end
 
+  test "destroy nullifies matched save the date signups and keeps the lead" do
+    guest = create_guest(@household_a, email: "ada@example.com")
+    signup = SaveTheDateSignup.create!(
+      wedding_id: @wedding_a.id,
+      email: "ada@example.com",
+      guest: guest,
+      matched_at: Time.current
+    )
+
+    assert_difference("Guest.count", -1) do
+      assert_no_difference("SaveTheDateSignup.count") do
+        guest.destroy!
+      end
+    end
+
+    signup.reload
+    assert_nil signup.guest_id
+    assert_nil signup.matched_at
+  end
+
+  test "destroy removes rsvps invitations and notification deliveries" do
+    guest = create_guest(@household_a, email: "ada@example.com")
+    Invitation.create!(guest: guest, status: "sent", sent_at: Time.current)
+    NotificationDelivery.create!(
+      guest: guest,
+      wedding_id: @wedding_a.id,
+      reminder_key: "week_before",
+      channel: "email",
+      scheduled_for: Date.current,
+      status: "queued"
+    )
+
+    assert_difference("RSVP.count", -1) do
+      assert_difference("Invitation.count", -1) do
+        assert_difference("NotificationDelivery.count", -1) do
+          guest.destroy!
+        end
+      end
+    end
+  end
+
+  test "destroy nullifies disposable photo attribution" do
+    guest = create_guest(@household_a)
+    photo = DisposablePhoto.create!(
+      wedding_id: @wedding_a.id,
+      guest: guest,
+      object_key: "test/#{SecureRandom.hex(8)}.jpg",
+      content_type: "image/jpeg",
+      byte_size: 1234,
+      flash_enabled: false,
+      captured_at: Time.current
+    )
+
+    DisposableCamera::StorageClient.stub(:delete!, true) do
+      assert_no_difference("DisposablePhoto.count") do
+        guest.destroy!
+      end
+    end
+
+    assert_nil photo.reload.guest_id
+  end
+
   private
 
   def build_guest(household, attrs = {})

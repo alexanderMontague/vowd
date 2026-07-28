@@ -5,6 +5,10 @@ class Guest < ApplicationRecord
   has_one :rsvp, dependent: :destroy
   has_many :invitations, dependent: :destroy
   has_many :notification_deliveries, dependent: :destroy
+  # Keep the contact lead; only the guest match is cleared.
+  has_many :save_the_date_signups, dependent: :nullify
+  # Photos stay in the wedding gallery; attribution is optional.
+  has_many :disposable_photos, dependent: :nullify
 
   validates :first_name, presence: true
   validates :last_name, presence: true
@@ -14,6 +18,8 @@ class Guest < ApplicationRecord
 
   before_validation :set_wedding_id_from_household, on: :create
   before_validation :generate_invite_code, on: :create
+  # Runs before `dependent: :nullify` so matched_at is cleared while guest_id still matches.
+  before_destroy :clear_save_the_date_matches, prepend: true
   after_create :create_default_rsvp
 
   scope :with_email, -> { where.not(email: nil).where.not(email: "") }
@@ -50,5 +56,9 @@ class Guest < ApplicationRecord
 
   def create_default_rsvp
     create_rsvp!(status: "pending") if rsvp.blank?
+  end
+
+  def clear_save_the_date_matches
+    save_the_date_signups.update_all(matched_at: nil)
   end
 end

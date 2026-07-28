@@ -13,7 +13,9 @@ module Admin
       @households = current_wedding.households.order(:name)
     end
 
-    def show; end
+    def show
+      redirect_to edit_admin_guest_path(@guest)
+    end
 
     def new
       redirect_to new_admin_household_path, notice: "Please create guests via the household form"
