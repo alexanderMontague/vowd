@@ -14,13 +14,15 @@
       ---------------------------------------------------------------------------- %>
   <section class="parallax-hero">
     <div class="parallax-hero__backdrop">
-      <% if hero_src.present? %>
-        <%= image_tag hero_src, alt: current_wedding.title %>
-      <% else %>
-        <%= render "public/shared/ornament",
-            name: "drapery-backdrop",
-            css_class: "parallax-ornament--cover inset-0",
-            opacity: 1 %>
+      <%= editor_slot("homepage_hero") do %>
+        <% if hero_src.present? %>
+          <%= image_tag hero_src, alt: current_wedding.title %>
+        <% else %>
+          <%= render "public/shared/ornament",
+              name: "drapery-backdrop",
+              css_class: "parallax-ornament--cover inset-0",
+              opacity: 1 %>
+        <% end %>
       <% end %>
     </div>
 
@@ -53,20 +55,24 @@
       <p class="parallax-meta mb-8">
         <%= current_wedding.hero["eyebrow"].presence || "Together with our families" %>
       </p>
-      <h1 class="parallax-title mb-8"><%= current_wedding.title %></h1>
+      <%= editor_essentials(tag: :h1, css_class: "parallax-title mb-8") do %>
+        <%= current_wedding.title %>
+      <% end %>
       <div class="wedding-divider-horizontal mb-8 w-24"></div>
 
-      <% if current_wedding.hero["tagline"].present? %>
-        <p class="parallax-lede mb-10 max-w-xl">
-          <%= current_wedding.hero["tagline"] %>
-        </p>
+      <%= editor_text("hero.tagline", tag: :p, css_class: "parallax-lede mb-10 max-w-xl") do %>
+        <%= current_wedding.hero["tagline"] %>
       <% end %>
 
       <div class="space-y-3">
         <% if current_wedding.date %>
-          <p class="parallax-meta"><%= format_date_elegant(current_wedding.date) %></p>
+          <%= editor_essentials(tag: :p, css_class: "parallax-meta") do %>
+            <%= format_date_elegant(current_wedding.date) %>
+          <% end %>
         <% end %>
-        <p class="parallax-meta opacity-70"><%= full_venue_name(venue) %></p>
+        <%= editor_essentials(tag: :p, css_class: "parallax-meta opacity-70") do %>
+          <%= full_venue_name(venue) %>
+        <% end %>
       </div>
 
       <div class="parallax-scroll-cue mt-14"></div>
@@ -106,13 +112,13 @@
 
           <div>
             <p class="parallax-meta mb-6">Our Story</p>
-            <%= render "public/shared/section_title", title: story["title"], centered: false %>
+            <%= render "public/shared/section_title", title: story["title"], centered: false, field: "story.title" %>
             <div class="parallax-lede">
               <% Array(story["paragraphs"]).each do |paragraph| %>
                 <p><%= paragraph %></p>
               <% end %>
-              <% if story["closing"].present? %>
-                <p class="italic text-ink-soft"><%= story["closing"] %></p>
+              <%= editor_text("story.closing", tag: :p, css_class: "italic text-ink-soft") do %>
+                <%= story["closing"] %>
               <% end %>
             </div>
           </div>
@@ -211,7 +217,8 @@
         <div class="mb-16 text-center">
           <%= render "public/shared/section_title",
               title: current_wedding.gallery_content["homepage_title"],
-              centered: true %>
+              centered: true,
+              field: "photos_page.homepage_title" %>
         </div>
 
         <div class="parallax-gallery">
@@ -270,13 +277,17 @@
       <% end %>
 
       <% if site_navigation.visible?("rsvp") %>
-        <%= render "public/shared/section_title", title: current_wedding.rsvp["title"], centered: true %>
-        <p class="parallax-lede mx-auto mb-12 max-w-lg">
+        <%= render "public/shared/section_title", title: current_wedding.rsvp["title"], centered: true, field: "rsvp_copy.title" %>
+        <%= editor_text("rsvp_copy.description", tag: :p, css_class: "parallax-lede mx-auto mb-12 max-w-lg", multiline: true) do %>
           <%= current_wedding.rsvp["description"] %>
-        </p>
-        <%= link_to current_wedding.rsvp["button_text"], public_rsvp_lookup_path,
-            class: "btn-wedding-primary" %>
-        <p class="parallax-meta mt-10"><%= current_wedding.rsvp["lookup_hint"] %></p>
+        <% end %>
+        <%= editor_text("rsvp_copy.button_text", tag: :span, css_class: "inline-block") do %>
+          <%= link_to current_wedding.rsvp["button_text"], public_rsvp_lookup_path,
+              class: "btn-wedding-primary" %>
+        <% end %>
+        <%= editor_text("rsvp_copy.lookup_hint", tag: :p, css_class: "parallax-meta mt-10") do %>
+          <%= current_wedding.rsvp["lookup_hint"] %>
+        <% end %>
       <% end %>
     </div>
   </section>

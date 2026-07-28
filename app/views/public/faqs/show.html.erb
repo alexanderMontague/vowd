@@ -1,11 +1,13 @@
 <div class="min-h-screen">
   <%= render "public/shared/page_header",
       title: current_wedding.faq["title"],
-      subtitle: current_wedding.faq["subtitle"] %>
+      subtitle: current_wedding.faq["subtitle"],
+      title_field: "faq.title",
+      subtitle_field: "faq.subtitle" %>
 
   <section class="px-4 pb-24">
     <div class="mx-auto max-w-3xl">
-      <div class="bg-surface-alt shadow-xl border border-hairline divide-y divide-hairline animate-fade-in-up" style="animation-delay: 0.2s;">
+      <%= editor_panel("faq", tag: :div, css_class: "bg-surface-alt shadow-xl border border-hairline divide-y divide-hairline animate-fade-in-up") do %>
         <% current_wedding.faq["questions"]&.each do |item| %>
           <details class="group px-8 md:px-12">
             <summary class="flex items-center justify-between gap-6 py-7 cursor-pointer list-none">
@@ -23,7 +25,7 @@
             </div>
           </details>
         <% end %>
-      </div>
+      <% end %>
 
       <div class="mt-10 text-center">
         <%= link_to "← Return Home", root_path, class: "text-sm text-ink-faint font-light tracking-wider hover:text-ink-muted transition-colors" %>

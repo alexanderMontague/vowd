@@ -1,108 +1,168 @@
 <%
   preview_page = SitePages.find(@section.preview_page)
   preview_path = site_page_path(preview_page)
+  content_save_section = @section.key == "look" ? "home" : @section.key
+  page_paths = ThemeSections.definitions.reject { |section| section.key == "look" }.to_h do |section|
+    [site_page_path(SitePages.find(section.preview_page)), section.key]
+  end
+  section_urls = ThemeSections.definitions.to_h do |section|
+    [section.key, admin_theme_section_path(section: section.key)]
+  end
 %>
 
-<div class="theme-editor"
-     data-controller="theme-editor<%= " asset-picker" unless @section.key == "look" %>"
+<% content_for :admin_main_class, "admin-main--theme-editor" %>
+
+<div class="theme-editor theme-editor--visual"
+     data-controller="theme-editor asset-picker"
      data-theme-editor-preview-url-value="<%= admin_theme_preview_path %>"
-     <% unless @section.key == "look" %>
-       data-asset-picker-usage-value="<%= AssetUsageIndex.call(@wedding).to_json %>"
-     <% end %>
-     data-action="<%= "nested-form:removed->asset-picker#refreshUsage gallery-lightbox:opened->asset-picker#refreshUsage" unless @section.key == "look" %>">
-  <div class="admin-page-header">
-    <h1>Theme</h1>
-    <p>
-      Design your guest site and edit each page’s copy and photos beside a live preview.
-      Look &amp; feel changes stay in draft until you save; page content saves immediately.
-    </p>
-  </div>
+     data-theme-editor-save-url-value="<%= admin_theme_section_path(section: content_save_section) %>"
+     data-theme-editor-look-url-value="<%= admin_theme_section_path(section: "look") %>"
+     data-theme-editor-section-value="<%= @section.key %>"
+     data-theme-editor-essentials-url-value="<%= admin_website_section_path(section: "essentials") %>"
+     data-theme-editor-pages-value="<%= page_paths.to_json %>"
+     data-theme-editor-section-urls-value="<%= section_urls.to_json %>"
+     data-asset-picker-usage-value="<%= AssetUsageIndex.call(@wedding).to_json %>"
+     data-action="nested-form:removed->asset-picker#refreshUsage gallery-lightbox:opened->asset-picker#refreshUsage asset-picker:opened->theme-editor#onPickerOpened">
 
-  <nav class="admin-hub-nav" aria-label="Theme sections">
-    <% ThemeSections.by_group.each do |group, sections| %>
-      <span class="admin-hub-nav-group"><%= ThemeSections.group_label(group) %></span>
-      <% sections.each do |section| %>
-        <%= link_to section.label,
-            admin_theme_section_path(section: section.key),
-            class: class_names("admin-hub-nav-link", "admin-hub-nav-link-active" => section.key == @section.key) %>
-      <% end %>
-    <% end %>
-  </nav>
+  <header class="theme-editor__chrome">
+    <div class="theme-editor__chrome-brand">
+      <p class="theme-editor__chrome-title">Theme</p>
+      <p class="theme-editor__chrome-hint">Use the site menu in the preview to move between pages.</p>
+    </div>
+    <span class="theme-editor-status" data-theme-editor-target="status"></span>
+  </header>
 
-  <% if @section.key == "look" && @unsaved_changes %>
+  <% if @unsaved_changes %>
     <div class="theme-editor-notice">
-      <span>You have unsaved theme changes. The preview is showing them; your guests are not.</span>
-      <%= button_to "Discard changes", admin_theme_preview_path,
+      <span>Unsaved theme changes — guests still see the last save.</span>
+      <%= button_to "Discard", admin_theme_preview_path,
                     method: :delete,
                     class: "btn btn-sm btn-secondary" %>
     </div>
   <% end %>
 
-  <div class="theme-editor-panes">
-    <div class="theme-editor-controls">
-      <% if @section.key == "look" %>
-        <%= form_with url: admin_theme_section_path(section: @section.key), method: :patch,
+  <%= render "admin/themes/preview_pane", preview_path: preview_path %>
+
+  <div class="theme-editor-drawer__backdrop"
+       data-theme-editor-target="backdrop"
+       data-action="click->theme-editor#closeDrawer"
+       hidden></div>
+
+  <aside class="theme-editor-drawer"
+         data-theme-editor-target="drawer"
+         aria-hidden="true">
+    <header class="theme-editor-drawer__header">
+      <div class="theme-editor-drawer__tabs" role="tablist" aria-label="Settings">
+        <button type="button"
+                class="theme-editor-drawer__tab is-active"
+                role="tab"
+                aria-selected="true"
+                data-theme-editor-target="pageTab"
+                data-action="theme-editor#showPageTab">
+          <span data-theme-editor-target="drawerTitle">Page</span>
+        </button>
+        <button type="button"
+                class="theme-editor-drawer__tab"
+                role="tab"
+                aria-selected="false"
+                data-theme-editor-target="themeTab"
+                data-action="theme-editor#showThemeTab">
+          Theme
+        </button>
+      </div>
+      <button type="button"
+              class="btn btn-sm btn-secondary"
+              data-action="theme-editor#closeDrawer">
+        Done
+      </button>
+    </header>
+
+    <div class="theme-editor-drawer__body">
+      <div class="theme-editor-panel"
+           data-theme-editor-target="panel"
+           data-panel="look"
+           hidden>
+        <%= form_with url: admin_theme_section_path(section: "look"), method: :patch,
+                      html: { id: "theme_look_form" },
                       class: "theme-editor-form",
-                      data: { theme_editor_target: "form" } do |f| %>
+                      data: { theme_editor_target: "lookForm" } do |f| %>
           <%= render "admin/themes/theme_choices", theme: @theme %>
           <%= render "admin/themes/type_fields", theme: @theme %>
           <%= render "admin/themes/color_fields", theme: @theme %>
           <%= render "admin/themes/page_toggles", theme: @theme %>
-
-          <div class="theme-editor-actions">
-            <%= f.submit "Save theme", class: "btn btn-primary" %>
-            <span class="theme-editor-status" data-theme-editor-target="status">
-              <%= @unsaved_changes ? "Previewing unsaved changes" : "Preview matches your live site" %>
-            </span>
-          </div>
         <% end %>
-      <% else %>
-        <%= form_with model: @wedding,
-                      url: admin_theme_section_path(section: @section.key),
-                      method: :patch,
-                      class: "theme-editor-form" do |f| %>
-          <%= render "admin/themes/sections/#{@section.key}",
-              wedding: @wedding,
-              library_assets: @library_assets,
-              library_index: @library_index %>
+      </div>
 
-                          <div class="theme-editor-actions">
-            <%= f.submit "Save page", class: "btn btn-primary" %>
-            <p class="theme-editor-status mb-0">Saves to your live guest site</p>
-          </div>
-        <% end %>
-
-        <dialog class="admin-picker-dialog" data-asset-picker-target="dialog" data-action="click->asset-picker#backdropClose">
-          <div class="admin-picker-dialog__header">
-            <div>
-              <p class="admin-picker-dialog__title">Choose from your library</p>
-              <p class="admin-picker-dialog__hint" data-asset-picker-target="hint"></p>
-            </div>
-            <button type="button" class="btn btn-sm btn-primary" data-action="asset-picker#close">Done</button>
-          </div>
-          <div class="admin-picker-dialog__options" id="photo_library_options">
-            <%= render partial: "admin/website/picker_option", collection: @library_assets, as: :asset %>
-          </div>
-          <p class="admin-picker-dialog__empty">Upload photos under the Photos section first.</p>
-        </dialog>
-
-        <template data-asset-picker-target="itemTemplate">
-          <%= render "admin/website/picker_selection",
-              field_name: "__FIELD_NAME__",
-              asset_id: "__ASSET_ID__",
-              thumb_url: "__THUMB_URL__" %>
-        </template>
-      <% end %>
-
-      <%# Must sit outside the Save form — nested <form> tags close the parent early in the browser. %>
-      <%= form_with url: destroy_selected_admin_website_assets_path,
-          method: :delete,
-          id: "photo_library_bulk_delete",
-          class: "hidden",
-          data: { turbo: true } do %>
+      <% ThemeSections.definitions.select { |section| section.group == :pages }.each do |section| %>
+        <% panel_key = section.key == "home" ? "home_settings" : section.key %>
+        <div class="theme-editor-panel"
+             data-theme-editor-target="panel"
+             data-panel="<%= panel_key %>"
+             hidden>
+          <%= form_with model: @wedding,
+                        url: admin_theme_section_path(section: section.key),
+                        method: :patch,
+                        class: "theme-editor-form",
+                        data: {
+                          theme_editor_target: "contentForm",
+                          action: "change->theme-editor#autosaveForm input->theme-editor#autosaveFormDebounced"
+                        } do |f| %>
+            <%= render "admin/themes/sections/#{section.key}",
+                wedding: @wedding,
+                library_assets: @library_assets,
+                library_index: @library_index %>
+          <% end %>
+        </div>
       <% end %>
     </div>
 
-    <%= render "admin/themes/preview_pane", preview_path: preview_path %>
+    <footer class="theme-editor-drawer__footer" data-theme-editor-target="lookFooter" hidden>
+      <button type="submit" form="theme_look_form" class="btn btn-primary">Save theme</button>
+      <span class="theme-editor-status">Draft until you save</span>
+    </footer>
+  </aside>
+
+  <div class="theme-editor-slot-pickers" data-theme-editor-target="slotPickers" hidden>
+    <% SiteSlots.photo_slots.each do |slot| %>
+      <%= render "admin/website/asset_picker",
+          field_name: "wedding[placements][#{slot.key}][]",
+          assets: @wedding.placements_for(slot.key),
+          max: slot.max,
+          usage_prefix: SiteSlots.page_label(slot.page),
+          usage_label: slot.label,
+          empty_text: slot.label %>
+    <% end %>
   </div>
+
+  <dialog class="admin-picker-dialog"
+          data-asset-picker-target="dialog"
+          data-action="click->asset-picker#backdropClose close->theme-editor#onPickerClosed">
+    <div class="admin-picker-dialog__header">
+      <div>
+        <p class="admin-picker-dialog__title">Choose from your library</p>
+        <p class="admin-picker-dialog__hint" data-asset-picker-target="hint"></p>
+      </div>
+      <button type="button" class="btn btn-sm btn-primary" data-action="asset-picker#close">Done</button>
+    </div>
+    <div class="admin-picker-dialog__options" id="photo_library_options">
+      <%= render partial: "admin/website/picker_option", collection: @library_assets, as: :asset %>
+    </div>
+    <p class="admin-picker-dialog__empty">Upload photos under Photos settings first.</p>
+  </dialog>
+
+  <template data-asset-picker-target="itemTemplate">
+    <%= render "admin/website/picker_selection",
+        field_name: "__FIELD_NAME__",
+        asset_id: "__ASSET_ID__",
+        thumb_url: "__THUMB_URL__" %>
+  </template>
+
+  <%= form_with url: destroy_selected_admin_website_assets_path,
+      method: :delete,
+      id: "photo_library_bulk_delete",
+      class: "hidden",
+      data: { turbo: true } do %>
+  <% end %>
+
+  <div class="admin-toast-stack print:hidden" data-theme-editor-target="toastStack" aria-live="polite"></div>
 </div>

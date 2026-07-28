@@ -1,14 +1,16 @@
 <% delay_class = ["", "animation-delay-200", "animation-delay-400", "animation-delay-400"][index % 4] %>
 
 <div class="text-center animate-on-scroll <%= delay_class %>" data-scroll-animate-target="item">
-  <div class="w-40 h-40 rounded-full overflow-hidden mx-auto mb-6 border-2 border-hairline shadow-md">
-    <% if (src = wedding_asset_url(current_wedding.party_member_image(person))).present? %>
-      <%= image_tag src, alt: person["name"], class: "w-full h-full object-cover" %>
-    <% else %>
-      <div class="w-full h-full bg-hairline"></div>
-    <% end %>
-  </div>
-  <p class="wedding-meta mb-1"><%= person["role"] %></p>
-  <h3 class="font-theme-display text-2xl text-ink mb-1"><%= person["name"] %></h3>
-  <p class="text-sm text-ink-soft font-light italic"><%= person["relation"] %></p>
+  <%= editor_panel("wedding_party") do %>
+    <div class="w-40 h-40 rounded-full overflow-hidden mx-auto mb-6 border-2 border-hairline shadow-md">
+      <% if (src = wedding_asset_url(current_wedding.party_member_image(person))).present? %>
+        <%= image_tag src, alt: person["name"], class: "w-full h-full object-cover" %>
+      <% else %>
+        <div class="w-full h-full bg-hairline"></div>
+      <% end %>
+    </div>
+    <p class="wedding-meta mb-1"><%= person["role"] %></p>
+    <h3 class="font-theme-display text-2xl text-ink mb-1"><%= person["name"] %></h3>
+    <p class="text-sm text-ink-soft font-light italic"><%= person["relation"] %></p>
+  <% end %>
 </div>

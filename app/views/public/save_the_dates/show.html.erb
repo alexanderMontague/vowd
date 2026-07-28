@@ -3,9 +3,11 @@
   <div class="invitation-video-content hidden min-h-screen px-4 py-10 md:py-20"
        data-invitation-video-target="content">
     <%= render "public/shared/invitation_frame",
-        floating_assets: current_wedding.placements_for("save_the_date_floating") do %>
+        floating_assets: current_wedding.placements_for("save_the_date_floating"),
+        floating_slot: "save_the_date_floating" do %>
       <%= render "public/shared/invitation_hero",
           eyebrow: copy["eyebrow"],
+          eyebrow_field: "save_the_date_copy.eyebrow",
           title: current_wedding.title %>
 
       <% if flash[:notice].present? || flash[:alert].present? %>
@@ -16,12 +18,11 @@
 
       <div class="space-y-10 text-center">
         <%= render decor_partial("framed_photo"),
-            asset: current_wedding.placement("save_the_date_portrait") %>
+            asset: current_wedding.placement("save_the_date_portrait"),
+            slot: "save_the_date_portrait" %>
 
-        <% if copy["announcement"].present? %>
-          <p class="mx-auto max-w-md wedding-prose">
-            <%= copy["announcement"] %>
-          </p>
+        <%= editor_text("save_the_date_copy.announcement", tag: :p, css_class: "mx-auto max-w-md wedding-prose", multiline: true) do %>
+          <%= copy["announcement"] %>
         <% end %>
 
         <% if current_wedding.date %>
@@ -29,13 +30,13 @@
                data-controller="countdown"
                data-countdown-target-time-value="<%= wedding_datetime_iso(current_wedding) %>">
             <div class="border-y border-accent/30 py-8">
-              <p class="mb-2 font-theme-display text-3xl font-light text-ink md:text-4xl">
+              <%= editor_essentials(tag: :p, css_class: "mb-2 font-theme-display text-3xl font-light text-ink md:text-4xl") do %>
                 <%= format_date_elegant(current_wedding.date) %>
-              </p>
+              <% end %>
               <% if current_wedding.ceremony_time %>
-                <p class="text-lg wedding-prose">
+                <%= editor_essentials(tag: :p, css_class: "text-lg wedding-prose") do %>
                   <%= current_wedding.ceremony_time %>
-                </p>
+                <% end %>
               <% end %>
             </div>
 
@@ -60,43 +61,41 @@
           </div>
         <% end %>
 
-        <% if current_wedding.venue %>
-          <div class="space-y-1">
+        <%= editor_essentials(tag: :div, css_class: "space-y-1") do %>
+          <% if current_wedding.venue %>
             <p class="wedding-prose"><%= current_wedding.venue['name'] %></p>
             <p class="text-sm font-light text-ink-soft">
               <%= full_venue_name(current_wedding.venue) %>
             </p>
-          </div>
+          <% end %>
         <% end %>
 
         <%= render decor_partial("vase_photo"),
-            asset: current_wedding.placement("save_the_date_vase") %>
+            asset: current_wedding.placement("save_the_date_vase"),
+            slot: "save_the_date_vase" %>
 
-        <div class="space-y-4 text-center">
+        <div class="flex flex-col items-center gap-4 text-center">
           <% if current_wedding&.date %>
-            <%= link_to calendar_url,
-                target: "_blank",
-                rel: "noopener noreferrer",
-                class: "btn-wedding-primary inline-block" do %>
-              <%= copy["calendar_button_text"].presence || "Add to Calendar" %>
+            <%= editor_text("save_the_date_copy.calendar_button_text", tag: :div, css_class: "w-full") do %>
+              <%= link_to copy["calendar_button_text"].presence || "Add to Calendar",
+                  calendar_url,
+                  target: "_blank",
+                  rel: "noopener noreferrer",
+                  class: "btn-wedding-primary inline-block" %>
             <% end %>
           <% end %>
-          <% if copy["formal_note"].present? %>
-            <p class="text-xs font-light text-ink-faint">
-              <%= copy["formal_note"] %>
-            </p>
+          <%= editor_text("save_the_date_copy.formal_note", tag: :p, css_class: "text-xs font-light text-ink-faint") do %>
+            <%= copy["formal_note"] %>
           <% end %>
         </div>
 
         <div class="mx-auto max-w-md space-y-8 border-t border-accent/30 pt-10">
           <div class="space-y-2 text-center">
-            <% if copy["signup_eyebrow"].present? %>
-              <p class="invitation-eyebrow"><%= copy["signup_eyebrow"] %></p>
+            <%= editor_text("save_the_date_copy.signup_eyebrow", tag: :p, css_class: "invitation-eyebrow") do %>
+              <%= copy["signup_eyebrow"] %>
             <% end %>
-            <% if copy["signup_prompt"].present? %>
-              <p class="mx-auto max-w-sm wedding-prose">
-                <%= copy["signup_prompt"] %>
-              </p>
+            <%= editor_text("save_the_date_copy.signup_prompt", tag: :p, css_class: "mx-auto max-w-sm wedding-prose", multiline: true) do %>
+              <%= copy["signup_prompt"] %>
             <% end %>
           </div>
 
@@ -131,7 +130,9 @@
             </div>
 
             <div class="pt-2 flex justify-center">
-              <%= f.submit copy["submit_button_text"].presence || "Share My Details", class: "btn-wedding-primary" %>
+              <%= editor_text("save_the_date_copy.submit_button_text", tag: :span, css_class: "inline-block") do %>
+                <%= f.submit copy["submit_button_text"].presence || "Share My Details", class: "btn-wedding-primary" %>
+              <% end %>
             </div>
           <% end %>
         </div>

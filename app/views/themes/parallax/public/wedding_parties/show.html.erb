@@ -1,7 +1,11 @@
 <% party = current_wedding.wedding_party %>
 
 <div data-controller="scroll-animate parallax">
-  <%= render "public/shared/page_header", title: party["title"], subtitle: party["subtitle"] %>
+  <%= render "public/shared/page_header",
+      title: party["title"],
+      subtitle: party["subtitle"],
+      title_field: "wedding_party.title",
+      subtitle_field: "wedding_party.subtitle" %>
 
   <% [["bridesmaids", "bridesmaids_title", false], ["groomsmen", "groomsmen_title", true]].each do |group, title_key, banded| %>
     <% members = Array(party[group]) %>

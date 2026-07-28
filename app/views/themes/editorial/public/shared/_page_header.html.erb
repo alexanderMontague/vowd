@@ -6,9 +6,21 @@
       <p class="editorial-label"><%= local_assigns.fetch(:kicker, current_wedding.title) %></p>
     </div>
     <div>
-      <h1 class="editorial-headline mb-8"><%= title %></h1>
-      <% if local_assigns[:subtitle].present? %>
-        <p class="editorial-standfirst"><%= subtitle %></p>
+      <% if local_assigns[:title_field].present? %>
+        <%= editor_text(title_field, tag: :h1, css_class: "editorial-headline mb-8") do %>
+          <%= title %>
+        <% end %>
+      <% else %>
+        <h1 class="editorial-headline mb-8"><%= title %></h1>
+      <% end %>
+      <% if local_assigns[:subtitle].present? || (site_editor_active? && local_assigns[:subtitle_field].present?) %>
+        <% if local_assigns[:subtitle_field].present? %>
+          <%= editor_text(subtitle_field, tag: :p, css_class: "editorial-standfirst") do %>
+            <%= subtitle %>
+          <% end %>
+        <% else %>
+          <p class="editorial-standfirst"><%= subtitle %></p>
+        <% end %>
       <% end %>
     </div>
   </div>

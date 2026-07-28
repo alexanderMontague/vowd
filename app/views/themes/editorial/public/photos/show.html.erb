@@ -7,6 +7,8 @@
   <%= render "public/shared/page_header",
       title: gallery["title"],
       subtitle: gallery["subtitle"],
+      title_field: "photos_page.title",
+      subtitle_field: "photos_page.subtitle",
       kicker: "Portfolio" %>
 
   <% sections.each_with_index do |section, index| %>

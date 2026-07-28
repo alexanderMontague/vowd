@@ -1,7 +1,7 @@
 <%
   preview_path = local_assigns.fetch(:preview_path) { root_path }
 %>
-<section class="theme-preview">
+<section class="theme-preview theme-preview--canvas">
   <header class="theme-preview__bar">
     <p class="theme-preview__label">Preview</p>
 
@@ -57,21 +57,40 @@
           <path d="M21 3v6h-6"/>
         </svg>
       </button>
+
+      <span class="theme-preview__tools-divider" aria-hidden="true"></span>
+
+      <label class="theme-preview__skip-video" data-theme-editor-target="skipVideoControl" hidden>
+        <input type="checkbox"
+               data-theme-editor-target="skipVideo"
+               data-action="theme-editor#toggleSkipVideo">
+        <span>Skip intro</span>
+      </label>
+
+      <button type="button"
+              class="theme-preview__settings"
+              data-action="theme-editor#openSettings"
+              aria-label="Settings"
+              title="Settings">
+        Settings
+      </button>
     </div>
   </header>
 
   <div class="theme-preview__stage" data-theme-editor-target="frameStage">
-    <%# Same-origin, unsandboxed on purpose: the editor writes CSS variables straight
-        into this document for instant feedback, and the session carries the draft so
-        every link inside stays in preview. %>
+    <div class="theme-preview__loading" data-theme-editor-target="frameLoading" hidden>
+      <div class="theme-preview__skeleton" aria-hidden="true">
+        <div class="theme-preview__skeleton-bar theme-preview__skeleton-bar--nav"></div>
+        <div class="theme-preview__skeleton-hero"></div>
+        <div class="theme-preview__skeleton-bar theme-preview__skeleton-bar--title"></div>
+        <div class="theme-preview__skeleton-bar theme-preview__skeleton-bar--line"></div>
+        <div class="theme-preview__skeleton-bar theme-preview__skeleton-bar--line-short"></div>
+      </div>
+      <p class="theme-preview__loading-label">Updating preview…</p>
+    </div>
     <iframe src="<%= preview_path %>"
             title="Guest site preview"
             class="theme-preview__frame"
             data-theme-editor-target="frame"></iframe>
   </div>
-
-  <p class="theme-preview__note">
-    Click through the preview like a guest. Scheduled visibility rules are ignored here
-    so you can see every page the theme defines.
-  </p>
 </section>

@@ -813,6 +813,29 @@
     @apply pointer-events-none absolute inset-0 z-20;
   }
 
+  /* Theme editor: only the polaroids (or a corner chip when empty) are clickable —
+     never a full-bleed overlay that steals clicks from the invitation content. */
+  .site-editor-active .floating-photos-editor-hit {
+    @apply absolute inset-0 z-[25];
+    pointer-events: none;
+  }
+
+  .site-editor-active .floating-photos-editor-hit.site-editor-slot--empty {
+    @apply pointer-events-auto inset-x-auto bottom-auto left-auto right-2 top-2 z-[25]
+           flex min-h-0 w-auto max-w-[12rem] items-center justify-center rounded-md
+           border border-dashed border-neutral-300 bg-white/95 px-3 py-2 shadow-sm;
+  }
+
+  /* Keep the inset container non-interactive; only the polaroid figures receive clicks. */
+  .site-editor-active .floating-photos-editor-hit .floating-photos {
+    pointer-events: none;
+  }
+
+  .site-editor-active .floating-photos-editor-hit .floating-photo {
+    pointer-events: auto;
+    cursor: pointer;
+  }
+
   .floating-photo {
     @apply absolute m-0 overflow-hidden border border-accent/30 bg-surface-alt p-1.5 shadow-md sm:p-2;
   }
@@ -897,6 +920,13 @@
   .animate-on-scroll.visible {
     opacity: 1;
     transform: translateY(0);
+  }
+
+  /* Theme iframe: show entrance content immediately so scroll observers
+     (and mismatched target/class wrappers) never leave the preview blank. */
+  .site-editor-active .animate-on-scroll {
+    opacity: 1;
+    transform: none;
   }
 
   .animation-delay-200 {
@@ -1025,6 +1055,10 @@
     @apply max-w-container w-full mx-auto my-8 px-4 sm:px-6 lg:px-8 print:max-w-none print:mx-0 print:my-0 print:p-0;
   }
 
+  .admin-main--theme-editor {
+    @apply max-w-none my-0 px-0 sm:px-0 lg:px-0 h-[calc(100vh-0px)] lg:h-screen flex flex-col overflow-hidden;
+  }
+
   .admin-page-header {
     @apply mb-8;
   }
@@ -1132,7 +1166,7 @@
   }
 
   .admin-photo-library__grid {
-    @apply grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5;
+    @apply grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3;
   }
 
   .admin-photo-library__empty {
@@ -1168,11 +1202,11 @@
      live selections. Shared by the library grid, the picker options, and the
      lightbox preview. */
   .admin-usage-overlay {
-    @apply pointer-events-none absolute inset-x-0 bottom-0 m-0 flex flex-wrap gap-1 bg-white/85 p-1 empty:hidden;
+    @apply pointer-events-none absolute inset-x-0 bottom-0 m-0 flex flex-wrap gap-0.5 bg-ink/55 p-0.5 empty:hidden;
   }
 
   .admin-usage-badge {
-    @apply rounded-full bg-secondary-100 px-1.5 py-0.5 text-[10px] font-medium leading-tight text-secondary-700;
+    @apply max-w-full truncate rounded px-1 py-px text-[8px] font-medium leading-none text-white;
   }
 
   .admin-envelope-section {
@@ -1212,7 +1246,7 @@
   }
 
   .admin-picker-selection {
-    @apply relative size-18 shrink-0;
+    @apply relative size-28 shrink-0 sm:size-32;
   }
 
   .admin-picker-selection img {
@@ -1240,7 +1274,7 @@
   }
 
   .admin-picker-dialog__options {
-    @apply grid grid-cols-3 gap-2 sm:grid-cols-4 md:grid-cols-6;
+    @apply grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4;
   }
 
   .admin-picker-dialog__empty {
@@ -1264,30 +1298,125 @@
   }
 
   /* --------------------------------------------------------------------------
-     Theme editor
-
-     A form beside a live preview of the guest site. The preview column sticks so
-     the frame stays in view while working down a long form.
+     Theme editor — full-bleed visual canvas + slide-over drawer
      -------------------------------------------------------------------------- */
   .theme-editor {
-    @apply max-w-[100rem];
+    @apply relative flex min-h-0 flex-1 flex-col;
   }
 
-  .theme-editor-panes {
-    @apply grid gap-6 xl:grid-cols-[minmax(0,26rem)_minmax(0,1fr)] xl:gap-8 xl:items-start;
+  .theme-editor--visual {
+    @apply h-full;
+  }
+
+  .theme-editor__chrome {
+    @apply flex flex-wrap items-center justify-between gap-3 border-b border-border bg-neutral-50 px-4 py-3 sm:px-6;
+  }
+
+  .theme-editor__chrome-brand {
+    @apply min-w-0;
+  }
+
+  .theme-editor__chrome-title {
+    @apply m-0 font-sans text-sm font-semibold tracking-normal text-neutral-800;
+  }
+
+  .theme-editor__chrome-hint {
+    @apply m-0 mt-0.5 text-xs text-neutral-500;
+  }
+
+  .theme-editor__nav {
+    @apply flex min-w-0 flex-1 flex-wrap items-center gap-1 overflow-x-auto;
+  }
+
+  .theme-editor__nav-group {
+    @apply mr-1 ml-3 first:ml-0 text-[0.65rem] font-semibold uppercase tracking-widest text-neutral-400;
+  }
+
+  .theme-editor__nav-link {
+    @apply shrink-0 rounded-md px-3 py-1.5 text-sm text-neutral-600 no-underline transition-colors hover:bg-neutral-100;
+  }
+
+  .theme-editor__nav-link--active {
+    @apply bg-secondary text-white hover:bg-secondary;
+  }
+
+  .theme-editor__chrome-actions {
+    @apply flex shrink-0 flex-wrap items-center gap-3;
   }
 
   .theme-editor-notice {
-    @apply mb-6 flex flex-wrap items-center justify-between gap-4 rounded-md border border-warning-100
-           bg-warning-50 px-4 py-3 text-sm text-warning-600;
+    @apply flex flex-wrap items-center justify-between gap-4 border-b border-warning-100 bg-warning-50 px-4 py-2 text-sm text-warning-600 sm:px-6;
   }
 
   .theme-editor-actions {
-    @apply sticky bottom-0 flex flex-wrap items-center gap-4 border-t border-border bg-neutral-50/95 py-4 backdrop-blur-sm;
+    @apply flex flex-wrap items-center gap-4 border-t border-border bg-white py-4;
   }
 
   .theme-editor-status {
     @apply text-xs text-neutral-500;
+  }
+
+  .theme-editor-drawer__backdrop {
+    @apply fixed inset-0 z-[180] bg-ink/40;
+  }
+
+  .theme-editor-drawer {
+    @apply fixed inset-y-0 right-0 z-[190] flex w-full max-w-md translate-x-full flex-col border-l border-border
+           bg-white shadow-xl transition-transform duration-200 ease-out;
+  }
+
+  .theme-editor-drawer.is-open {
+    @apply translate-x-0;
+  }
+
+  @media (max-width: 639px) {
+    .theme-editor-drawer {
+      @apply inset-x-0 top-auto bottom-0 max-h-[85vh] max-w-none translate-x-0 translate-y-full rounded-t-xl border-l-0 border-t;
+    }
+
+    .theme-editor-drawer.is-open {
+      @apply translate-y-0;
+    }
+  }
+
+  .theme-editor-drawer__header {
+    @apply flex shrink-0 items-center justify-between gap-3 border-b border-border bg-white px-4 py-3;
+  }
+
+  .theme-editor-drawer__tabs {
+    @apply flex min-w-0 flex-1 items-center gap-1 rounded-md bg-neutral-100 p-0.5;
+  }
+
+  .theme-editor-drawer__tab {
+    @apply min-w-0 flex-1 truncate rounded-[5px] px-3 py-1.5 text-sm font-medium text-neutral-600 transition-colors;
+  }
+
+  .theme-editor-drawer__tab.is-active {
+    @apply bg-white text-neutral-900 shadow-sm;
+  }
+
+  .theme-editor-drawer__title {
+    @apply m-0 font-sans text-sm font-semibold tracking-normal text-neutral-800;
+  }
+
+  .theme-editor-drawer__body {
+    @apply min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 py-4;
+  }
+
+  .theme-editor-drawer__footer {
+    @apply flex shrink-0 flex-wrap items-center gap-3 border-t border-border bg-white px-4 py-3;
+  }
+
+  body.theme-editor-drawer-open {
+    @apply overflow-hidden;
+  }
+
+  .theme-editor-panel[hidden] {
+    display: none !important;
+  }
+
+  .theme-editor .admin-editor-panel-title {
+    @apply mb-3 font-sans text-sm font-semibold normal-case tracking-normal text-neutral-800;
   }
 
   /* Theme picker */
@@ -1378,13 +1507,17 @@
     @apply shrink-0 pt-1;
   }
 
-  /* Preview pane */
+  /* Preview pane — fills remaining viewport */
   .theme-preview {
-    @apply overflow-hidden rounded-card border border-border bg-bg-card shadow-card xl:sticky xl:top-6;
+    @apply flex min-h-0 flex-1 flex-col overflow-hidden bg-neutral-100;
+  }
+
+  .theme-preview--canvas {
+    @apply rounded-none border-0 shadow-none;
   }
 
   .theme-preview__bar {
-    @apply flex flex-wrap items-center justify-between gap-3 border-b border-border px-4 py-3;
+    @apply flex shrink-0 flex-wrap items-center justify-between gap-3 border-b border-border bg-white px-4 py-2;
   }
 
   .theme-preview__label {
@@ -1412,16 +1545,123 @@
     @apply border-border bg-neutral-100 text-neutral-900;
   }
 
+  .theme-preview__settings {
+    @apply inline-flex h-9 items-center rounded-md border border-transparent px-2.5 text-xs font-medium
+           text-neutral-700 transition-colors hover:bg-neutral-100;
+  }
+
+  .theme-preview__skip-video {
+    @apply inline-flex h-9 cursor-pointer items-center gap-1.5 rounded-md px-2 text-xs font-medium text-neutral-700
+           hover:bg-neutral-100;
+  }
+
+  .theme-preview__skip-video[hidden] {
+    display: none !important;
+  }
+
+  .theme-preview__skip-video input {
+    @apply size-3.5 accent-secondary;
+  }
+
   .theme-preview__stage {
-    @apply mx-auto w-full bg-neutral-100 transition-[max-width] duration-300;
+    @apply relative mx-auto flex min-h-0 w-full flex-1 flex-col bg-neutral-200 transition-[max-width] duration-300;
+  }
+
+  .theme-preview__stage.is-loading .theme-preview__frame {
+    @apply opacity-0;
+  }
+
+  .theme-preview__loading {
+    @apply absolute inset-0 z-10 flex flex-col items-center justify-center gap-4 bg-neutral-100 px-6;
+  }
+
+  .theme-preview__skeleton {
+    @apply flex w-full max-w-lg flex-col gap-4;
+  }
+
+  .theme-preview__skeleton-bar {
+    @apply h-3 animate-pulse rounded bg-neutral-300/80;
+  }
+
+  .theme-preview__skeleton-bar--nav {
+    @apply h-8 w-full;
+  }
+
+  .theme-preview__skeleton-hero {
+    @apply h-48 w-full animate-pulse rounded bg-neutral-300/70;
+  }
+
+  .theme-preview__skeleton-bar--title {
+    @apply mx-auto h-5 w-2/3;
+  }
+
+  .theme-preview__skeleton-bar--line {
+    @apply mx-auto w-full max-w-sm;
+  }
+
+  .theme-preview__skeleton-bar--line-short {
+    @apply mx-auto w-1/2;
+  }
+
+  .theme-preview__loading-label {
+    @apply m-0 text-xs font-medium tracking-wide text-neutral-500;
   }
 
   .theme-preview__frame {
-    @apply block h-[75vh] min-h-[32rem] w-full border-0 bg-white;
+    @apply block h-full min-h-0 w-full flex-1 border-0 bg-white transition-opacity duration-200;
   }
 
   .theme-preview__note {
     @apply m-0 border-t border-border px-4 py-3 text-xs text-neutral-500;
+  }
+
+  /* Site editor hotspots (guest templates in the Theme iframe).
+     Do not set `font` here — it overrides display type classes on the same node. */
+  [data-site-editor-target="hotspot"] {
+    @apply relative cursor-pointer outline outline-2 outline-transparent outline-offset-2 transition-[outline-color];
+  }
+
+  [data-site-editor-target="hotspot"][contenteditable="true"],
+  [data-site-editor-target="hotspot"][contenteditable="plaintext-only"] {
+    letter-spacing: inherit;
+    line-height: inherit;
+    text-transform: inherit;
+    color: inherit;
+  }
+
+  [data-site-editor-target="hotspot"]:hover,
+  [data-site-editor-target="hotspot"].is-editing {
+    outline-color: color-mix(in oklab, var(--color-secondary, #3d5a4c) 70%, transparent);
+  }
+
+  [data-site-editor-target="hotspot"][data-kind="essentials"]:hover {
+    outline-color: color-mix(in oklab, var(--color-warning-600, #b45309) 55%, transparent);
+  }
+
+  [data-site-editor-target="hotspot"][data-kind="essentials"]::after {
+    content: "Edit in Wedding → Essentials";
+    @apply pointer-events-none absolute left-1/2 top-full z-20 mt-2 hidden -translate-x-1/2
+           whitespace-nowrap rounded-md bg-ink px-2 py-1 text-xs text-white;
+  }
+
+  [data-site-editor-target="hotspot"][data-kind="essentials"]:hover::after {
+    @apply block;
+  }
+
+  .site-editor-slot--empty {
+    @apply flex min-h-24 items-center justify-center border border-dashed border-neutral-300 bg-neutral-50/80;
+  }
+
+  .site-editor-empty-label {
+    @apply text-sm text-neutral-500;
+  }
+
+  .wedding-hero-slot {
+    @apply absolute inset-0;
+  }
+
+  .wedding-hero-slot .wedding-hero-image {
+    @apply h-full w-full;
   }
 
   .admin-editor-divider {

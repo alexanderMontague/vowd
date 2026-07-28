@@ -125,6 +125,130 @@ class Public::SiteThemeTest < ActionDispatch::IntegrationTest
     assert_select "footer.wedding-footer", count: 0
   end
 
+  test "guests never see site editor hotspots" do
+    get root_path
+
+    assert_response :success
+    assert_select "[data-site-editor-target='hotspot']", count: 0
+    assert_no_match(/data-controller=["']site-editor["']/, response.body)
+  end
+
+  test "an admin outside the theme editor never sees hotspots" do
+    admin = create_admin_for(@wedding)
+    sign_in_admin(admin)
+
+    get root_path
+
+    assert_response :success
+    assert_select "[data-site-editor-target='hotspot']", count: 0
+  end
+
+  test "a signed-in admin browsing the public site top-level never sees hotspots" do
+    admin = create_admin_for(@wedding)
+    sign_in_admin(admin)
+    get admin_theme_section_path(section: "home")
+
+    get root_path
+
+    assert_response :success
+    assert_select "[data-controller='site-editor']", count: 0
+    assert_select "[data-site-editor-target='hotspot']", count: 0
+  end
+
+  test "site editor stays active across iframe preview navigations" do
+    @wedding.update!(
+      wedding_party: @wedding.wedding_party.merge(
+        "bridesmaids" => [{ "name" => "Nora", "role" => "Maid of Honour", "relation" => "Sister" }]
+      )
+    )
+    admin = create_admin_for(@wedding)
+    sign_in_admin(admin)
+    get admin_theme_section_path(section: "home")
+
+    get_iframe root_path
+    assert_response :success
+    assert_select "[data-controller='site-editor']"
+    assert_select "meta[name='turbo'][content='false']"
+    assert_select "[data-site-editor-target='hotspot']"
+
+    get_iframe public_wedding_party_path
+    assert_response :success
+    assert_select "[data-controller='site-editor']"
+    assert_select "meta[name='turbo'][content='false']"
+    assert_select "[data-site-editor-target='hotspot']"
+    # Entrance animation class + observer target must share a node, otherwise
+    # editor mode leaves party members stuck at opacity: 0.
+    assert_select ".animate-on-scroll[data-scroll-animate-target='item']", minimum: 1
+    assert_select ".animate-on-scroll[data-site-editor-target='hotspot']", count: 0
+  end
+
+  test "site editor hotspots appear after opening Theme" do
+    admin = create_admin_for(@wedding)
+    sign_in_admin(admin)
+    get admin_theme_section_path(section: "home")
+
+    get_iframe root_path
+
+    assert_response :success
+    assert_select "[data-controller='site-editor']"
+    assert_select "[data-site-editor-target='hotspot'][data-kind='text']"
+    assert_select "[data-site-editor-target='hotspot'][data-kind='essentials']"
+    assert_select "[data-site-editor-target='hotspot'][data-kind='slot']"
+  end
+
+  test "editor mode annotates every guest page with the right hotspot kinds" do
+    admin = create_admin_for(@wedding)
+    sign_in_admin(admin)
+    get admin_theme_section_path(section: "home")
+
+    {
+      root_path => %w[text essentials slot panel],
+      public_faq_path => %w[text panel],
+      public_photos_path => %w[text],
+      public_wedding_party_path => %w[text],
+      public_save_the_date_path => %w[text essentials slot],
+      public_rsvp_lookup_path => %w[essentials slot]
+    }.each do |path, kinds|
+      get_iframe path
+
+      assert_response :success, "expected #{path} to render in editor mode"
+      assert_select "[data-controller='site-editor']"
+      assert_select "meta[name='turbo'][content='false']"
+      kinds.each do |kind|
+        assert_select "[data-site-editor-target='hotspot'][data-kind=?]", kind
+      end
+    end
+  end
+
+  test "editor mode shows empty photo slot placeholders" do
+    admin = create_admin_for(@wedding)
+    sign_in_admin(admin)
+    get admin_theme_section_path(section: "rsvp")
+
+    get_iframe public_rsvp_lookup_path
+
+    assert_response :success
+    assert_select ".site-editor-slot--empty"
+    assert_select ".site-editor-empty-label", minimum: 1
+  end
+
+  test "editorial and parallax themes expose editor hotspots too" do
+    admin = create_admin_for(@wedding)
+    sign_in_admin(admin)
+    get admin_theme_section_path(section: "home")
+
+    %w[editorial parallax].each do |key|
+      @wedding.update!(theme: { "key" => key })
+
+      get_iframe root_path
+
+      assert_response :success
+      assert_select "[data-site-editor-target='hotspot'][data-kind='text']"
+      assert_select "[data-site-editor-target='hotspot'][data-kind='essentials']"
+      assert_select "[data-site-editor-target='hotspot'][data-kind='slot']"
+    end
+  end
+
   test "a visitor never sees an admin's preview draft" do
     admin = create_admin_for(@wedding)
     sign_in_admin(admin)

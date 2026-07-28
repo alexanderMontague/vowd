@@ -1,22 +1,28 @@
 <% party = current_wedding.wedding_party %>
 
 <div class="min-h-screen" data-controller="scroll-animate">
-  <%= render "public/shared/page_header", title: party["title"], subtitle: party["subtitle"] %>
+  <%= render "public/shared/page_header",
+      title: party["title"],
+      subtitle: party["subtitle"],
+      title_field: "wedding_party.title",
+      subtitle_field: "wedding_party.subtitle" %>
 
-  <%# Both groups render identically, so they share one partial rather than drifting apart. %>
   <% [["bridesmaids", "bridesmaids_title", false], ["groomsmen", "groomsmen_title", true]].each do |group, title_key, banded| %>
     <% members = Array(party[group]) %>
-    <% next if members.empty? %>
+    <% next if members.empty? && !site_editor_active? %>
 
     <section class="py-24 px-4 <%= "wedding-band" if banded %>">
       <div class="max-w-6xl mx-auto">
         <%= render "public/shared/divider" %>
         <div class="mb-12"></div>
-        <%= render "public/shared/section_title", title: party[title_key], centered: true %>
+        <%= render "public/shared/section_title",
+            title: party[title_key],
+            centered: true,
+            field: "wedding_party.#{title_key}" %>
         <div class="mb-16"></div>
         <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-12">
           <% members.each_with_index do |person, index| %>
-            <%= render "public/wedding_parties/member", person: person, index: index %>
+            <%= render "public/wedding_parties/member", person: person, index: index, group: group %>
           <% end %>
         </div>
       </div>

@@ -60,7 +60,9 @@ class ThemeSections
     pages: "Pages"
   }.freeze
 
-  DEFAULT_KEY = "look".freeze
+  # Land on Home so the preview matches a guest page; Look & feel opens from
+  # the preview toolbar without owning the admin URL.
+  DEFAULT_KEY = "home".freeze
 
   class << self
     def definitions

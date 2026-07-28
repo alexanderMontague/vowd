@@ -2,19 +2,27 @@
   asset = local_assigns[:asset]
   caption = local_assigns[:caption]
   wrapper_class = local_assigns.fetch(:wrapper_class, "")
+  slot_key = local_assigns[:slot]
 %>
-<% if asset.present? %>
-  <figure class="vase-photo <%= wrapper_class %>">
-    <div class="vase-photo__arch">
-      <%= image_tag wedding_asset_url(asset),
-          class: "vase-photo__image", alt: wedding_asset_alt(asset),
+<% inner = capture do %>
+  <% if asset.present? %>
+    <figure class="vase-photo <%= wrapper_class %>">
+      <div class="vase-photo__arch">
+        <%= image_tag wedding_asset_url(asset),
+            class: "vase-photo__image", alt: wedding_asset_alt(asset),
+            loading: "lazy", decoding: "async" %>
+      </div>
+      <%= image_tag "decor/urn-pedestal.webp",
+          class: "vase-photo__urn", alt: "", aria: { hidden: true },
           loading: "lazy", decoding: "async" %>
-    </div>
-    <%= image_tag "decor/urn-pedestal.webp",
-        class: "vase-photo__urn", alt: "", aria: { hidden: true },
-        loading: "lazy", decoding: "async" %>
-    <% if caption.present? %>
-      <figcaption class="vase-photo__caption"><%= caption %></figcaption>
-    <% end %>
-  </figure>
+      <% if caption.present? %>
+        <figcaption class="vase-photo__caption"><%= caption %></figcaption>
+      <% end %>
+    </figure>
+  <% end %>
+<% end %>
+<% if slot_key.present? %>
+  <%= editor_slot(slot_key, css_class: wrapper_class) { inner } %>
+<% else %>
+  <%= inner %>
 <% end %>

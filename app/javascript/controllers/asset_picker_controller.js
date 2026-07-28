@@ -27,6 +27,7 @@ export default class extends Controller {
     this.setHint(this.limitHint())
     this.syncOptions()
     this.dialogTarget.showModal()
+    this.dispatch("opened", { detail: { picker: this.activePicker } })
   }
 
   close() {

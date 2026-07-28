@@ -2,10 +2,14 @@
 <% sections = current_wedding.gallery_sections %>
 
 <div class="min-h-screen" data-controller="scroll-animate">
-  <%= render "public/shared/page_header", title: gallery["title"], subtitle: gallery["subtitle"] %>
+  <%= render "public/shared/page_header",
+      title: gallery["title"],
+      subtitle: gallery["subtitle"],
+      title_field: "photos_page.title",
+      subtitle_field: "photos_page.subtitle" %>
 
   <% sections.each_with_index do |section, section_index| %>
-    <section class="py-24 px-4 <%= "wedding-band" if section_index.odd? %>">
+    <%= editor_panel("photos", tag: :section, css_class: "py-24 px-4 #{"wedding-band" if section_index.odd?}") do %>
       <div class="max-w-7xl mx-auto">
         <%= render "public/shared/divider" %>
         <div class="mb-12"></div>
@@ -20,7 +24,7 @@
           <% end %>
         </div>
       </div>
-    </section>
+    <% end %>
   <% end %>
 
   <% if current_wedding.dispo_gallery_visible? %>

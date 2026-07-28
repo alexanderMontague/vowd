@@ -4,9 +4,11 @@
   <%= render "public/shared/page_header",
       title: faq["title"],
       subtitle: faq["subtitle"],
+      title_field: "faq.title",
+      subtitle_field: "faq.subtitle",
       kicker: "Notes" %>
 
-  <section class="editorial-shell editorial-section">
+  <%= editor_panel("faq", tag: :section, css_class: "editorial-shell editorial-section") do %>
     <div class="editorial-grid">
       <div class="editorial-rail">
         <%= render "public/shared/marker", number: 1, label: "Questions" %>
@@ -36,5 +38,5 @@
         </div>
       </div>
     </div>
-  </section>
+  <% end %>
 </div>

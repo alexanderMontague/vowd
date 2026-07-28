@@ -1,7 +1,11 @@
 <% faq = current_wedding.faq %>
 
 <div data-controller="parallax">
-  <%= render "public/shared/page_header", title: faq["title"], subtitle: faq["subtitle"] %>
+  <%= render "public/shared/page_header",
+      title: faq["title"],
+      subtitle: faq["subtitle"],
+      title_field: "faq.title",
+      subtitle_field: "faq.subtitle" %>
 
   <section class="parallax-section parallax-stage">
     <div class="parallax-stage__ornaments">

@@ -1,14 +1,15 @@
-<%# Credited like a masthead entry: square portrait, role above the name. %>
 <div class="animate-on-scroll" data-scroll-animate-target="item">
-  <div class="editorial-contributor__portrait">
-    <% if (src = wedding_asset_url(current_wedding.party_member_image(person))).present? %>
-      <%= image_tag src, alt: person["name"], loading: "lazy" %>
-    <% else %>
-      <div class="editorial-contributor__initial"><%= person["name"].to_s.first %></div>
-    <% end %>
-  </div>
+  <%= editor_panel("wedding_party") do %>
+    <div class="editorial-contributor__portrait">
+      <% if (src = wedding_asset_url(current_wedding.party_member_image(person))).present? %>
+        <%= image_tag src, alt: person["name"], loading: "lazy" %>
+      <% else %>
+        <div class="editorial-contributor__initial"><%= person["name"].to_s.first %></div>
+      <% end %>
+    </div>
 
-  <p class="editorial-label mb-2"><%= person["role"] %></p>
-  <h3 class="editorial-contributor__name"><%= person["name"] %></h3>
-  <p class="editorial-caption mt-1"><%= person["relation"] %></p>
+    <p class="editorial-label mb-2"><%= person["role"] %></p>
+    <h3 class="editorial-contributor__name"><%= person["name"] %></h3>
+    <p class="editorial-caption mt-1"><%= person["relation"] %></p>
+  <% end %>
 </div>

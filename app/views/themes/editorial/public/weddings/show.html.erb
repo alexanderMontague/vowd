@@ -18,8 +18,10 @@
   <header class="editorial-cover">
     <div class="editorial-shell pt-10">
       <div class="editorial-cover__frame">
-        <% if hero_src.present? %>
-          <%= image_tag hero_src, alt: current_wedding.title %>
+        <%= editor_slot("homepage_hero") do %>
+          <% if hero_src.present? %>
+            <%= image_tag hero_src, alt: current_wedding.title %>
+          <% end %>
         <% end %>
       </div>
 
@@ -28,56 +30,67 @@
           <p class="editorial-label mb-6">
             <%= current_wedding.hero["eyebrow"].presence || "The Wedding Issue" %>
           </p>
-          <h1 class="editorial-headline"><%= current_wedding.title %></h1>
+          <%= editor_essentials(tag: :h1, css_class: "editorial-headline") do %>
+            <%= current_wedding.title %>
+          <% end %>
         </div>
 
         <% if current_wedding.date %>
-          <p class="editorial-label text-ink lg:text-right">
+          <%= editor_essentials(tag: :p, css_class: "editorial-label text-ink lg:text-right") do %>
             <%= format_date_short(current_wedding.date) %>
-          </p>
+          <% end %>
         <% end %>
       </div>
 
       <div class="editorial-colophon">
-        <% if current_wedding.hero["tagline"].present? %>
-          <p class="editorial-caption flex-1"><%= current_wedding.hero["tagline"] %></p>
+        <%= editor_text("hero.tagline", tag: :p, css_class: "editorial-caption flex-1") do %>
+          <%= current_wedding.hero["tagline"] %>
         <% end %>
-        <p class="editorial-caption"><%= full_venue_name(venue) %></p>
+        <%= editor_essentials(tag: :p, css_class: "editorial-caption") do %>
+          <%= full_venue_name(venue) %>
+        <% end %>
         <% if current_wedding.ceremony_time.present? %>
-          <p class="editorial-caption">Ceremony <%= current_wedding.ceremony_time %></p>
+          <%= editor_essentials(tag: :p, css_class: "editorial-caption") do %>
+            Ceremony <%= current_wedding.ceremony_time %>
+          <% end %>
         <% end %>
       </div>
     </div>
   </header>
 
   <%# Story %>
-  <% if story["enabled"] %>
-    <section class="editorial-shell editorial-section">
+  <% if story["enabled"] || site_editor_active? %>
+    <%= editor_panel("home_settings", tag: :section, css_class: "editorial-shell editorial-section") do %>
       <div class="editorial-grid">
         <div class="editorial-rail">
           <%= render "public/shared/marker", number: next_number.call, label: "Our Story" %>
         </div>
 
         <div class="animate-on-scroll" data-scroll-animate-target="item">
-          <h2 class="editorial-title mb-10"><%= story["title"] %></h2>
+          <%= editor_text("story.title", tag: :h2, css_class: "editorial-title mb-10") do %>
+            <%= story["title"] %>
+          <% end %>
           <div class="editorial-body">
             <% Array(story["paragraphs"]).each do |paragraph| %>
               <p><%= paragraph %></p>
             <% end %>
           </div>
-          <% if story["closing"].present? %>
-            <p class="editorial-caption mt-10 border-t pt-6" style="border-color: var(--editorial-rule);">
-              <%= story["closing"] %>
-            </p>
+          <%= editor_text("story.closing", tag: :p, css_class: "editorial-caption mt-10 border-t pt-6") do %>
+            <%= story["closing"] %>
           <% end %>
         </div>
       </div>
-    </section>
+    <% end %>
 
-    <% if (plate_src = wedding_asset_url(story_plate)).present? %>
-      <figure class="editorial-plate m-0">
-        <%= image_tag plate_src, alt: wedding_asset_alt(story_plate), loading: "lazy" %>
-      </figure>
+    <% plate_src = wedding_asset_url(story_plate) %>
+    <% if plate_src.present? || site_editor_active? %>
+      <%= editor_slot("save_the_date_portrait") do %>
+        <% if plate_src.present? %>
+          <figure class="editorial-plate m-0">
+            <%= image_tag plate_src, alt: wedding_asset_alt(story_plate), loading: "lazy" %>
+          </figure>
+        <% end %>
+      <% end %>
     <% end %>
   <% end %>
 

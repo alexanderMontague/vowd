@@ -1,12 +1,14 @@
 <div class="wedding-page-wash min-h-screen px-4 py-10 md:py-20">
   <%= render "public/shared/invitation_frame",
-      floating_assets: current_wedding.placements_for("rsvp_floating") do %>
+      floating_assets: current_wedding.placements_for("rsvp_floating"),
+      floating_slot: "rsvp_floating" do %>
     <%= render "public/shared/invitation_hero",
         eyebrow: "RSVP",
         title: current_wedding.title %>
 
     <%= render decor_partial("framed_photo"),
         asset: current_wedding.placement("rsvp_portrait"),
+        slot: "rsvp_portrait",
         wrapper_class: "mb-10" %>
 
     <p class="invitation-lead mb-10 text-center">

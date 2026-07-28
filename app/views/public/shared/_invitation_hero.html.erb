@@ -2,17 +2,31 @@
   divider_height = local_assigns.fetch(:divider_height, 16)
   show_ornament = local_assigns.fetch(:show_ornament, true)
   header_class = local_assigns.fetch(:header_class, "mb-10")
+  eyebrow_field = local_assigns[:eyebrow_field]
+  title_essentials = local_assigns.fetch(:title_essentials, true)
 %>
 <header class="invitation-hero animate-fade-in-up text-center <%= header_class %>">
   <div class="mb-8">
     <%= render "public/shared/divider", height: divider_height %>
   </div>
-  <% if local_assigns[:eyebrow].present? %>
+  <% if local_assigns[:eyebrow].present? || (site_editor_active? && eyebrow_field.present?) %>
     <div class="invitation-eyebrow-row">
-      <p class="invitation-eyebrow mb-0"><%= eyebrow %></p>
+      <% if eyebrow_field.present? %>
+        <%= editor_text(eyebrow_field, tag: :p, css_class: "invitation-eyebrow mb-0") do %>
+          <%= eyebrow %>
+        <% end %>
+      <% else %>
+        <p class="invitation-eyebrow mb-0"><%= eyebrow %></p>
+      <% end %>
     </div>
   <% end %>
-  <h1 class="invitation-title"><%= title %></h1>
+  <% if title_essentials %>
+    <%= editor_essentials(tag: :h1, css_class: "invitation-title") do %>
+      <%= title %>
+    <% end %>
+  <% else %>
+    <h1 class="invitation-title"><%= title %></h1>
+  <% end %>
   <% if local_assigns[:subtitle].present? %>
     <p class="invitation-subtitle"><%= subtitle %></p>
   <% end %>

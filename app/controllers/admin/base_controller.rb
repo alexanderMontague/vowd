@@ -3,11 +3,13 @@ module Admin
     include AdminAuthentication
     include WeddingConcern
     include AdminCanonicalHost
+    include SiteEditor
 
     layout "admin"
 
     before_action :require_wedding!
     before_action :require_wedding_configured!
+    before_action :clear_site_editor_outside_theme!
 
     private
 
@@ -20,6 +22,13 @@ module Admin
 
     def skip_wedding_configured_gate?
       is_a?(Admin::WebsiteController) || is_a?(Admin::Website::AssetsController)
+    end
+
+    def clear_site_editor_outside_theme!
+      return if is_a?(Admin::ThemesController) || is_a?(Admin::Themes::PreviewsController)
+      return if is_a?(Admin::Website::AssetsController)
+
+      clear_site_editor!
     end
   end
 end

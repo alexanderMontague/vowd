@@ -1,9 +1,5 @@
 <section class="card mb-6">
   <h2 class="admin-editor-panel-title">Type</h2>
-  <p class="admin-editor-panel-copy">
-    Headings use the first face, body copy the second. Pairings only — every combination
-    here has been checked for weight coverage and contrast.
-  </p>
 
   <div class="form-group mb-0">
     <%= label_tag "theme_font", "Font pairing" %>
@@ -12,6 +8,5 @@
           class: "form-control",
           id: "theme_font",
           data: { theme_font_select: true, action: "change->theme-editor#commit" } %>
-    <p class="form-hint"><%= theme.font.description %></p>
   </div>
 </section>

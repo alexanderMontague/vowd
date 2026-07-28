@@ -3,16 +3,18 @@ module Admin
     include ThemePreviewing
     include ThemeFormParams
     include WeddingContentParams
+    include SiteEditor
 
     before_action :require_configured_wedding
     before_action :ensure_section
+    before_action :activate_site_editor!, only: :show
 
     def show
       return if performed?
 
       @wedding = current_wedding
-      prepare_theme_editor if look_section?
-      prepare_content_library unless look_section?
+      prepare_theme_editor
+      prepare_content_library
     end
 
     def update
@@ -20,10 +22,10 @@ module Admin
 
       @wedding = current_wedding
 
-      if look_section?
-        update_theme
-      else
+      if content_update?
         update_content
+      else
+        update_theme
       end
     end
 
@@ -51,6 +53,12 @@ module Admin
       @section.key == "look"
     end
 
+    # Inline / drawer content patches send `wedding[...]` and must never hit the
+    # Look & feel theme updater — even when the chrome URL still says /look.
+    def content_update?
+      params[:wedding].present?
+    end
+
     def prepare_theme_editor
       @saved_theme = current_wedding.site_theme
       @theme = theme_preview_active? ? WeddingTheme.new(theme_preview_config) : @saved_theme
@@ -67,27 +75,60 @@ module Admin
 
       if theme.nil?
         prepare_theme_editor
-        flash.now[:alert] = "Pick one of the available themes."
-        return render :show, status: :unprocessable_content
+        prepare_content_library
+        respond_to do |format|
+          format.json do
+            render json: { ok: false, error: "Pick one of the available themes." },
+                   status: :unprocessable_content
+          end
+          format.html do
+            flash.now[:alert] = "Pick one of the available themes."
+            render :show, status: :unprocessable_content
+          end
+        end
+        return
       end
 
       current_wedding.update!(theme: theme.to_h)
       clear_theme_preview
 
-      redirect_to admin_theme_section_path(section: @section.key), notice: "Theme saved."
+      respond_to do |format|
+        format.json { render json: { ok: true } }
+        format.html do
+          redirect_to admin_theme_section_path(section: @section.key), notice: "Theme saved."
+        end
+      end
     end
 
     def update_content
       attrs = build_wedding_attributes
 
       if @wedding.update(attrs)
-        redirect_to admin_theme_section_path(section: @section.key),
-                    notice: "Page content saved."
+        respond_to do |format|
+          format.json { render json: { ok: true } }
+          format.html do
+            redirect_to admin_theme_section_path(section: content_redirect_section),
+                        notice: "Page content saved."
+          end
+        end
       else
+        prepare_theme_editor
         prepare_content_library
-        flash.now[:alert] = @wedding.errors.full_messages.to_sentence
-        render :show, status: :unprocessable_entity
+        respond_to do |format|
+          format.json do
+            render json: { ok: false, error: @wedding.errors.full_messages.to_sentence },
+                   status: :unprocessable_entity
+          end
+          format.html do
+            flash.now[:alert] = @wedding.errors.full_messages.to_sentence
+            render :show, status: :unprocessable_entity
+          end
+        end
       end
+    end
+
+    def content_redirect_section
+      look_section? ? "home" : @section.key
     end
   end
 end

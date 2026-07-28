@@ -10,8 +10,6 @@
 
   <div class="parallax-hero__scrim"></div>
 
-  <%# The backdrop is itself drapery, so drapes here would only muddy it. Roses give
-      the corners definition against it instead. %>
   <div class="parallax-hero__ornaments">
     <%= render "public/shared/ornament",
         name: "roses-top-left",
@@ -24,9 +22,21 @@
   </div>
 
   <div class="parallax-stage__content max-w-3xl py-24 text-center animate-fade-in-up">
-    <h1 class="parallax-title mb-6"><%= title %></h1>
-    <% if local_assigns[:subtitle].present? %>
-      <p class="parallax-lede mx-auto max-w-lg"><%= subtitle %></p>
+    <% if local_assigns[:title_field].present? %>
+      <%= editor_text(title_field, tag: :h1, css_class: "parallax-title mb-6") do %>
+        <%= title %>
+      <% end %>
+    <% else %>
+      <h1 class="parallax-title mb-6"><%= title %></h1>
+    <% end %>
+    <% if local_assigns[:subtitle].present? || (site_editor_active? && local_assigns[:subtitle_field].present?) %>
+      <% if local_assigns[:subtitle_field].present? %>
+        <%= editor_text(subtitle_field, tag: :p, css_class: "parallax-lede mx-auto max-w-lg") do %>
+          <%= subtitle %>
+        <% end %>
+      <% else %>
+        <p class="parallax-lede mx-auto max-w-lg"><%= subtitle %></p>
+      <% end %>
     <% end %>
   </div>
 </section>

@@ -1,16 +1,21 @@
 <%
-  # Decorative echoes of photos shown elsewhere — hidden from assistive tech.
-  # On narrow screens they peek from the card edges without covering copy;
-  # on wide screens they scatter beside the invitation.
   layers = floating_photo_layers(local_assigns.fetch(:assets, []))
+  slot_key = local_assigns[:slot]
 %>
-<% if layers.any? %>
-  <div class="floating-photos" aria-hidden="true" data-controller="parallax">
-    <% layers.each_with_index do |(asset, speed), index| %>
-      <figure class="floating-photo floating-photo--<%= index + 1 %>"
-        data-parallax-target="layer" data-parallax-speed="<%= speed %>">
-        <%= image_tag wedding_asset_url(asset), alt: "", loading: "lazy", decoding: "async" %>
-      </figure>
-    <% end %>
-  </div>
+<% inner = capture do %>
+  <% if layers.any? %>
+    <div class="floating-photos" aria-hidden="true" data-controller="parallax">
+      <% layers.each_with_index do |(asset, speed), index| %>
+        <figure class="floating-photo floating-photo--<%= index + 1 %>"
+          data-parallax-target="layer" data-parallax-speed="<%= speed %>">
+          <%= image_tag wedding_asset_url(asset), alt: "", loading: "lazy", decoding: "async" %>
+        </figure>
+      <% end %>
+    </div>
+  <% end %>
+<% end %>
+<% if slot_key.present? %>
+  <%= editor_slot(slot_key, css_class: "floating-photos-editor-hit") { inner } %>
+<% else %>
+  <%= inner %>
 <% end %>

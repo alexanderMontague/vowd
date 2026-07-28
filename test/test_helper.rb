@@ -47,6 +47,10 @@ module ActiveSupport
       host! AppHost.base_domain
     end
 
+    def get_iframe(path, **kwargs)
+      get path, **kwargs, headers: (kwargs[:headers] || {}).merge("Sec-Fetch-Dest" => "iframe")
+    end
+
     def with_env(overrides)
       original = overrides.keys.index_with { |key| ENV.fetch(key, nil) }
       overrides.each { |key, value| value.nil? ? ENV.delete(key) : ENV[key] = value }

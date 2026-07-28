@@ -59,7 +59,7 @@
         <%= button_to "Log out", admin_logout_path, method: :delete, class: "btn btn-sm btn-danger w-full mt-8" %>
       </aside>
 
-      <main class="admin-main" data-controller="scroll-preservation">
+      <main class="admin-main <%= content_for(:admin_main_class) %>" data-controller="scroll-preservation">
         <%= yield %>
       </main>
     </div>

@@ -4,12 +4,14 @@
   <%= render "public/shared/page_header",
       title: party["title"],
       subtitle: party["subtitle"],
+      title_field: "wedding_party.title",
+      subtitle_field: "wedding_party.subtitle",
       kicker: "Contributors" %>
 
   <% groups = [["bridesmaids", "bridesmaids_title"], ["groomsmen", "groomsmen_title"]] %>
   <% groups.each_with_index do |(group, title_key), index| %>
     <% members = Array(party[group]) %>
-    <% next if members.empty? %>
+    <% next if members.empty? && !site_editor_active? %>
 
     <section class="editorial-shell editorial-section">
       <div class="editorial-grid">

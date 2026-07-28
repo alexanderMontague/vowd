@@ -4,7 +4,11 @@
 %>
 
 <div data-controller="scroll-animate parallax">
-  <%= render "public/shared/page_header", title: gallery["title"], subtitle: gallery["subtitle"] %>
+  <%= render "public/shared/page_header",
+      title: gallery["title"],
+      subtitle: gallery["subtitle"],
+      title_field: "photos_page.title",
+      subtitle_field: "photos_page.subtitle" %>
 
   <% sections.each_with_index do |section, index| %>
     <section class="parallax-section parallax-stage <%= "parallax-section--band" if index.odd? %>">

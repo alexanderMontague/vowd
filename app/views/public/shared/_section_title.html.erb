@@ -1,3 +1,8 @@
-<h2 class="wedding-section-title <%= 'text-center' if local_assigns[:centered] != false %>">
+<h2 class="wedding-section-title <%= 'text-center' if local_assigns[:centered] != false %>"
+    <% if local_assigns[:field].present? && site_editor_active? %>
+      data-site-editor-target="hotspot"
+      data-kind="text"
+      data-field="<%= field %>"
+    <% end %>>
   <%= title %>
 </h2>

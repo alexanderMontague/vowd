@@ -14,7 +14,7 @@ Conventions for this Rails app. Prefer matching existing patterns over introduci
 - **`Wedding`** is an **ActiveRecord** model (`app/models/wedding.rb`). The string primary key is the site **slug** (subdomain). Site copy and settings live in typed columns plus JSON fields (`story`, `hero`, `faq`, etc.).
 - **`TenantResolver`** + **`AppHost`** resolve the tenant from the request host: `{slug}.{APP_BASE_DOMAIN}` or a wedding’s `custom_domain`. Apex `APP_BASE_DOMAIN` is the platform (marketing, signup, login).
 - **`WeddingConcern`** exposes request-scoped **`current_wedding`** (never a process-global memo). One **`AdminUser`** owns exactly one wedding (`admin_users.wedding_id`).
-- Edit guest-facing content in admin **Theme** (page sections with live preview). Feature flags remain under admin **Settings**. Essentials, meals, domain, and notifications stay under admin **Wedding**.
+- Edit guest-facing content in admin **Theme** (full-bleed live preview with click-to-edit hotspots and slide-over drawers for Look & feel / complex controls). Feature flags remain under admin **Settings**. Essentials, meals, domain, and notifications stay under admin **Wedding**.
 
 ## Application structure
 

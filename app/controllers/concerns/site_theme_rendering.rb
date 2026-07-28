@@ -12,13 +12,14 @@ module SiteThemeRendering
 
   included do
     include ThemePreviewing
+    include SiteEditor
 
     class_attribute :guest_page_key, instance_writer: false
 
     before_action :prepend_theme_view_path
     before_action :require_visible_page!
 
-    helper_method :site_theme, :site_navigation, :theme_preview_active?
+    helper_method :site_theme, :site_navigation, :theme_preview_active?, :site_editor_active?
   end
 
   class_methods do

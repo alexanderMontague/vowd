@@ -1,17 +1,24 @@
 <%
-  # The shared theme lays a lace oval PNG over the photo. This theme draws its mount in
-  # CSS instead, so the mount stays registered to the photo at every size.
   asset = local_assigns[:asset]
   caption = local_assigns[:caption]
+  wrapper_class = local_assigns.fetch(:wrapper_class, "")
+  slot_key = local_assigns[:slot]
 %>
-<% if asset.present? %>
-  <figure class="parallax-portrait mx-auto max-w-sm <%= local_assigns.fetch(:wrapper_class, '') %>">
-    <div class="parallax-portrait__photo">
-      <%= image_tag wedding_asset_url(asset),
-          alt: wedding_asset_alt(asset), loading: "lazy", decoding: "async" %>
-    </div>
-    <% if caption.present? %>
-      <figcaption class="mt-6 text-center wedding-meta"><%= caption %></figcaption>
-    <% end %>
-  </figure>
+<% inner = capture do %>
+  <% if asset.present? %>
+    <figure class="parallax-portrait mx-auto max-w-sm <%= wrapper_class %>">
+      <div class="parallax-portrait__photo">
+        <%= image_tag wedding_asset_url(asset),
+            alt: wedding_asset_alt(asset), loading: "lazy", decoding: "async" %>
+      </div>
+      <% if caption.present? %>
+        <figcaption class="mt-6 text-center wedding-meta"><%= caption %></figcaption>
+      <% end %>
+    </figure>
+  <% end %>
+<% end %>
+<% if slot_key.present? %>
+  <%= editor_slot(slot_key, css_class: wrapper_class) { inner } %>
+<% else %>
+  <%= inner %>
 <% end %>

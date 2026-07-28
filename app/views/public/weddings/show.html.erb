@@ -1,13 +1,14 @@
 <div class="min-h-screen" data-controller="scroll-animate">
-  <%# Hero Section %>
   <section class="wedding-hero">
-    <% hero_src = wedding_asset_url(current_wedding.hero_image) %>
-    <% if hero_src.present? %>
-      <%= image_tag hero_src,
-          alt: current_wedding.title,
-          class: "wedding-hero-image" %>
-    <% else %>
-      <div class="wedding-hero-image bg-ink"></div>
+    <%= editor_slot("homepage_hero", css_class: "wedding-hero-slot") do %>
+      <% hero_src = wedding_asset_url(current_wedding.hero_image) %>
+      <% if hero_src.present? %>
+        <%= image_tag hero_src,
+            alt: current_wedding.title,
+            class: "wedding-hero-image" %>
+      <% else %>
+        <div class="wedding-hero-image bg-ink"></div>
+      <% end %>
     <% end %>
     <div class="wedding-hero-overlay"></div>
     <div class="wedding-hero-content">
@@ -15,76 +16,83 @@
         <div class="mb-8 animate-scale-in">
           <div class="w-px h-16 bg-white/30 mx-auto mb-8"></div>
         </div>
-        <h1 class="wedding-hero-title text-white">
+        <%= editor_essentials(tag: :h1, css_class: "wedding-hero-title text-white") do %>
           <%= current_wedding.title %>
-        </h1>
+        <% end %>
         <div class="wedding-divider-horizontal w-24 mb-8 animate-grow-width"></div>
-        <p class="wedding-hero-subtitle text-white">
+        <%= editor_text("hero.tagline", tag: :p, css_class: "wedding-hero-subtitle text-white") do %>
           <%= current_wedding.hero["tagline"] %>
-        </p>
+        <% end %>
         <div class="space-y-3 text-base font-light tracking-wider text-white">
           <% if current_wedding.date %>
-            <p><%= format_date_elegant(current_wedding.date) %></p>
+            <%= editor_essentials(tag: :p) do %>
+              <%= format_date_elegant(current_wedding.date) %>
+            <% end %>
           <% end %>
-          <p class="text-sm opacity-80"><%= full_venue_name(current_wedding.venue) %></p>
+          <%= editor_essentials(tag: :p, css_class: "text-sm opacity-80") do %>
+            <%= full_venue_name(current_wedding.venue) %>
+          <% end %>
         </div>
       </div>
     </div>
   </section>
 
-  <% if current_wedding.story["enabled"] %>
-    <%# Our Story Section %>
-    <section class="max-w-4xl mx-auto py-32 px-4">
+  <% if current_wedding.story["enabled"] || site_editor_active? %>
+    <%= editor_panel("home_settings", tag: :section, css_class: "max-w-4xl mx-auto py-32 px-4") do %>
       <div class="text-center animate-on-scroll" data-scroll-animate-target="item">
         <%= render "public/shared/divider" %>
         <div class="mb-12"></div>
-        <%= render "public/shared/section_title", title: current_wedding.story["title"] %>
+        <%= render "public/shared/section_title", title: current_wedding.story["title"], field: "story.title" %>
         <div class="space-y-8 leading-loose text-lg wedding-prose max-w-2xl mx-auto">
-          <% current_wedding.story["paragraphs"]&.each do |paragraph| %>
+          <% Array(current_wedding.story["paragraphs"]).each do |paragraph| %>
             <p><%= paragraph %></p>
           <% end %>
-          <% if current_wedding.story["closing"] %>
-            <p class="italic text-base text-ink-soft">
-              <%= current_wedding.story["closing"] %>
-            </p>
-          <% end %>
         </div>
+        <% if current_wedding.story["closing"].present? || site_editor_active? %>
+          <%= editor_text("story.closing", tag: :p, css_class: "italic text-base text-ink-soft mt-8") do %>
+            <%= current_wedding.story["closing"] %>
+          <% end %>
+        <% end %>
         <div class="mt-16"></div>
         <%= render "public/shared/divider" %>
       </div>
-    </section>
+    <% end %>
   <% end %>
 
-  <%# Event Details %>
   <section class="wedding-band py-32" id="events">
     <div class="max-w-6xl mx-auto px-4">
       <%= render "public/shared/section_title", title: "Event Details", centered: true %>
       <div class="mb-24"></div>
       <div class="grid md:grid-cols-3 gap-20">
         <%= render "public/shared/event_detail", icon: "calendar", title: "Date" do %>
-          <% if current_wedding.date %>
-            <p class="wedding-prose"><%= current_wedding.date.strftime("%A") %></p>
-            <p class="wedding-prose"><%= format_date(current_wedding.date) %></p>
+          <%= editor_essentials do %>
+            <% if current_wedding.date %>
+              <p class="wedding-prose"><%= current_wedding.date.strftime("%A") %></p>
+              <p class="wedding-prose"><%= format_date(current_wedding.date) %></p>
+            <% end %>
           <% end %>
         <% end %>
 
         <%= render "public/shared/event_detail", icon: "clock", title: "Time", delay_class: "animation-delay-200" do %>
-          <p class="wedding-prose">Ceremony at <%= current_wedding.ceremony_time %></p>
-          <p class="wedding-prose text-sm opacity-70">Reception to Follow</p>
+          <%= editor_essentials do %>
+            <p class="wedding-prose">Ceremony at <%= current_wedding.ceremony_time %></p>
+            <p class="wedding-prose text-sm opacity-70">Reception to Follow</p>
+          <% end %>
         <% end %>
 
         <%= render "public/shared/event_detail", icon: "map_pin", title: "Venue", delay_class: "animation-delay-400" do %>
-          <p class="wedding-prose"><%= current_wedding.venue["name"] %></p>
-          <p class="wedding-prose text-sm opacity-70">
-            <%= full_venue_name(current_wedding.venue) %>
-          </p>
+          <%= editor_essentials do %>
+            <p class="wedding-prose"><%= current_wedding.venue["name"] %></p>
+            <p class="wedding-prose text-sm opacity-70">
+              <%= full_venue_name(current_wedding.venue) %>
+            </p>
+          <% end %>
         <% end %>
       </div>
     </div>
   </section>
 
   <% if @events.any? %>
-    <%# Schedule Section %>
     <section class="py-32 px-4">
       <div class="max-w-4xl mx-auto">
         <%= render "public/shared/divider" %>
@@ -114,14 +122,16 @@
     </section>
   <% end %>
 
-  <% if current_wedding.homepage_gallery_visible? %>
+  <% if current_wedding.homepage_gallery_visible? || site_editor_active? %>
     <% homepage_images = current_wedding.homepage_gallery_images %>
-    <%# Photo Gallery preview %>
-    <section class="py-32">
+    <%= editor_panel("home_settings", tag: :section, css_class: "py-32") do %>
       <div class="max-w-7xl mx-auto px-4">
         <%= render "public/shared/divider" %>
         <div class="mb-12"></div>
-        <%= render "public/shared/section_title", title: current_wedding.gallery_content["homepage_title"], centered: true %>
+        <%= render "public/shared/section_title",
+            title: current_wedding.gallery_content["homepage_title"],
+            centered: true,
+            field: "photos_page.homepage_title" %>
         <div class="mb-24"></div>
         <div class="grid md:grid-cols-3 gap-8">
           <% homepage_images.each_with_index do |image, index| %>
@@ -131,31 +141,31 @@
             </div>
           <% end %>
         </div>
-        <%# Only offer the gallery page when the theme actually has one. %>
         <% if site_navigation.visible?("gallery") %>
           <div class="text-center mt-16">
             <%= link_to "View All Photos", public_photos_path, class: "btn-wedding-primary" %>
           </div>
         <% end %>
       </div>
-    </section>
+    <% end %>
   <% end %>
 
   <% if site_navigation.visible?("rsvp") %>
-    <%# RSVP Call to Action %>
     <section class="wedding-band py-32" id="rsvp-section">
       <div class="max-w-2xl mx-auto px-4 text-center">
         <%= render "public/shared/divider" %>
         <div class="mb-12"></div>
-        <%= render "public/shared/section_title", title: current_wedding.rsvp["title"] %>
-        <p class="text-lg mb-12 max-w-lg mx-auto leading-relaxed wedding-prose">
+        <%= render "public/shared/section_title", title: current_wedding.rsvp["title"], field: "rsvp_copy.title" %>
+        <%= editor_text("rsvp_copy.description", tag: :p, css_class: "text-lg mb-12 max-w-lg mx-auto leading-relaxed wedding-prose", multiline: true) do %>
           <%= current_wedding.rsvp["description"] %>
-        </p>
-        <%= link_to current_wedding.rsvp["button_text"], public_rsvp_lookup_path,
-            class: "btn-wedding-primary" %>
-        <p class="text-sm tracking-wider mt-8 text-ink-faint font-light">
+        <% end %>
+        <%= editor_text("rsvp_copy.button_text", tag: :span, css_class: "inline-block") do %>
+          <%= link_to current_wedding.rsvp["button_text"], public_rsvp_lookup_path,
+              class: "btn-wedding-primary" %>
+        <% end %>
+        <%= editor_text("rsvp_copy.lookup_hint", tag: :p, css_class: "text-sm tracking-wider mt-8 text-ink-faint font-light") do %>
           <%= current_wedding.rsvp["lookup_hint"] %>
-        </p>
+        <% end %>
       </div>
     </section>
   <% end %>

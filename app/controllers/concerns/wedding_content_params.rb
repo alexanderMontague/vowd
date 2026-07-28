@@ -67,68 +67,115 @@ module WeddingContentParams
 
   def build_story(raw)
     data = nested_hash(raw)
+    existing = current_wedding.story.presence || Wedding::DEFAULT_STORY
+
     {
-      "enabled" => ActiveModel::Type::Boolean.new.cast(data[:enabled]),
-      "title" => data[:title].to_s,
-      "paragraphs" => parse_list(data[:paragraphs_text], separator: "\n"),
-      "closing" => data[:closing].presence
+      "enabled" => if data.key?(:enabled)
+                     ActiveModel::Type::Boolean.new.cast(data[:enabled])
+                   else
+                     ActiveModel::Type::Boolean.new.cast(existing["enabled"])
+                   end,
+      "title" => data.key?(:title) ? data[:title].to_s : existing["title"].to_s,
+      "paragraphs" => if data.key?(:paragraphs_text)
+                        parse_list(data[:paragraphs_text], separator: "\n")
+                      else
+                        Array(existing["paragraphs"])
+                      end,
+      "closing" => if data.key?(:closing)
+                     data[:closing].presence
+                   else
+                     existing["closing"]
+                   end
     }
   end
 
   def build_hero(raw)
     data = nested_hash(raw)
-    { "tagline" => data[:tagline].to_s }
+    existing = current_wedding.hero.presence || Wedding::DEFAULT_HERO
+    { "tagline" => data.key?(:tagline) ? data[:tagline].to_s : existing["tagline"].to_s }
   end
 
   def build_rsvp_copy(raw)
     data = nested_hash(raw)
+    existing = current_wedding.rsvp_copy.presence || Wedding::DEFAULT_RSVP_COPY
     {
-      "title" => data[:title].to_s,
-      "description" => data[:description].to_s,
-      "button_text" => data[:button_text].to_s,
-      "lookup_hint" => data[:lookup_hint].to_s
+      "title" => data.key?(:title) ? data[:title].to_s : existing["title"].to_s,
+      "description" => data.key?(:description) ? data[:description].to_s : existing["description"].to_s,
+      "button_text" => data.key?(:button_text) ? data[:button_text].to_s : existing["button_text"].to_s,
+      "lookup_hint" => data.key?(:lookup_hint) ? data[:lookup_hint].to_s : existing["lookup_hint"].to_s
     }
   end
 
   def build_save_the_date_copy(raw)
     data = nested_hash(raw)
+    existing = current_wedding.save_the_date
     {
-      "eyebrow" => data[:eyebrow].to_s,
-      "announcement" => data[:announcement].to_s,
-      "formal_note" => data[:formal_note].to_s,
-      "signup_eyebrow" => data[:signup_eyebrow].to_s,
-      "signup_prompt" => data[:signup_prompt].to_s,
-      "calendar_button_text" => data[:calendar_button_text].to_s,
-      "submit_button_text" => data[:submit_button_text].to_s
+      "eyebrow" => data.key?(:eyebrow) ? data[:eyebrow].to_s : existing["eyebrow"].to_s,
+      "announcement" => data.key?(:announcement) ? data[:announcement].to_s : existing["announcement"].to_s,
+      "formal_note" => data.key?(:formal_note) ? data[:formal_note].to_s : existing["formal_note"].to_s,
+      "signup_eyebrow" => data.key?(:signup_eyebrow) ? data[:signup_eyebrow].to_s : existing["signup_eyebrow"].to_s,
+      "signup_prompt" => data.key?(:signup_prompt) ? data[:signup_prompt].to_s : existing["signup_prompt"].to_s,
+      "calendar_button_text" => if data.key?(:calendar_button_text)
+                                  data[:calendar_button_text].to_s
+                                else
+                                  existing["calendar_button_text"].to_s
+                                end,
+      "submit_button_text" => if data.key?(:submit_button_text)
+                                data[:submit_button_text].to_s
+                              else
+                                existing["submit_button_text"].to_s
+                              end
     }
   end
 
   def build_faq(raw)
     data = nested_hash(raw)
-    questions = nested_list(data[:questions]).filter_map do |item|
-      question = item[:question].to_s.strip
-      answer = item[:answer].to_s.strip
-      next if question.blank? && answer.blank?
+    existing = current_wedding.faq.presence || Wedding::DEFAULT_FAQ
+    questions = if data.key?(:questions)
+                  nested_list(data[:questions]).filter_map do |item|
+                    question = item[:question].to_s.strip
+                    answer = item[:answer].to_s.strip
+                    next if question.blank? && answer.blank?
 
-      { "question" => question, "answer" => answer }
-    end
+                    { "question" => question, "answer" => answer }
+                  end
+                else
+                  Array(existing["questions"])
+                end
 
     {
-      "title" => data[:title].to_s,
-      "subtitle" => data[:subtitle].to_s,
+      "title" => data.key?(:title) ? data[:title].to_s : existing["title"].to_s,
+      "subtitle" => data.key?(:subtitle) ? data[:subtitle].to_s : existing["subtitle"].to_s,
       "questions" => questions
     }
   end
 
   def build_wedding_party(raw)
     data = nested_hash(raw)
+    existing = current_wedding.wedding_party.presence || Wedding::DEFAULT_WEDDING_PARTY
     {
-      "title" => data[:title].to_s,
-      "subtitle" => data[:subtitle].to_s,
-      "bridesmaids_title" => data[:bridesmaids_title].to_s,
-      "groomsmen_title" => data[:groomsmen_title].to_s,
-      "bridesmaids" => build_party_members(data[:bridesmaids]),
-      "groomsmen" => build_party_members(data[:groomsmen])
+      "title" => data.key?(:title) ? data[:title].to_s : existing["title"].to_s,
+      "subtitle" => data.key?(:subtitle) ? data[:subtitle].to_s : existing["subtitle"].to_s,
+      "bridesmaids_title" => if data.key?(:bridesmaids_title)
+                              data[:bridesmaids_title].to_s
+                            else
+                              existing["bridesmaids_title"].to_s
+                            end,
+      "groomsmen_title" => if data.key?(:groomsmen_title)
+                             data[:groomsmen_title].to_s
+                           else
+                             existing["groomsmen_title"].to_s
+                           end,
+      "bridesmaids" => if data.key?(:bridesmaids)
+                         build_party_members(data[:bridesmaids])
+                       else
+                         Array(existing["bridesmaids"])
+                       end,
+      "groomsmen" => if data.key?(:groomsmen)
+                       build_party_members(data[:groomsmen])
+                     else
+                       Array(existing["groomsmen"])
+                     end
     }
   end
 
