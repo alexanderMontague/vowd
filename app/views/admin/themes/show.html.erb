@@ -24,14 +24,6 @@
      data-asset-picker-usage-value="<%= AssetUsageIndex.call(@wedding).to_json %>"
      data-action="nested-form:removed->asset-picker#refreshUsage gallery-lightbox:opened->asset-picker#refreshUsage asset-picker:opened->theme-editor#onPickerOpened">
 
-  <header class="theme-editor__chrome">
-    <div class="theme-editor__chrome-brand">
-      <p class="theme-editor__chrome-title">Theme</p>
-      <p class="theme-editor__chrome-hint">Use the site menu in the preview to move between pages.</p>
-    </div>
-    <span class="theme-editor-status" data-theme-editor-target="status"></span>
-  </header>
-
   <% if @unsaved_changes %>
     <div class="theme-editor-notice">
       <span>Unsaved theme changes — guests still see the last save.</span>

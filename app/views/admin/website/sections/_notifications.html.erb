@@ -1,4 +1,4 @@
 <% notifications = wedding.notifications.presence || Wedding::DEFAULT_NOTIFICATIONS %>
 <h2 class="admin-editor-panel-title">Notifications</h2>
 <p class="admin-editor-panel-copy">Reminder schedule and channels.</p>
-<%= render "admin/website/notifications_fields", notifications: notifications %>
+<%= render "admin/website/notifications_fields", notifications: notifications, wedding: wedding %>

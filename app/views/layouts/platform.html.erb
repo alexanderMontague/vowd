@@ -10,29 +10,25 @@
     <%= javascript_importmap_tags %>
   </head>
 
-  <% header_light = content_for?(:platform_header_theme) && yield(:platform_header_theme).to_s == "light" %>
-  <body class="font-sans m-0 min-h-screen bg-stone-50 text-secondary">
-    <header class="absolute inset-x-0 top-0 z-20">
-      <div class="mx-auto flex max-w-6xl items-center justify-between px-6 py-5">
-        <%= link_to platform_root_path,
-            class: "font-display text-2xl tracking-wide no-underline #{header_light ? 'text-white' : 'text-secondary'}" do %>
-          Vowd
-        <% end %>
-        <nav class="flex items-center gap-3">
-          <%= link_to "Log in", platform_login_path,
-              class: header_light ? "btn btn-sm bg-white/10 text-white border border-white/40 hover:bg-white/20" : "btn btn-secondary btn-sm" %>
+  <% header_light = false %>
+  <body class="platform-app m-0 min-h-screen <%= content_for?(:body_class) ? yield(:body_class) : "" %>">
+    <header class="platform-header">
+      <div class="platform-header__inner">
+        <%= link_to "Vowd", platform_root_path, class: "platform-header__brand" %>
+        <nav class="platform-header__nav">
+          <%= link_to "Log in", platform_login_path, class: "btn btn-secondary btn-sm" %>
           <%= link_to "Sign up", platform_signup_path, class: "btn btn-primary btn-sm" %>
         </nav>
       </div>
     </header>
 
     <% if flash[:notice] %>
-      <div class="relative z-30 mx-auto max-w-lg px-6 <%= header_light ? 'pt-24' : 'pt-24' %>">
+      <div class="platform-flash">
         <div class="alert alert-success"><%= flash[:notice] %></div>
       </div>
     <% end %>
     <% if flash[:alert] %>
-      <div class="relative z-30 mx-auto max-w-lg px-6 pt-24">
+      <div class="platform-flash">
         <div class="alert alert-error"><%= flash[:alert] %></div>
       </div>
     <% end %>

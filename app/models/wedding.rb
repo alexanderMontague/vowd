@@ -90,7 +90,6 @@ class Wedding < ApplicationRecord
     "reminders" => {
       "enabled" => true,
       "send_time" => "10:00",
-      "audience" => "pending_rsvp",
       "channels" => {
         "email" => { "enabled" => true }
       },
@@ -99,18 +98,21 @@ class Wedding < ApplicationRecord
           "key" => "week_before",
           "days_before" => 7,
           "channels" => ["email"],
+          "audiences" => ["pending_rsvp"],
           "email_subject" => "Your wedding RSVP: one week to go"
         },
         {
           "key" => "day_before",
           "days_before" => 1,
           "channels" => ["email"],
+          "audiences" => ["pending_rsvp"],
           "email_subject" => "Your wedding RSVP: tomorrow is the big day"
         },
         {
           "key" => "day_of",
           "days_before" => 0,
           "channels" => ["email"],
+          "audiences" => ["pending_rsvp", "accepted"],
           "email_subject" => "Today is wedding day"
         }
       ]

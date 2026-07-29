@@ -86,7 +86,10 @@ class Admin::ThemesControllerTest < ActionDispatch::IntegrationTest
     assert_select "[data-action='theme-editor#openSection']", count: 0
     assert_select "[data-theme-editor-section-urls-value]"
     assert_select "[data-theme-editor-target='frameLoading']"
+    assert_select ".theme-preview__title", text: "Theme"
     assert_includes response.body, "Use the site menu in the preview"
+    assert_select ".theme-preview__status[data-theme-editor-target='status']"
+    assert_select ".theme-editor__chrome", count: 0
     assert_select "button[form='theme_look_form']", text: "Save theme"
     assert_select "form.theme-editor-form[data-action*='autosaveForm']"
   end

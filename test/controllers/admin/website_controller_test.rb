@@ -66,13 +66,13 @@ module Admin
             reminders: {
               enabled: "1",
               send_time: "09:00",
-              audience: "pending_rsvp",
               channels: { email: { enabled: "1" } },
               schedule: {
                 "0" => {
                   key: "week_before",
                   days_before: "7",
                   channels: ["email"],
+                  audiences: %w[pending_rsvp accepted],
                   email_subject: "One week to go"
                 }
               }
@@ -85,6 +85,18 @@ module Admin
       @wedding.reload
       assert_equal "09:00", @wedding.notifications.dig("reminders", "send_time")
       assert_equal "One week to go", @wedding.notifications.dig("reminders", "schedule", 0, "email_subject")
+      assert_equal %w[pending_rsvp accepted], @wedding.notifications.dig("reminders", "schedule", 0, "audiences")
+    end
+
+    test "notifications section shows audiences and email preview" do
+      get admin_website_section_path(section: "notifications")
+
+      assert_response :success
+      assert_select "input[name*='[audiences][]']"
+      assert_select ".admin-email-preview"
+      assert_select ".admin-email-preview__subject"
+      assert_select ".admin-email-preview__body"
+      assert_not_includes response.body, "name=\"wedding[notifications][reminders][audience]\""
     end
 
     test "update leaves placements alone when the form omits them" do

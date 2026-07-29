@@ -25,7 +25,7 @@ class WeddingReminderPipelineJob < ApplicationJob
   end
 
   def enqueue_deliveries_for_rule(wedding:, config:, rule:, local_date:)
-    config.recipients_scope.find_in_batches(batch_size: BATCH_SIZE) do |guest_batch|
+    config.recipients_scope(rule).find_in_batches(batch_size: BATCH_SIZE) do |guest_batch|
       guest_batch.each do |guest|
         rule.channels.each do |channel|
           next unless deliverable?(guest, channel)

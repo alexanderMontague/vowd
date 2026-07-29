@@ -1,5 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Montserrat:wght@200;300;400;500&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Special+Elite&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap");
 @import "tailwindcss";
 
 /* Per-theme layers. Each is scoped to `[data-theme="<key>"]`, so they only apply
@@ -1623,7 +1624,20 @@ html.admin-nav-locked {
   }
 
   .theme-preview__bar {
-    @apply flex shrink-0 flex-wrap items-center justify-between gap-3 border-b border-border bg-white px-4 py-2;
+    @apply flex shrink-0 flex-nowrap items-center justify-between gap-3 border-b border-border bg-white px-4 py-2;
+    min-height: 3rem;
+  }
+
+  .theme-preview__brand {
+    @apply min-w-0 flex-1;
+  }
+
+  .theme-preview__title {
+    @apply m-0 text-sm font-semibold tracking-normal text-neutral-800;
+  }
+
+  .theme-preview__hint {
+    @apply m-0 mt-0.5 truncate text-xs text-neutral-500;
   }
 
   .theme-preview__label {
@@ -1631,15 +1645,19 @@ html.admin-nav-locked {
   }
 
   .theme-preview__tools {
-    @apply flex flex-wrap items-center gap-1;
+    @apply flex shrink-0 flex-nowrap items-center gap-1;
+  }
+
+  .theme-preview__status {
+    @apply max-w-[10rem] truncate text-xs text-neutral-500 sm:max-w-none;
   }
 
   .theme-preview__tools-divider {
-    @apply mx-1 h-5 w-px bg-border;
+    @apply mx-1 h-5 w-px shrink-0 self-center bg-border;
   }
 
   .theme-preview__device {
-    @apply inline-flex size-9 items-center justify-center rounded-md border border-transparent text-neutral-600
+    @apply inline-flex size-9 shrink-0 items-center justify-center rounded-md border border-transparent text-neutral-600
            transition-colors hover:bg-neutral-100;
   }
 
@@ -1652,12 +1670,12 @@ html.admin-nav-locked {
   }
 
   .theme-preview__settings {
-    @apply inline-flex h-9 items-center rounded-md border border-transparent px-2.5 text-xs font-medium
+    @apply inline-flex h-9 shrink-0 items-center rounded-md border border-transparent px-2.5 text-xs font-medium
            text-neutral-700 transition-colors hover:bg-neutral-100;
   }
 
   .theme-preview__skip-video {
-    @apply inline-flex h-9 cursor-pointer items-center gap-1.5 rounded-md px-2 text-xs font-medium text-neutral-700
+    @apply inline-flex h-9 shrink-0 cursor-pointer items-center gap-1.5 rounded-md px-2 text-xs font-medium text-neutral-700
            hover:bg-neutral-100;
   }
 
@@ -1666,7 +1684,12 @@ html.admin-nav-locked {
   }
 
   .theme-preview__skip-video input {
-    @apply size-3.5 accent-secondary;
+    @apply m-0 size-3.5 shrink-0 accent-secondary;
+    vertical-align: middle;
+  }
+
+  .theme-preview__skip-video span {
+    @apply leading-none;
   }
 
   .theme-preview__stage {
@@ -1926,9 +1949,142 @@ html.admin-nav-locked {
      Physical Invitation - 5×7 inch cardstock
      -------------------------------------------------------------------------- */
   .invitation-panel {
+    position: relative;
+    display: flex;
     width: 5in;
     height: 7in;
     flex-shrink: 0;
+    overflow: hidden;
+    box-sizing: border-box;
+    background: var(--theme-surface, #fafaf9);
+    color: var(--theme-ink, #292524);
+  }
+
+  .invitation-panel__bg {
+    position: absolute;
+    inset: 0;
+    opacity: 0.14;
+    background:
+      radial-gradient(circle at 12% 18%, color-mix(in srgb, var(--theme-accent, #c89b7b) 35%, transparent), transparent 42%),
+      radial-gradient(circle at 88% 82%, color-mix(in srgb, var(--theme-primary, #292524) 18%, transparent), transparent 40%);
+    pointer-events: none;
+  }
+
+  .invitation-panel__body {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 0;
+    padding: 0.7in 0.65in;
+    overflow: hidden;
+  }
+
+  .invitation-panel__body--center {
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: 0.85rem;
+  }
+
+  .invitation-kicker,
+  .invitation-eyebrow {
+    margin: 0;
+    font-family: var(--theme-font-body, var(--font-body));
+    font-size: 0.65rem;
+    font-weight: 300;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: color-mix(in srgb, var(--theme-ink, #292524) 55%, transparent);
+  }
+
+  .invitation-kicker {
+    margin-bottom: 0.65rem;
+  }
+
+  .invitation-title {
+    margin: 0.75rem 0;
+    font-family: var(--theme-font-display, var(--font-display));
+    font-size: 2.35rem;
+    font-weight: 400;
+    line-height: 1.1;
+    letter-spacing: 0.04em;
+    color: var(--theme-ink, #292524);
+  }
+
+  .invitation-details {
+    margin: 0;
+    text-align: right;
+  }
+
+  .invitation-details p {
+    margin: 0 0 0.2rem;
+    font-family: var(--theme-font-body, var(--font-body));
+    font-size: 0.8rem;
+    font-weight: 300;
+    letter-spacing: 0.08em;
+    color: color-mix(in srgb, var(--theme-ink, #292524) 72%, transparent);
+  }
+
+  .invitation-details__muted {
+    color: color-mix(in srgb, var(--theme-ink, #292524) 55%, transparent) !important;
+    letter-spacing: 0.02em !important;
+  }
+
+  .invitation-footer {
+    margin: 0.75rem 0 0;
+    text-align: center;
+    font-family: var(--theme-font-body, var(--font-body));
+    font-size: 0.78rem;
+    font-style: italic;
+    font-weight: 300;
+    color: color-mix(in srgb, var(--theme-ink, #292524) 55%, transparent);
+  }
+
+  .invitation-back__copy {
+    margin: 0;
+    max-width: 12rem;
+    font-family: var(--theme-font-body, var(--font-body));
+    font-size: 0.8rem;
+    font-weight: 300;
+    line-height: 1.45;
+    color: color-mix(in srgb, var(--theme-ink, #292524) 72%, transparent);
+  }
+
+  .qr-code-wrapper {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.65rem;
+    border-radius: 0.75rem;
+    background: color-mix(in srgb, var(--theme-surface-alt, #f5f5f4) 88%, transparent);
+  }
+
+  .invitation-controls {
+    display: grid;
+    gap: 1rem;
+    align-items: end;
+  }
+
+  @media (min-width: 1024px) {
+    .invitation-controls {
+      grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr) minmax(0, 1fr) auto;
+    }
+  }
+
+  .invitation-controls__actions {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: 0.5rem;
+    min-height: 2.25rem;
+  }
+
+  .invitation-controls .form-control,
+  .invitation-controls__actions .btn {
+    min-height: 2.25rem;
   }
 
   .screen-only {
@@ -2046,6 +2202,7 @@ html.admin-nav-locked {
     page: invitation-sheet;
     width: 5in;
     height: 7in;
+    overflow: hidden;
     break-after: page;
     page-break-after: always;
     box-sizing: border-box;
@@ -2060,8 +2217,22 @@ html.admin-nav-locked {
   .invitation-panel {
     width: 5in;
     height: 7in;
+    overflow: hidden;
     box-shadow: none;
     margin: 0;
+  }
+
+  .invitation-panel__body {
+    padding: 0.55in 0.5in;
+  }
+
+  .invitation-title {
+    font-size: 2rem;
+    margin: 0.5rem 0;
+  }
+
+  .invitation-footer {
+    margin-top: 0.45rem;
   }
 
   .sign-print-sheet {
@@ -2833,11 +3004,11 @@ html.admin-nav-locked {
   }
 
   /* ==========================================================================
-     Retro Photo — front-end-only layered filter
-     The original image is never modified. Layers are composited on top and the
-     colour grade is applied via CSS `filter`; per-photo variation comes from the
-     retro-photo controller's `--rp-*` custom properties. Which layers show is
-     driven by an ancestor `[data-photo-style]` scope.
+     Retro Photo — disposable-camera film look (matches marketing gallery.jpg)
+     Originals stay untouched. Colour grade + soft plastic lens via CSS filter;
+     grain, warm flash spill, vignette, edge falloff, and film-frame border are
+     layered on top. Per-photo variation comes from `--rp-*` (retro-photo
+     controller). Which layers show is scoped by ancestor `[data-photo-style]`.
      ========================================================================== */
   .retro-photo {
     display: block;
@@ -2865,7 +3036,9 @@ html.admin-nav-locked {
 
   .retro-photo__grain,
   .retro-photo__leak,
-  .retro-photo__vignette {
+  .retro-photo__cast,
+  .retro-photo__vignette,
+  .retro-photo__frame-edge {
     position: absolute;
     inset: 0;
     pointer-events: none;
@@ -2873,58 +3046,94 @@ html.admin-nav-locked {
     transition: opacity 0.3s ease;
   }
 
+  /* Fine organic grain — denser than digital noise */
   .retro-photo__grain {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-    background-size: 160px 160px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-size: 140px 140px;
     background-position: var(--rp-grain-x, 0%) var(--rp-grain-y, 0%);
     mix-blend-mode: overlay;
   }
 
+  /* Subtle warm flash spill (not a colorful light leak) */
   .retro-photo__leak {
     background:
       radial-gradient(
-        circle at var(--rp-leak-x, 85%) var(--rp-leak-y, 12%),
-        hsla(calc(30deg + var(--rp-leak-hue, 0deg)), 92%, 62%, var(--rp-leak-opacity, 0.35)) 0%,
-        hsla(calc(8deg + var(--rp-leak-hue, 0deg)), 88%, 55%, calc(var(--rp-leak-opacity, 0.35) * 0.55)) 28%,
-        transparent 62%
+        circle at var(--rp-leak-x, 48%) var(--rp-leak-y, 38%),
+        hsla(calc(42deg + var(--rp-leak-hue, 0deg)), 78%, 72%, var(--rp-leak-opacity, 0.22)) 0%,
+        hsla(calc(28deg + var(--rp-leak-hue, 0deg)), 70%, 58%, calc(var(--rp-leak-opacity, 0.22) * 0.45)) 32%,
+        transparent 68%
       );
-    mix-blend-mode: screen;
+    mix-blend-mode: soft-light;
   }
 
+  /* Warm highlights / cool milky shadows — film scan cast */
+  .retro-photo__cast {
+    background:
+      linear-gradient(
+        165deg,
+        rgba(255, 214, 150, 0.18) 0%,
+        transparent 42%,
+        rgba(28, 48, 58, 0.22) 100%
+      );
+    mix-blend-mode: soft-light;
+  }
+
+  /* Strong tunnel vignette — disposable plastic lens */
   .retro-photo__vignette {
-    background: radial-gradient(
-      ellipse at center,
-      transparent 52%,
-      rgba(0, 0, 0, var(--rp-vignette, 0.45)) 100%
-    );
+    background:
+      radial-gradient(
+        ellipse 72% 68% at 50% 46%,
+        transparent 28%,
+        rgba(0, 0, 0, calc(var(--rp-vignette, 0.62) * 0.35)) 62%,
+        rgba(0, 0, 0, var(--rp-vignette, 0.62)) 100%
+      );
   }
 
-  /* Retro treatment */
+  /* Soft edge blur + dark film-frame border */
+  .retro-photo__frame-edge {
+    box-shadow:
+      inset 0 0 0 2px rgba(8, 6, 4, 0.92),
+      inset 0 0 28px 10px rgba(0, 0, 0, 0.55),
+      inset 0 0 80px 28px rgba(0, 0, 0, 0.28);
+  }
+
+  /* Retro treatment — warm muted flash film, soft plastic lens */
   [data-photo-style="retro"] .retro-photo__img {
-    filter: sepia(var(--rp-sepia, 0.38)) contrast(var(--rp-contrast, 1.1))
-      saturate(var(--rp-saturate, 1.15)) brightness(var(--rp-brightness, 1));
+    filter:
+      sepia(var(--rp-sepia, 0.28))
+      hue-rotate(var(--rp-hue, -6deg))
+      contrast(var(--rp-contrast, 1.18))
+      saturate(var(--rp-saturate, 0.82))
+      brightness(var(--rp-brightness, 1.04))
+      blur(var(--rp-softness, 0.45px));
   }
 
   [data-photo-style="retro"] .retro-photo__grain {
-    opacity: var(--rp-grain-opacity, 0.18);
+    opacity: var(--rp-grain-opacity, 0.32);
   }
 
   [data-photo-style="retro"] .retro-photo__leak,
-  [data-photo-style="retro"] .retro-photo__vignette {
+  [data-photo-style="retro"] .retro-photo__cast,
+  [data-photo-style="retro"] .retro-photo__vignette,
+  [data-photo-style="retro"] .retro-photo__frame-edge {
     opacity: 1;
   }
 
   /* Black & white treatment */
   [data-photo-style="bw"] .retro-photo__img {
-    filter: grayscale(1) contrast(calc(var(--rp-contrast, 1.1) + 0.05))
-      brightness(var(--rp-brightness, 1));
+    filter:
+      grayscale(1)
+      contrast(calc(var(--rp-contrast, 1.18) + 0.08))
+      brightness(var(--rp-brightness, 1.04))
+      blur(var(--rp-softness, 0.45px));
   }
 
   [data-photo-style="bw"] .retro-photo__grain {
-    opacity: calc(var(--rp-grain-opacity, 0.18) * 1.25);
+    opacity: calc(var(--rp-grain-opacity, 0.32) * 1.15);
   }
 
-  [data-photo-style="bw"] .retro-photo__vignette {
+  [data-photo-style="bw"] .retro-photo__vignette,
+  [data-photo-style="bw"] .retro-photo__frame-edge {
     opacity: 1;
   }
 
@@ -2942,7 +3151,9 @@ html.admin-nav-locked {
     .retro-photo__img,
     .retro-photo__grain,
     .retro-photo__leak,
-    .retro-photo__vignette {
+    .retro-photo__cast,
+    .retro-photo__vignette,
+    .retro-photo__frame-edge {
       transition: none;
     }
   }
@@ -3062,4 +3273,270 @@ html.admin-nav-locked {
 
 .platform-browser img {
   @apply block w-full;
+}
+
+/* ==========================================================================
+   Platform marketing (aligned with admin premium tokens)
+   ========================================================================== */
+
+.platform-app {
+  --platform-ink: #12151a;
+  --platform-muted: #737b8c;
+  --platform-canvas: #f2f3f6;
+  --platform-surface: #ffffff;
+  --platform-border: #e5e7ec;
+  --platform-accent: #2b5f52;
+  --platform-accent-hover: #234e43;
+  --platform-sidebar: #0f1217;
+  --platform-font: "Plus Jakarta Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-family: var(--platform-font);
+  color: var(--platform-ink);
+  background: var(--platform-canvas);
+  -webkit-font-smoothing: antialiased;
+}
+
+html:has(.platform-app),
+body.platform-app {
+  background: var(--platform-canvas, #f2f3f6);
+}
+
+.platform-app .btn-primary {
+  background: var(--platform-accent);
+  color: #fff;
+}
+
+.platform-app .btn-primary:hover {
+  background: var(--platform-accent-hover);
+}
+
+.platform-header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  border-bottom: 1px solid var(--platform-border);
+  background: color-mix(in srgb, var(--platform-canvas) 92%, transparent);
+  backdrop-filter: blur(10px);
+}
+
+.platform-header__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 72rem;
+  margin: 0 auto;
+  padding: 1rem 1.5rem;
+}
+
+.platform-header__brand {
+  font-family: var(--platform-font);
+  font-size: 1.15rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  text-decoration: none;
+  color: var(--platform-ink);
+}
+
+.platform-header--light .platform-header__brand {
+  color: var(--platform-ink);
+}
+
+.platform-header__nav {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.platform-btn-ghost {
+  background: transparent !important;
+}
+
+.platform-flash {
+  position: relative;
+  z-index: 30;
+  max-width: 32rem;
+  margin: 0 auto;
+  padding: 1.5rem 1.5rem 0;
+}
+
+.platform-hero {
+  display: grid;
+  gap: 2.75rem;
+  align-items: center;
+  max-width: 72rem;
+  margin: 0 auto;
+  padding: 3.5rem 1.5rem 4rem;
+  color: var(--platform-ink);
+  background: transparent;
+}
+
+@media (min-width: 1024px) {
+  .platform-hero {
+    grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
+    padding-top: 4.25rem;
+    padding-bottom: 5rem;
+  }
+}
+
+.platform-hero__brand {
+  margin: 0;
+  font-size: clamp(2.75rem, 6vw, 3.75rem);
+  font-weight: 600;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  color: var(--platform-ink);
+}
+
+.platform-hero__headline {
+  margin: 1.1rem 0 0;
+  max-width: 18ch;
+  font-size: clamp(1.65rem, 3vw, 2.15rem);
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  line-height: 1.25;
+  color: var(--platform-ink);
+}
+
+.platform-hero__lede {
+  margin: 1.1rem 0 0;
+  max-width: 34rem;
+  font-size: 1.05rem;
+  font-weight: 400;
+  line-height: 1.55;
+  color: var(--platform-muted);
+}
+
+.platform-hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1.75rem;
+}
+
+.platform-browser {
+  overflow: hidden;
+  border: 1px solid var(--platform-border);
+  border-radius: 0.85rem;
+  background: var(--platform-surface);
+  box-shadow: 0 18px 50px rgba(15, 18, 23, 0.08);
+}
+
+.platform-browser-chrome {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.65rem 0.85rem;
+  border-bottom: 1px solid var(--platform-border);
+  background: #f7f8fa;
+}
+
+.platform-browser-dot {
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 999px;
+  background: #cfd3db;
+}
+
+.platform-browser-url {
+  margin-left: 0.5rem;
+  font-size: 0.7rem;
+  color: var(--platform-muted);
+}
+
+.platform-browser__image {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  object-fit: cover;
+  object-position: top;
+  background: var(--platform-surface-subtle, #f7f8fa);
+}
+
+.platform-section {
+  max-width: 72rem;
+  margin: 0 auto;
+  padding: 1rem 1.5rem 4.5rem;
+}
+
+.platform-section__intro {
+  max-width: 36rem;
+  margin-bottom: 2.75rem;
+}
+
+.platform-section__intro h2 {
+  margin: 0;
+  font-size: clamp(1.6rem, 3vw, 2rem);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+}
+
+.platform-section__intro p {
+  margin: 0.75rem 0 0;
+  font-size: 1.05rem;
+  color: var(--platform-muted);
+  line-height: 1.55;
+}
+
+.platform-features {
+  display: grid;
+  gap: 2.5rem;
+}
+
+@media (min-width: 768px) {
+  .platform-features {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.platform-feature h3 {
+  margin: 1rem 0 0;
+  font-size: 1.15rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.platform-feature p {
+  margin: 0.4rem 0 0;
+  color: var(--platform-muted);
+  line-height: 1.55;
+}
+
+.platform-band,
+.platform-cta {
+  border-top: 1px solid var(--platform-border);
+}
+
+.platform-band {
+  background: transparent;
+}
+
+.platform-band__inner,
+.platform-cta__inner {
+  max-width: 40rem;
+  margin: 0 auto;
+  padding: 4rem 1.5rem;
+  text-align: center;
+}
+
+.platform-band h2,
+.platform-cta h2 {
+  margin: 0;
+  font-size: 1.75rem;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+}
+
+.platform-band p,
+.platform-cta p {
+  margin: 0.85rem 0 1.5rem;
+  color: var(--platform-muted);
+  line-height: 1.55;
+}
+
+.platform-cta {
+  background: color-mix(in srgb, var(--platform-accent) 8%, var(--platform-canvas));
+  color: var(--platform-ink);
+}
+
+.platform-cta p {
+  color: var(--platform-muted);
 }

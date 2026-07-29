@@ -14,8 +14,11 @@
 
   <div class="card">
     <% if @households.any? %>
+      <% content_for :head do %>
+        <link rel="stylesheet" href="<%= current_wedding.site_theme.fonts_href %>" data-theme-fonts>
+      <% end %>
       <%= form_with url: physical_admin_invitations_path, method: :get, class: "mb-8" do |f| %>
-        <div class="grid gap-5 lg:grid-cols-[minmax(0,1.25fr)_minmax(0,1fr)_minmax(0,1fr)_auto] lg:items-end">
+        <div class="invitation-controls">
           <div class="form-group mb-0">
             <label for="household_id">Preview with household</label>
             <%= f.select :household_id,
@@ -46,9 +49,9 @@
                 {},
                 { class: "form-control w-full" } %>
           </div>
-          <div class="flex gap-3 items-end" data-controller="print">
-            <%= f.submit "Apply Options", class: "btn btn-secondary btn-sm" %>
-            <button type="button" class="btn btn-primary btn-sm" data-action="click->print#open">
+          <div class="invitation-controls__actions" data-controller="print">
+            <%= f.submit "Apply", class: "btn btn-secondary" %>
+            <button type="button" class="btn btn-primary" data-action="click->print#open">
               Print
             </button>
           </div>

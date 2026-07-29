@@ -5,8 +5,6 @@
    never leak into the product chrome. Import after Tailwind in application.css.
    ========================================================================== */
 
-@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap");
-
 .admin-app {
   /* Color */
   --admin-ink: #12151a;
@@ -311,9 +309,9 @@ html.admin-nav-locked {
 }
 
 .admin-app .admin-side-nav-link-active {
-  background: var(--admin-sidebar-active-bg);
+  background: color-mix(in srgb, var(--admin-accent) 42%, var(--admin-sidebar-elevated));
   color: #fff;
-  box-shadow: inset 2px 0 0 var(--admin-accent);
+  box-shadow: none;
 }
 
 .admin-app .admin-main {
@@ -575,6 +573,229 @@ html.admin-nav-locked {
   .admin-app .stats-grid--compact {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
+}
+
+.admin-app .stats-grid--dashboard {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+@media (min-width: 768px) {
+  .admin-app .stats-grid--dashboard {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1200px) {
+  .admin-app .stats-grid--dashboard {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+}
+
+.admin-app .stat-meta {
+  margin: 0.45rem 0 0;
+  font-size: 0.75rem;
+  line-height: 1.35;
+  color: var(--admin-faint);
+}
+
+.admin-app .admin-dashboard-grid {
+  display: grid;
+  gap: var(--admin-space-4);
+}
+
+@media (min-width: 1024px) {
+  .admin-app .admin-dashboard-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.admin-app .admin-dashboard-panel {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
+
+.admin-app .admin-dashboard-panel__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--admin-space-3);
+  margin-bottom: var(--admin-space-4);
+}
+
+.admin-app .admin-dashboard-panel__title {
+  margin: 0;
+  font-family: var(--admin-font);
+  font-size: var(--admin-text-md);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--admin-ink);
+}
+
+.admin-app .admin-dashboard-panel__link {
+  font-size: var(--admin-text-xs);
+  font-weight: 600;
+  color: var(--admin-accent);
+  text-decoration: none;
+}
+
+.admin-app .admin-dashboard-panel__link:hover {
+  color: var(--admin-accent-hover);
+}
+
+.admin-app .admin-rsvp-breakdown {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--admin-space-6);
+}
+
+.admin-app .admin-donut {
+  position: relative;
+  width: 8.5rem;
+  height: 8.5rem;
+  flex-shrink: 0;
+  border-radius: 999px;
+}
+
+.admin-app .admin-donut__hole {
+  position: absolute;
+  inset: 1.15rem;
+  display: grid;
+  place-content: center;
+  border-radius: 999px;
+  background: var(--admin-surface);
+  text-align: center;
+}
+
+.admin-app .admin-donut__total {
+  font-size: 1.35rem;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  color: var(--admin-ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.admin-app .admin-donut__caption {
+  margin-top: 0.2rem;
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: var(--admin-tracking-label);
+  text-transform: uppercase;
+  color: var(--admin-muted);
+}
+
+.admin-app .admin-rsvp-legend {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.7rem;
+  min-width: 10rem;
+  flex: 1;
+}
+
+.admin-app .admin-rsvp-legend li {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 0.65rem;
+  font-size: var(--admin-text-sm);
+}
+
+.admin-app .admin-rsvp-legend__swatch {
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 999px;
+}
+
+.admin-app .admin-rsvp-legend__swatch--accepted {
+  background: var(--admin-success);
+}
+
+.admin-app .admin-rsvp-legend__swatch--declined {
+  background: var(--admin-danger);
+}
+
+.admin-app .admin-rsvp-legend__swatch--pending {
+  background: var(--admin-border-strong);
+}
+
+.admin-app .admin-rsvp-legend__label {
+  color: var(--admin-ink-soft);
+}
+
+.admin-app .admin-rsvp-legend__value {
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--admin-ink);
+}
+
+.admin-app .admin-event-list,
+.admin-app .admin-shoutout-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0;
+}
+
+.admin-app .admin-event-list__item,
+.admin-app .admin-shoutout-list__item {
+  padding: 0.85rem 0;
+  border-bottom: 1px solid var(--admin-border);
+}
+
+.admin-app .admin-event-list__item:first-child,
+.admin-app .admin-shoutout-list__item:first-child {
+  padding-top: 0;
+}
+
+.admin-app .admin-event-list__item:last-child,
+.admin-app .admin-shoutout-list__item:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+
+.admin-app .admin-event-list__name,
+.admin-app .admin-shoutout-list__guest {
+  margin: 0;
+  font-size: var(--admin-text-sm);
+  font-weight: 600;
+  color: var(--admin-ink);
+}
+
+.admin-app .admin-event-list__meta,
+.admin-app .admin-shoutout-list__line {
+  margin: 0.25rem 0 0;
+  font-size: var(--admin-text-xs);
+  color: var(--admin-muted);
+  line-height: 1.45;
+}
+
+.admin-app .admin-shoutout-list__line span {
+  font-weight: 600;
+  color: var(--admin-faint);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-right: 0.35rem;
+}
+
+.admin-app .admin-guest-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.55rem;
+  height: 1.55rem;
+  margin-right: 0.45rem;
+  border-radius: 999px;
+  background: var(--admin-accent-soft);
+  color: var(--admin-accent);
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  vertical-align: middle;
 }
 
 .admin-app table {
@@ -1011,4 +1232,37 @@ html.admin-nav-locked {
 
 .admin-app .text-neutral-400 {
   color: var(--admin-faint);
+}
+
+.admin-app .admin-email-preview__card {
+  overflow: hidden;
+  border: 1px solid var(--admin-border);
+  border-radius: var(--admin-radius);
+  background: var(--admin-surface);
+}
+
+.admin-app .admin-email-preview__subject {
+  margin: 0;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--admin-border);
+  background: var(--admin-surface-subtle);
+  font-size: var(--admin-text-sm);
+  color: var(--admin-ink);
+}
+
+.admin-app .admin-email-preview__subject span {
+  margin-right: 0.5rem;
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: var(--admin-tracking-label);
+  text-transform: uppercase;
+  color: var(--admin-faint);
+}
+
+.admin-app .admin-email-preview__body {
+  max-height: 22rem;
+  overflow: auto;
+  background: #faf9f7;
+  transform: scale(0.92);
+  transform-origin: top center;
 }

@@ -5,12 +5,12 @@ module WeddingReminders
     DEFAULT_AUDIENCE = "pending_rsvp"
     VALID_AUDIENCES = %w[all pending_rsvp accepted declined].freeze
     DEFAULT_RULES = [
-      { "key" => "week_before", "days_before" => 7, "channels" => ["email"] },
-      { "key" => "day_before", "days_before" => 1, "channels" => ["email"] },
-      { "key" => "day_of", "days_before" => 0, "channels" => ["email"] }
+      { "key" => "week_before", "days_before" => 7, "channels" => ["email"], "audiences" => ["pending_rsvp"] },
+      { "key" => "day_before", "days_before" => 1, "channels" => ["email"], "audiences" => ["pending_rsvp"] },
+      { "key" => "day_of", "days_before" => 0, "channels" => ["email"], "audiences" => ["pending_rsvp", "accepted"] }
     ].freeze
 
-    ReminderRule = Struct.new(:key, :days_before, :channels, :email_subject, keyword_init: true)
+    ReminderRule = Struct.new(:key, :days_before, :channels, :email_subject, :audiences, keyword_init: true)
 
     def initialize(wedding:)
       @wedding = wedding
@@ -33,6 +33,7 @@ module WeddingReminders
       raw_value
     end
 
+    # Legacy global audience — used only when a schedule row has no audiences.
     def audience
       configured_audience = @reminder_config["audience"].to_s
       VALID_AUDIENCES.include?(configured_audience) ? configured_audience : DEFAULT_AUDIENCE
@@ -48,7 +49,7 @@ module WeddingReminders
       configured_rules = @reminder_config.fetch("schedule", DEFAULT_RULES)
       configured_rules.filter_map.with_index do |rule, index|
         parsed_rule = parse_rule(rule, index)
-        next if parsed_rule.channels.empty?
+        next if parsed_rule.blank? || parsed_rule.channels.empty?
 
         parsed_rule
       end
@@ -66,15 +67,26 @@ module WeddingReminders
       local_minutes >= scheduled_minutes
     end
 
-    def recipients_scope
-      base_scope = @wedding.guests.includes(:rsvp)
+    def recipients_scope(rule = nil)
+      audiences = Array(rule&.audiences).presence || [audience]
+      audiences = [DEFAULT_AUDIENCE] if audiences.empty?
 
-      case audience
-      when "all" then base_scope
-      when "accepted" then base_scope.rsvp_accepted
-      when "declined" then base_scope.rsvp_declined
-      else base_scope.rsvp_pending
+      if audiences.include?("all")
+        return @wedding.guests.includes(:rsvp)
       end
+
+      scopes = audiences.filter_map do |bucket|
+        case bucket
+        when "accepted" then @wedding.guests.rsvp_accepted
+        when "declined" then @wedding.guests.rsvp_declined
+        when "pending_rsvp" then @wedding.guests.rsvp_pending
+        end
+      end
+
+      return @wedding.guests.none.includes(:rsvp) if scopes.empty?
+
+      ids = scopes.flat_map { |scope| scope.pluck(:id) }.uniq
+      @wedding.guests.where(id: ids).includes(:rsvp)
     end
 
     private
@@ -83,7 +95,6 @@ module WeddingReminders
       notifications = @wedding.attributes["notifications"]
       return {} unless notifications.is_a?(Hash)
 
-      # Copy reminders so callers can safely merge without mutating stored JSON.
       reminders = deep_stringify_keys(notifications).fetch("reminders", {})
       reminders.merge("timezone" => @wedding.timezone)
     end
@@ -98,11 +109,15 @@ module WeddingReminders
         NotificationDelivery::CHANNELS.include?(channel) && channel_enabled?(channel)
       end
 
+      audiences = Array(raw_rule["audiences"]).map(&:to_s).select { |value| VALID_AUDIENCES.include?(value) }
+      audiences = [audience] if audiences.empty?
+
       ReminderRule.new(
         key: reminder_key,
         days_before: raw_rule["days_before"].to_i,
         channels: filtered_channels,
-        email_subject: raw_rule["email_subject"].to_s
+        email_subject: raw_rule["email_subject"].to_s,
+        audiences: audiences
       )
     end
 

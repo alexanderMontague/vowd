@@ -4,9 +4,18 @@
 %>
 <section class="theme-preview theme-preview--canvas">
   <header class="theme-preview__bar">
-    <p class="theme-preview__label">Preview</p>
+    <div class="theme-preview__brand">
+      <p class="theme-preview__title">Theme</p>
+      <p class="theme-preview__hint" title="Use the site menu in the preview to move between pages.">
+        Use the site menu in the preview to move between pages.
+      </p>
+    </div>
 
     <div class="theme-preview__tools">
+      <span class="theme-editor-status theme-preview__status" data-theme-editor-target="status"></span>
+
+      <span class="theme-preview__tools-divider" aria-hidden="true"></span>
+
       <button type="button"
               class="theme-preview__device"
               data-theme-editor-target="deviceButton"

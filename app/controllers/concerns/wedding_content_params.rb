@@ -57,9 +57,9 @@ module WeddingContentParams
       placements: SiteSlots.keys.index_with { [] },
       notifications: {
         reminders: [
-          :enabled, :send_time, :audience,
+          :enabled, :send_time,
           { channels: { email: [:enabled] } },
-          { schedule: [:key, :days_before, :email_subject, { channels: [] }] }
+          { schedule: [:key, :days_before, :email_subject, { channels: [], audiences: [] }] }
         ]
       }
     )
@@ -258,10 +258,16 @@ module WeddingContentParams
       days = row[:days_before].presence
       next if days.blank? && row[:email_subject].to_s.blank?
 
+      audiences = Array(row[:audiences]).map(&:to_s).select do |value|
+        WeddingReminders::Configuration::VALID_AUDIENCES.include?(value)
+      end
+      audiences = [WeddingReminders::Configuration::DEFAULT_AUDIENCE] if audiences.empty?
+
       {
         "key" => row[:key].presence || "custom_#{SecureRandom.hex(4)}",
         "days_before" => days.to_i,
         "channels" => Array(row[:channels]).map(&:to_s).select { |channel| NotificationDelivery::CHANNELS.include?(channel) }.presence || ["email"],
+        "audiences" => audiences,
         "email_subject" => row[:email_subject].to_s
       }
     end
@@ -270,7 +276,6 @@ module WeddingContentParams
       "reminders" => {
         "enabled" => ActiveModel::Type::Boolean.new.cast(reminders[:enabled]),
         "send_time" => reminders[:send_time].presence || "10:00",
-        "audience" => reminders[:audience].presence || "pending_rsvp",
         "channels" => {
           "email" => { "enabled" => ActiveModel::Type::Boolean.new.cast(email[:enabled]) }
         },

@@ -1,48 +1,56 @@
 <% content_for :title, "Vowd — Wedding websites for modern couples" %>
-<% content_for :platform_header_theme, "light" %>
+<% content_for :body_class, "platform-app" %>
 
-<section class="relative overflow-hidden bg-gradient-to-br from-secondary via-secondary-700 to-stone-800 pt-28 pb-20">
-  <div class="pointer-events-none absolute inset-0 opacity-30"
-       style="background-image: radial-gradient(circle at 20% 20%, rgba(200,155,123,0.35), transparent 45%), radial-gradient(circle at 80% 0%, rgba(255,255,255,0.12), transparent 40%);"></div>
-
-  <div class="relative mx-auto grid max-w-6xl items-center gap-12 px-6 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)]">
-    <div class="text-center lg:text-left">
-      <p class="font-display text-5xl tracking-[0.08em] text-white md:text-6xl platform-fade-up">Vowd</p>
-      <h1 class="mt-5 font-display text-3xl font-light leading-snug text-white md:text-4xl platform-fade-up platform-delay-1">
-        A wedding website that feels like you
-      </h1>
-      <p class="mx-auto mt-5 max-w-xl text-base font-light leading-relaxed text-white/80 md:mx-0 md:text-lg platform-fade-up platform-delay-2">
-        Guest pages, RSVPs, save-the-dates, and a disposable camera — on your subdomain, managed from a private admin.
-      </p>
-      <div class="mt-9 flex flex-wrap items-center justify-center gap-4 lg:justify-start platform-fade-up platform-delay-3">
-        <%= link_to "Create your site", platform_signup_path, class: "btn btn-primary" %>
-        <%= link_to "Log in", platform_login_path, class: "btn btn-secondary bg-white/10 text-white border-white/40 hover:bg-white/20" %>
-      </div>
+<section class="platform-hero">
+  <div class="platform-hero__copy">
+    <p class="platform-hero__brand">Vowd</p>
+    <h1 class="platform-hero__headline">Wedding websites that feel considered</h1>
+    <p class="platform-hero__lede">
+      Theme your guest site, manage RSVPs, plan the party, and collect candid photos —
+      from one calm admin.
+    </p>
+    <div class="platform-hero__actions">
+      <%= link_to "Create your site", platform_signup_path, class: "btn btn-primary" %>
+      <%= link_to "Log in", platform_login_path, class: "btn btn-secondary" %>
     </div>
+  </div>
 
-    <div class="platform-browser platform-fade-up platform-delay-2">
-      <div class="platform-browser-chrome">
-        <span class="platform-browser-dot"></span>
-        <span class="platform-browser-dot"></span>
-        <span class="platform-browser-dot"></span>
-        <span class="platform-browser-url">britt-and-alex.vowd.site</span>
-      </div>
-      <%= image_tag "marketing/hero.jpg",
-          alt: "Guest wedding website with hero, date, and venue",
-          class: "aspect-[16/10] object-cover object-top" %>
+  <div class="platform-browser platform-hero__media">
+    <div class="platform-browser-chrome">
+      <span class="platform-browser-dot"></span>
+      <span class="platform-browser-dot"></span>
+      <span class="platform-browser-dot"></span>
+      <span class="platform-browser-url">britt-and-alex.vowd.localhost</span>
     </div>
+    <%= image_tag "marketing/hero.jpg",
+        alt: "Vowd wedding website preview",
+        class: "platform-browser__image" %>
   </div>
 </section>
 
-<section class="mx-auto max-w-6xl px-6 py-24">
-  <div class="mb-14 max-w-2xl">
-    <h2 class="font-display text-3xl text-secondary md:text-4xl">The product, not the stock photo</h2>
-    <p class="mt-3 text-lg font-light text-stone-600">
-      These are real screens from Vowd — the same UI your guests and you will use.
-    </p>
+<section class="platform-section">
+  <div class="platform-section__intro">
+    <h2>Everything your guests need — and you need to stay organized</h2>
+    <p>Built for couples who want polish without a spreadsheet or a design degree.</p>
   </div>
 
-  <div class="grid gap-14 md:grid-cols-2">
+  <div class="platform-features">
+    <article class="platform-feature">
+      <div class="platform-browser">
+        <div class="platform-browser-chrome">
+          <span class="platform-browser-dot"></span>
+          <span class="platform-browser-dot"></span>
+          <span class="platform-browser-dot"></span>
+          <span class="platform-browser-url">/admin/theme</span>
+        </div>
+        <%= image_tag "marketing/theme.jpg",
+            alt: "Theme editor with live preview",
+            class: "platform-browser__image" %>
+      </div>
+      <h3>Theme editor</h3>
+      <p>Live preview, click-to-edit copy, photo placements, and look & feel — autosaved as you go.</p>
+    </article>
+
     <article class="platform-feature">
       <div class="platform-browser">
         <div class="platform-browser-chrome">
@@ -52,16 +60,14 @@
           <span class="platform-browser-url">/rsvp</span>
         </div>
         <%= image_tag "marketing/rsvp.jpg",
-            alt: "RSVP form for a household with attendance and meal choices",
-            class: "aspect-[16/10] object-cover object-top" %>
+            alt: "Guest RSVP experience",
+            class: "platform-browser__image" %>
       </div>
-      <h3 class="mt-5 font-display text-2xl text-secondary">RSVP & guest list</h3>
-      <p class="mt-2 font-light leading-relaxed text-stone-600">
-        Invite codes, meal choices, households, and live response tracking — without a spreadsheet.
-      </p>
+      <h3>RSVP & guests</h3>
+      <p>Households, meal choices, invite codes, and a dashboard that shows who’s coming.</p>
     </article>
 
-    <article class="platform-feature md:mt-10">
+    <article class="platform-feature">
       <div class="platform-browser">
         <div class="platform-browser-chrome">
           <span class="platform-browser-dot"></span>
@@ -70,13 +76,43 @@
           <span class="platform-browser-url">/save-the-date</span>
         </div>
         <%= image_tag "marketing/save-the-date.jpg",
-            alt: "Save the date invitation page with announcement and details",
-            class: "aspect-[16/10] object-cover object-top" %>
+            alt: "Save the date page",
+            class: "platform-browser__image" %>
       </div>
-      <h3 class="mt-5 font-display text-2xl text-secondary">Save the date</h3>
-      <p class="mt-2 font-light leading-relaxed text-stone-600">
-        Collect early interest, share calendar downloads, and keep a focused pre-RSVP mode until you’re ready.
-      </p>
+      <h3>Save the Date</h3>
+      <p>Collect interest early, share calendar downloads, then open full RSVP when you’re ready.</p>
+    </article>
+
+    <article class="platform-feature">
+      <div class="platform-browser">
+        <div class="platform-browser-chrome">
+          <span class="platform-browser-dot"></span>
+          <span class="platform-browser-dot"></span>
+          <span class="platform-browser-dot"></span>
+          <span class="platform-browser-url">/admin</span>
+        </div>
+        <%= image_tag "marketing/admin.jpg",
+            alt: "Private admin dashboard",
+            class: "platform-browser__image" %>
+      </div>
+      <h3>Private admin</h3>
+      <p>Guests, invitations, reminders, and RSVP insight — only on your wedding host.</p>
+    </article>
+
+    <article class="platform-feature">
+      <div class="platform-browser">
+        <div class="platform-browser-chrome">
+          <span class="platform-browser-dot"></span>
+          <span class="platform-browser-dot"></span>
+          <span class="platform-browser-dot"></span>
+          <span class="platform-browser-url">/admin/party</span>
+        </div>
+        <%= image_tag "marketing/party.jpg",
+            alt: "Party planning board",
+            class: "platform-browser__image" %>
+      </div>
+      <h3>Party planning</h3>
+      <p>Bachelor and bachelorette boards with people, ideas, itinerary, and destination polls.</p>
     </article>
 
     <article class="platform-feature">
@@ -88,59 +124,34 @@
           <span class="platform-browser-url">/dispo</span>
         </div>
         <%= image_tag "marketing/gallery.jpg",
-            alt: "Disposable camera UI with film-style controls",
-            class: "aspect-[16/10] object-cover object-top" %>
+            alt: "Disposable camera photo with film treatment",
+            class: "platform-browser__image" %>
       </div>
-      <h3 class="mt-5 font-display text-2xl text-secondary">Disposable camera</h3>
-      <p class="mt-2 font-light leading-relaxed text-stone-600">
-        Guests snap candid shots from their phones. You get a live gallery with film-style treatments.
-      </p>
-    </article>
-
-    <article class="platform-feature md:mt-10">
-      <div class="platform-browser">
-        <div class="platform-browser-chrome">
-          <span class="platform-browser-dot"></span>
-          <span class="platform-browser-dot"></span>
-          <span class="platform-browser-dot"></span>
-          <span class="platform-browser-url">/admin</span>
-        </div>
-        <%= image_tag "marketing/admin.jpg",
-            alt: "Admin dashboard with guest RSVP stats and upcoming events",
-            class: "aspect-[16/10] object-cover object-top" %>
-      </div>
-      <h3 class="mt-5 font-display text-2xl text-secondary">Private admin</h3>
-      <p class="mt-2 font-light leading-relaxed text-stone-600">
-        Edit your site, manage guests and invitations, and toggle features — only on your wedding host.
-      </p>
+      <h3>Disposable camera</h3>
+      <p>Guests snap candid shots from their phones. You get a live gallery with film-style treatments.</p>
     </article>
   </div>
 </section>
 
-<section class="border-t border-stone-200 bg-stone-100/70">
-  <div class="mx-auto max-w-3xl px-6 py-20 text-center">
-    <h2 class="font-display text-3xl text-secondary md:text-4xl">Open source</h2>
-    <p class="mt-4 font-light leading-relaxed text-stone-600">
-      Prefer to run it yourself? Vowd is open source — fork the repo, host it on your own machine or VPS, and keep full control of your wedding site.
+<section class="platform-band">
+  <div class="platform-band__inner">
+    <h2>Open source</h2>
+    <p>
+      Prefer to run it yourself? Vowd is open source — fork the repo, host it on your own machine or VPS,
+      and keep full control of your wedding site.
     </p>
-    <div class="mt-8">
-      <%= link_to "View on GitHub",
-          "https://github.com/alexanderMontague/vowd",
-          class: "btn btn-secondary",
-          target: "_blank",
-          rel: "noopener noreferrer" %>
-    </div>
+    <%= link_to "View on GitHub",
+        "https://github.com/alexanderMontague/vowd",
+        class: "btn btn-secondary",
+        target: "_blank",
+        rel: "noopener noreferrer" %>
   </div>
 </section>
 
-<section class="border-t border-stone-200 bg-secondary text-primary-50">
-  <div class="mx-auto max-w-3xl px-6 py-20 text-center">
-    <h2 class="font-display text-3xl md:text-4xl">Your subdomain. Your day.</h2>
-    <p class="mt-4 font-light text-primary-100/90">
-      Sign up, pick a slug, and start configuring — guests visit your site, you run everything from admin.
-    </p>
-    <div class="mt-10">
-      <%= link_to "Get started", platform_signup_path, class: "btn btn-primary" %>
-    </div>
+<section class="platform-cta">
+  <div class="platform-cta__inner">
+    <h2>Your subdomain. Your day.</h2>
+    <p>Sign up, pick a slug, and start configuring — guests visit your site, you run everything from admin.</p>
+    <%= link_to "Get started", platform_signup_path, class: "btn btn-primary" %>
   </div>
 </section>

@@ -1,9 +1,9 @@
 <%#
-  Renders a single disposable camera photo with its layered retro treatment.
-  The original image is served untouched; the grain / light-leak / vignette layers
-  and colour grade are applied purely on the front end. Per-photo variation is set
-  by the retro-photo controller; which layers are visible is scoped by an ancestor
-  `data-photo-style` attribute.
+  Renders a single disposable camera photo with its layered film treatment.
+  The original image is served untouched; grain / flash spill / cast / vignette /
+  frame-edge layers and the colour grade are applied on the front end. Per-photo
+  variation is set by the retro-photo controller; which layers are visible is
+  scoped by an ancestor `data-photo-style` attribute.
 
   Locals:
     photo  - a DisposablePhoto
@@ -20,6 +20,8 @@
          loading="lazy">
     <span class="retro-photo__grain" aria-hidden="true"></span>
     <span class="retro-photo__leak" aria-hidden="true"></span>
+    <span class="retro-photo__cast" aria-hidden="true"></span>
     <span class="retro-photo__vignette" aria-hidden="true"></span>
+    <span class="retro-photo__frame-edge" aria-hidden="true"></span>
   </div>
 </figure>

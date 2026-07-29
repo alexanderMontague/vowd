@@ -3,8 +3,8 @@ import { Controller } from "@hotwired/stimulus";
 // Grain texture identical to the CSS `.retro-photo__grain` layer, so the
 // exported download matches what's shown on screen.
 const GRAIN_SVG =
-  "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E";
-const GRAIN_TILE = 160;
+  "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E";
+const GRAIN_TILE = 140;
 const JPEG_QUALITY = 0.92;
 
 export default class extends Controller {
@@ -127,20 +127,25 @@ export default class extends Controller {
     context.drawImage(image, 0, 0, width, height);
     context.filter = "none";
 
-    const grainAlpha = style === "bw" ? variation.grainOpacity * 1.25 : variation.grainOpacity;
+    const grainAlpha = style === "bw" ? variation.grainOpacity * 1.15 : variation.grainOpacity;
     await this.drawGrain(context, width, height, grainAlpha, variation);
 
-    if (style === "retro") this.drawLeak(context, width, height, variation);
+    if (style === "retro") {
+      this.drawFlashSpill(context, width, height, variation);
+      this.drawCast(context, width, height);
+    }
+
     this.drawVignette(context, width, height, variation);
+    this.drawFrameEdge(context, width, height);
 
     return this.canvasToBlob(canvas);
   }
 
   filterString(style, v) {
     if (style === "bw") {
-      return `grayscale(1) contrast(${(v.contrast + 0.05).toFixed(3)}) brightness(${v.brightness})`;
+      return `grayscale(1) contrast(${(v.contrast + 0.08).toFixed(3)}) brightness(${v.brightness}) blur(${v.softness}px)`;
     }
-    return `sepia(${v.sepia}) contrast(${v.contrast}) saturate(${v.saturate}) brightness(${v.brightness})`;
+    return `sepia(${v.sepia}) hue-rotate(${v.hue}deg) contrast(${v.contrast}) saturate(${v.saturate}) brightness(${v.brightness}) blur(${v.softness}px)`;
   }
 
   async drawGrain(context, width, height, alpha, v) {
@@ -159,34 +164,73 @@ export default class extends Controller {
     context.restore();
   }
 
-  drawLeak(context, width, height, v) {
+  drawFlashSpill(context, width, height, v) {
     const cx = (v.leakX / 100) * width;
     const cy = (v.leakY / 100) * height;
     const radius = this.farthestCorner(cx, cy, width, height);
-    const warmHue = 30 + v.leakHue;
-    const deepHue = 8 + v.leakHue;
+    const warmHue = 42 + v.leakHue;
+    const deepHue = 28 + v.leakHue;
 
     const gradient = context.createRadialGradient(cx, cy, 0, cx, cy, radius);
-    gradient.addColorStop(0, `hsla(${warmHue}, 92%, 62%, ${v.leakOpacity})`);
-    gradient.addColorStop(0.28, `hsla(${deepHue}, 88%, 55%, ${(v.leakOpacity * 0.55).toFixed(3)})`);
-    gradient.addColorStop(0.62, `hsla(${deepHue}, 88%, 55%, 0)`);
+    gradient.addColorStop(0, `hsla(${warmHue}, 78%, 72%, ${v.leakOpacity})`);
+    gradient.addColorStop(0.32, `hsla(${deepHue}, 70%, 58%, ${(v.leakOpacity * 0.45).toFixed(3)})`);
+    gradient.addColorStop(0.68, `hsla(${deepHue}, 70%, 58%, 0)`);
 
     context.save();
-    context.globalCompositeOperation = "screen";
+    context.globalCompositeOperation = "soft-light";
+    context.fillStyle = gradient;
+    context.fillRect(0, 0, width, height);
+    context.restore();
+  }
+
+  drawCast(context, width, height) {
+    const gradient = context.createLinearGradient(0, 0, width * 0.35, height);
+    gradient.addColorStop(0, "rgba(255, 214, 150, 0.18)");
+    gradient.addColorStop(0.42, "rgba(255, 214, 150, 0)");
+    gradient.addColorStop(1, "rgba(28, 48, 58, 0.22)");
+
+    context.save();
+    context.globalCompositeOperation = "soft-light";
     context.fillStyle = gradient;
     context.fillRect(0, 0, width, height);
     context.restore();
   }
 
   drawVignette(context, width, height, v) {
-    const cx = width / 2;
-    const cy = height / 2;
-    const gradient = context.createRadialGradient(cx, cy, 0, cx, cy, Math.hypot(cx, cy));
-    gradient.addColorStop(0.52, "rgba(0, 0, 0, 0)");
+    const cx = width * 0.5;
+    const cy = height * 0.46;
+    const radius = Math.hypot(cx, cy);
+    const gradient = context.createRadialGradient(cx, cy, 0, cx, cy, radius);
+    gradient.addColorStop(0.28, "rgba(0, 0, 0, 0)");
+    gradient.addColorStop(0.62, `rgba(0, 0, 0, ${(v.vignette * 0.35).toFixed(3)})`);
     gradient.addColorStop(1, `rgba(0, 0, 0, ${v.vignette})`);
 
     context.save();
     context.fillStyle = gradient;
+    context.fillRect(0, 0, width, height);
+    context.restore();
+  }
+
+  drawFrameEdge(context, width, height) {
+    const inset = Math.max(2, Math.round(Math.min(width, height) * 0.004));
+
+    context.save();
+    context.strokeStyle = "rgba(8, 6, 4, 0.92)";
+    context.lineWidth = inset * 2;
+    context.strokeRect(inset, inset, width - inset * 2, height - inset * 2);
+
+    const edge = context.createRadialGradient(
+      width / 2,
+      height / 2,
+      Math.min(width, height) * 0.35,
+      width / 2,
+      height / 2,
+      Math.hypot(width / 2, height / 2),
+    );
+    edge.addColorStop(0, "rgba(0, 0, 0, 0)");
+    edge.addColorStop(0.7, "rgba(0, 0, 0, 0.28)");
+    edge.addColorStop(1, "rgba(0, 0, 0, 0.55)");
+    context.fillStyle = edge;
     context.fillRect(0, 0, width, height);
     context.restore();
   }
@@ -218,18 +262,20 @@ export default class extends Controller {
     };
 
     return {
-      sepia: num("--rp-sepia", 0.38),
-      contrast: num("--rp-contrast", 1.1),
-      saturate: num("--rp-saturate", 1.15),
-      brightness: num("--rp-brightness", 1),
-      grainOpacity: num("--rp-grain-opacity", 0.18),
+      sepia: num("--rp-sepia", 0.28),
+      hue: num("--rp-hue", -6),
+      contrast: num("--rp-contrast", 1.18),
+      saturate: num("--rp-saturate", 0.82),
+      brightness: num("--rp-brightness", 1.04),
+      softness: num("--rp-softness", 0.45),
+      grainOpacity: num("--rp-grain-opacity", 0.32),
       grainX: num("--rp-grain-x", 0),
       grainY: num("--rp-grain-y", 0),
-      leakOpacity: num("--rp-leak-opacity", 0.35),
-      leakX: num("--rp-leak-x", 85),
-      leakY: num("--rp-leak-y", 12),
+      leakOpacity: num("--rp-leak-opacity", 0.22),
+      leakX: num("--rp-leak-x", 48),
+      leakY: num("--rp-leak-y", 38),
       leakHue: num("--rp-leak-hue", 0),
-      vignette: num("--rp-vignette", 0.45),
+      vignette: num("--rp-vignette", 0.62),
     };
   }
 

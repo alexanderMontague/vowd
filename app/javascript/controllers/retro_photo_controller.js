@@ -1,11 +1,11 @@
 import { Controller } from "@hotwired/stimulus";
 
-// Derives a stable, per-photo retro treatment from a seed (the photo id) and
-// exposes it as CSS custom properties. The variation is deterministic — the same
-// photo always gets the same grain drift, light-leak position/hue, vignette, tilt
-// and colour grade — so the look never flickers between renders while still
-// differing photo-to-photo. The original image bytes are never touched; this only
-// feeds the CSS filter layers.
+// Derives a stable, per-photo disposable-film treatment from a seed (the photo
+// id) and exposes it as CSS custom properties. The variation is deterministic —
+// the same photo always gets the same grain drift, flash spill, vignette, soft
+// focus and colour grade — so the look never flickers between renders while
+// still differing photo-to-photo. The original image bytes are never touched;
+// this only feeds the CSS filter layers.
 export default class extends Controller {
   static values = { seed: String };
 
@@ -19,19 +19,21 @@ export default class extends Controller {
     const between = (min, max) => min + (max - min) * random();
 
     const properties = {
-      "--rp-leak-x": `${between(-15, 115).toFixed(1)}%`,
-      "--rp-leak-y": `${between(-15, 55).toFixed(1)}%`,
-      "--rp-leak-hue": `${between(-25, 45).toFixed(0)}deg`,
-      "--rp-leak-opacity": between(0.24, 0.5).toFixed(2),
+      "--rp-leak-x": `${between(35, 65).toFixed(1)}%`,
+      "--rp-leak-y": `${between(28, 52).toFixed(1)}%`,
+      "--rp-leak-hue": `${between(-12, 18).toFixed(0)}deg`,
+      "--rp-leak-opacity": between(0.14, 0.28).toFixed(2),
       "--rp-grain-x": `${between(0, 100).toFixed(0)}%`,
       "--rp-grain-y": `${between(0, 100).toFixed(0)}%`,
-      "--rp-grain-opacity": between(0.12, 0.24).toFixed(2),
-      "--rp-vignette": between(0.32, 0.55).toFixed(2),
-      "--rp-tilt": `${between(-1, 1).toFixed(2)}deg`,
-      "--rp-sepia": between(0.28, 0.48).toFixed(2),
-      "--rp-contrast": between(1.05, 1.16).toFixed(2),
-      "--rp-saturate": between(1.06, 1.28).toFixed(2),
-      "--rp-brightness": between(0.97, 1.05).toFixed(2),
+      "--rp-grain-opacity": between(0.26, 0.4).toFixed(2),
+      "--rp-vignette": between(0.52, 0.72).toFixed(2),
+      "--rp-tilt": `${between(-0.8, 0.8).toFixed(2)}deg`,
+      "--rp-sepia": between(0.22, 0.36).toFixed(2),
+      "--rp-hue": `${between(-10, 2).toFixed(0)}deg`,
+      "--rp-contrast": between(1.12, 1.26).toFixed(2),
+      "--rp-saturate": between(0.72, 0.9).toFixed(2),
+      "--rp-brightness": between(1.0, 1.08).toFixed(2),
+      "--rp-softness": `${between(0.35, 0.55).toFixed(2)}px`,
     };
 
     for (const [name, value] of Object.entries(properties)) {

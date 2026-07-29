@@ -1,3 +1,6 @@
-# Seeds are intentionally minimal. Create an account via platform signup
-# (APP_BASE_DOMAIN apex /signup), then configure the wedding in admin.
-Rails.logger.debug "No default seed data. Sign up at the platform apex to create a wedding."
+# Demo wedding for local development and marketing imagery.
+# Login: demo@vowd.test / password  (on the wedding host)
+# Apex marketing stays on APP_BASE_DOMAIN.
+
+Seeds::DemoWedding.call
+Rails.logger.info "Seeded demo wedding '#{Seeds::DemoWedding::SLUG}' (#{Seeds::DemoWedding::ADMIN_EMAIL} / #{Seeds::DemoWedding::ADMIN_PASSWORD})"

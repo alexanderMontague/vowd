@@ -1,21 +1,25 @@
-<% rsvp_url = public_rsvp_url(household.primary_guest.invite_code) %>
+<%
+  theme = current_wedding.site_theme
+  rsvp_url = public_rsvp_url(household.primary_guest.invite_code)
+%>
 
-<div class="invitation-back invitation-panel bg-white p-6 flex flex-col items-center justify-center text-center relative overflow-hidden">
-  <div class="absolute inset-0 invitation-background-pattern text-stone-300 opacity-20" aria-hidden="true"></div>
-  <div class="absolute top-0 right-0 w-14 h-14 overflow-hidden pointer-events-none">
+<div class="invitation-back invitation-panel"
+     style="<%= theme.style_attribute %>; --font-display: var(--theme-font-display); --font-body: var(--theme-font-body);">
+  <div class="invitation-panel__bg" aria-hidden="true"></div>
+  <div class="absolute top-0 right-0 w-12 h-12 overflow-hidden pointer-events-none">
     <%= render "botanical_accent", placement: "top-right", size: "sm" %>
   </div>
-  <div class="relative z-10 w-full max-w-[200px]">
-    <p class="text-sm text-stone-600 font-light mb-4" style="font-family: var(--font-body);">
+  <div class="invitation-panel__body invitation-panel__body--center">
+    <p class="invitation-back__copy">
       Scan the code to RSVP and view ceremony, reception, and accommodation details.
     </p>
-    <div class="qr-code-wrapper inline-flex items-center justify-center p-3 rounded-xl bg-stone-50/80">
+    <div class="qr-code-wrapper">
       <div class="w-[100px] h-[100px] [&>svg]:w-full [&>svg]:h-full">
         <%= qr_code_svg(rsvp_url) %>
       </div>
     </div>
   </div>
-  <div class="absolute bottom-0 left-0 w-14 h-14 overflow-hidden pointer-events-none">
+  <div class="absolute bottom-0 left-0 w-12 h-12 overflow-hidden pointer-events-none">
     <%= render "botanical_accent", placement: "bottom-left", size: "sm" %>
   </div>
 </div>

@@ -3,6 +3,13 @@
   channels = reminders.fetch("channels", {})
   schedule = Array(reminders["schedule"])
   schedule = [Wedding::DEFAULT_NOTIFICATIONS.dig("reminders", "schedule").first] if schedule.empty?
+  audience_options = [
+    ["Pending RSVP", "pending_rsvp"],
+    ["Accepted", "accepted"],
+    ["Declined", "declined"],
+    ["All guests", "all"]
+  ]
+  config = WeddingReminders::Configuration.new(wedding: wedding)
 %>
 
 <div class="form-group">
@@ -25,20 +32,7 @@
   </div>
 
   <div class="form-group">
-    <%= label_tag "wedding_notifications_audience", "Audience" %>
-    <%= select_tag "wedding[notifications][reminders][audience]",
-        options_for_select(
-          [["Pending RSVP", "pending_rsvp"], ["Accepted", "accepted"], ["Declined", "declined"], ["All guests", "all"]],
-          reminders["audience"]
-        ),
-        class: "form-control",
-        id: "wedding_notifications_audience" %>
-  </div>
-</div>
-
-<div class="form-group">
-  <p class="text-xs font-semibold uppercase tracking-widest text-neutral-400 mb-3">Channels</p>
-  <div class="flex flex-wrap gap-4">
+    <p class="text-xs font-semibold uppercase tracking-widest text-neutral-400 mb-3">Channels</p>
     <label class="inline-flex items-center gap-2 text-sm">
       <%= check_box_tag "wedding[notifications][reminders][channels][email][enabled]", "1",
           ActiveModel::Type::Boolean.new.cast(channels.dig("email", "enabled")),
@@ -54,8 +48,20 @@
     <button type="button" class="btn btn-sm btn-secondary" data-action="nested-form#add">Add reminder</button>
   </div>
 
-  <div class="grid gap-3" data-nested-form-target="container">
+  <div class="grid gap-4" data-nested-form-target="container">
     <% schedule.each_with_index do |row, index| %>
+      <%
+        rule = config.rules.find { |item| item.key == row["key"] } ||
+               WeddingReminders::Configuration::ReminderRule.new(
+                 key: row["key"].presence || "reminder_#{index + 1}",
+                 days_before: row["days_before"].to_i,
+                 channels: Array(row["channels"]).presence || ["email"],
+                 email_subject: row["email_subject"].to_s,
+                 audiences: Array(row["audiences"]).presence || ["pending_rsvp"]
+               )
+        preview = WeddingReminders::Preview.call(wedding: wedding, reminder_rule: rule)
+        selected_audiences = Array(row["audiences"]).presence || Array(reminders["audience"]).presence || ["pending_rsvp"]
+      %>
       <div class="admin-nested-row" data-nested-form-target="item">
         <div class="flex justify-between items-start mb-3">
           <p class="text-sm font-medium text-neutral-700">Reminder</p>
@@ -68,9 +74,34 @@
             <label>Days before wedding</label>
             <input type="number" min="0" name="wedding[notifications][reminders][schedule][<%= index %>][days_before]" value="<%= row["days_before"] %>" class="form-control">
           </div>
-          <div class="form-group md:col-span-2 mb-0">
+          <div class="form-group md:col-span-2">
             <label>Email subject</label>
             <input type="text" name="wedding[notifications][reminders][schedule][<%= index %>][email_subject]" value="<%= row["email_subject"] %>" class="form-control">
+          </div>
+          <div class="form-group md:col-span-2 mb-0">
+            <p class="mb-2 text-xs font-medium text-neutral-600">Audiences</p>
+            <div class="flex flex-wrap gap-3">
+              <% audience_options.each do |label, value| %>
+                <label class="inline-flex items-center gap-2 text-sm">
+                  <%= check_box_tag "wedding[notifications][reminders][schedule][#{index}][audiences][]",
+                      value,
+                      selected_audiences.include?(value),
+                      class: "rounded border-border" %>
+                  <%= label %>
+                </label>
+              <% end %>
+            </div>
+            <p class="form-hint">Guests matching any selected audience receive one email (deduped at send time).</p>
+          </div>
+        </div>
+
+        <div class="admin-email-preview mt-4">
+          <p class="admin-section-title mb-2">Email preview</p>
+          <div class="admin-email-preview__card">
+            <p class="admin-email-preview__subject"><span>Subject</span> <%= preview[:subject] %></p>
+            <div class="admin-email-preview__body">
+              <%= preview[:html].html_safe %>
+            </div>
           </div>
         </div>
       </div>
@@ -90,11 +121,27 @@
           <label>Days before wedding</label>
           <input type="number" min="0" name="wedding[notifications][reminders][schedule][NEW_INDEX][days_before]" value="7" class="form-control">
         </div>
-        <div class="form-group md:col-span-2 mb-0">
+        <div class="form-group md:col-span-2">
           <label>Email subject</label>
           <input type="text" name="wedding[notifications][reminders][schedule][NEW_INDEX][email_subject]" value="" class="form-control">
         </div>
+        <div class="form-group md:col-span-2 mb-0">
+          <p class="mb-2 text-xs font-medium text-neutral-600">Audiences</p>
+          <div class="flex flex-wrap gap-3">
+            <% audience_options.each do |label, value| %>
+              <label class="inline-flex items-center gap-2 text-sm">
+                <input type="checkbox"
+                       name="wedding[notifications][reminders][schedule][NEW_INDEX][audiences][]"
+                       value="<%= value %>"
+                       class="rounded border-border"
+                       <%= "checked" if value == "pending_rsvp" %>>
+                <%= label %>
+              </label>
+            <% end %>
+          </div>
+        </div>
       </div>
+      <p class="form-hint mt-3 mb-0">Save to refresh the email preview for this reminder.</p>
     </div>
   </template>
 </div>

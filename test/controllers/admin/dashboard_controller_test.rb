@@ -15,11 +15,21 @@ class Admin::DashboardControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_select "body.admin-app"
-    assert_select ".admin-section__label", text: "RSVPs"
-    assert_select ".admin-section__label", text: "Outreach"
+    assert_select ".admin-section__label", text: "Overview"
     assert_select ".stat-label", text: "Save the Date"
     assert_select "a.stat-card--link[href=?]", admin_save_the_date_signups_path
     assert_match "2", response.body
+  end
+
+  test "dashboard renders breakdown panels and recent activity" do
+    get admin_root_path
+
+    assert_response :success
+    assert_select ".admin-dashboard-grid"
+    assert_select ".admin-donut"
+    assert_select ".admin-dashboard-panel__title", text: "RSVP breakdown"
+    assert_select ".admin-dashboard-panel__title", text: "Upcoming events"
+    assert_select ".admin-dashboard-panel__title", text: "Recent RSVPs"
   end
 
   test "admin nav puts dashboard first and groups wedding with theme" do
@@ -41,6 +51,6 @@ class Admin::DashboardControllerTest < ActionDispatch::IntegrationTest
     assert_select "body.admin-app"
     assert_select ".admin-page-header h1", text: "Dashboard"
     assert_select ".admin-stack"
-    assert_select ".admin-section__label", text: "Upcoming events"
+    assert_select ".admin-dashboard-panel__title", text: "Upcoming events"
   end
 end

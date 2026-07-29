@@ -1,3 +1,10 @@
+<% actions = capture do %>
+  <% if current_wedding&.configured? %>
+    <%= link_to "View site", AppHost.wedding_public_url(current_wedding),
+        class: "btn btn-secondary btn-sm", target: "_blank", rel: "noopener" %>
+    <%= link_to "Guests", admin_guests_path, class: "btn btn-primary btn-sm" %>
+  <% end %>
+<% end %>
 <%= render "admin/shared/page_header",
     title: "Dashboard",
     subtitle: (
@@ -12,82 +19,131 @@
       else
         "No wedding configured yet."
       end
-    ) %>
+    ),
+    actions: actions %>
+
+<%
+  total = @stats[:total_guests].to_i
+  accepted = @stats[:accepted].to_i
+  declined = @stats[:declined].to_i
+  pending = @stats[:pending].to_i
+  responded = accepted + declined
+  accepted_pct = total.positive? ? ((accepted.to_f / total) * 100).round(1) : 0
+  declined_pct = total.positive? ? ((declined.to_f / total) * 100).round(1) : 0
+  pending_pct = total.positive? ? ((pending.to_f / total) * 100).round(1) : 0
+  accepted_share = total.positive? ? (accepted.to_f / total) * 100 : 0
+  declined_share = total.positive? ? (declined.to_f / total) * 100 : 0
+  pending_share = total.positive? ? (pending.to_f / total) * 100 : 0
+  donut_style = if total.positive?
+                  "background: conic-gradient(" \
+                    "var(--admin-success) 0 #{accepted_share}%, " \
+                    "var(--admin-danger) #{accepted_share}% #{accepted_share + declined_share}%, " \
+                    "var(--admin-border-strong) #{accepted_share + declined_share}% 100%)"
+                else
+                  "background: var(--admin-border)"
+                end
+%>
 
 <div class="admin-stack">
-  <section class="admin-section" aria-labelledby="dashboard-rsvp-label">
-    <h2 id="dashboard-rsvp-label" class="admin-section__label">RSVPs</h2>
-    <div class="stats-grid">
+  <section class="admin-section" aria-labelledby="dashboard-overview-label">
+    <h2 id="dashboard-overview-label" class="admin-section__label">Overview</h2>
+    <div class="stats-grid stats-grid--dashboard">
       <div class="stat-card">
-        <div class="stat-value"><%= @stats[:total_guests] %></div>
+        <div class="stat-value"><%= total %></div>
         <div class="stat-label">Total guests</div>
+        <p class="stat-meta"><%= responded %> responded</p>
       </div>
       <div class="stat-card">
-        <div class="stat-value"><%= @stats[:accepted] %></div>
+        <div class="stat-value"><%= accepted %></div>
         <div class="stat-label">Accepted</div>
+        <p class="stat-meta"><%= accepted_pct %>% of guests</p>
       </div>
       <div class="stat-card">
-        <div class="stat-value"><%= @stats[:declined] %></div>
+        <div class="stat-value"><%= declined %></div>
         <div class="stat-label">Declined</div>
+        <p class="stat-meta"><%= declined_pct %>% of guests</p>
       </div>
       <div class="stat-card">
-        <div class="stat-value"><%= @stats[:pending] %></div>
+        <div class="stat-value"><%= pending %></div>
         <div class="stat-label">Pending</div>
+        <p class="stat-meta"><%= pending_pct %>% awaiting reply</p>
       </div>
       <div class="stat-card">
         <div class="stat-value"><%= @stats[:acceptance_rate] %>%</div>
         <div class="stat-label">Acceptance rate</div>
-      </div>
-    </div>
-  </section>
-
-  <section class="admin-section" aria-labelledby="dashboard-outreach-label">
-    <h2 id="dashboard-outreach-label" class="admin-section__label">Outreach</h2>
-    <div class="stats-grid stats-grid--compact">
-      <div class="stat-card">
-        <div class="stat-value"><%= @stats[:invitations_sent] %></div>
-        <div class="stat-label">Invitations sent</div>
+        <p class="stat-meta">Of responses so far</p>
       </div>
       <%= link_to admin_save_the_date_signups_path, class: "stat-card stat-card--link" do %>
         <div class="stat-value"><%= @stats[:save_the_date_responses] %></div>
         <div class="stat-label">Save the Date</div>
+        <p class="stat-meta"><%= @stats[:invitations_sent] %> invitations sent</p>
       <% end %>
     </div>
   </section>
 
-  <section class="admin-section" aria-labelledby="dashboard-events-label">
-    <h2 id="dashboard-events-label" class="admin-section__label">Upcoming events</h2>
-    <div class="card mb-0">
-      <% if @upcoming_events.any? %>
-        <div class="table-container">
-          <table>
-            <thead>
-              <tr>
-                <th>Event</th>
-                <th>Date &amp; time</th>
-                <th>Location</th>
-              </tr>
-            </thead>
-            <tbody>
-              <% @upcoming_events.each do |event| %>
-                <tr>
-                  <td><%= event.name %></td>
-                  <td><%= event.datetime&.strftime("%B %d, %Y at %I:%M %p") %></td>
-                  <td><%= event.location %></td>
-                </tr>
-              <% end %>
-            </tbody>
-          </table>
+  <div class="admin-dashboard-grid">
+    <section class="card admin-dashboard-panel mb-0" aria-labelledby="dashboard-rsvp-label">
+      <div class="admin-dashboard-panel__header">
+        <h2 id="dashboard-rsvp-label" class="admin-dashboard-panel__title">RSVP breakdown</h2>
+      </div>
+      <div class="admin-rsvp-breakdown">
+        <div class="admin-donut" style="<%= donut_style %>" aria-hidden="true">
+          <div class="admin-donut__hole">
+            <span class="admin-donut__total"><%= total %></span>
+            <span class="admin-donut__caption">guests</span>
+          </div>
         </div>
+        <ul class="admin-rsvp-legend">
+          <li>
+            <span class="admin-rsvp-legend__swatch admin-rsvp-legend__swatch--accepted"></span>
+            <span class="admin-rsvp-legend__label">Accepted</span>
+            <span class="admin-rsvp-legend__value"><%= accepted %></span>
+          </li>
+          <li>
+            <span class="admin-rsvp-legend__swatch admin-rsvp-legend__swatch--declined"></span>
+            <span class="admin-rsvp-legend__label">Declined</span>
+            <span class="admin-rsvp-legend__value"><%= declined %></span>
+          </li>
+          <li>
+            <span class="admin-rsvp-legend__swatch admin-rsvp-legend__swatch--pending"></span>
+            <span class="admin-rsvp-legend__label">Pending</span>
+            <span class="admin-rsvp-legend__value"><%= pending %></span>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="card admin-dashboard-panel mb-0" aria-labelledby="dashboard-events-label">
+      <div class="admin-dashboard-panel__header">
+        <h2 id="dashboard-events-label" class="admin-dashboard-panel__title">Upcoming events</h2>
+        <%= link_to "Manage", admin_events_path, class: "admin-dashboard-panel__link" %>
+      </div>
+      <% if @upcoming_events.any? %>
+        <ul class="admin-event-list">
+          <% @upcoming_events.each do |event| %>
+            <li class="admin-event-list__item">
+              <div>
+                <p class="admin-event-list__name"><%= event.name %></p>
+                <p class="admin-event-list__meta">
+                  <%= event.datetime&.strftime("%b %-d · %-I:%M %p") %>
+                  <% if event.location.present? %>
+                    · <%= event.location %>
+                  <% end %>
+                </p>
+              </div>
+            </li>
+          <% end %>
+        </ul>
       <% else %>
         <%= render "admin/shared/empty_state", message: "No upcoming events scheduled." %>
       <% end %>
-    </div>
-  </section>
+    </section>
 
-  <section class="admin-section" aria-labelledby="dashboard-recent-label">
-    <h2 id="dashboard-recent-label" class="admin-section__label">Recent RSVPs</h2>
-    <div class="card mb-0">
+    <section class="card admin-dashboard-panel mb-0" aria-labelledby="dashboard-recent-label">
+      <div class="admin-dashboard-panel__header">
+        <h2 id="dashboard-recent-label" class="admin-dashboard-panel__title">Recent RSVPs</h2>
+        <%= link_to "View guests", admin_guests_path, class: "admin-dashboard-panel__link" %>
+      </div>
       <% if @recent_rsvps.any? %>
         <div class="table-container">
           <table>
@@ -101,9 +157,12 @@
             <tbody>
               <% @recent_rsvps.each do |rsvp| %>
                 <tr>
-                  <td><%= rsvp.guest.full_name %></td>
                   <td>
-                    <span class="<%= rsvp.accepted? ? 'text-success' : 'text-danger' %>">
+                    <span class="admin-guest-chip" aria-hidden="true"><%= rsvp.guest.first_name.to_s.first %><%= rsvp.guest.last_name.to_s.first %></span>
+                    <%= rsvp.guest.full_name %>
+                  </td>
+                  <td>
+                    <span class="<%= rsvp.accepted? ? "badge-success" : "badge-danger" %>">
                       <%= rsvp.status.capitalize %>
                     </span>
                   </td>
@@ -116,36 +175,29 @@
       <% else %>
         <%= render "admin/shared/empty_state", message: "No RSVPs yet." %>
       <% end %>
-    </div>
-  </section>
+    </section>
 
-  <section class="admin-section" aria-labelledby="dashboard-shoutouts-label">
-    <h2 id="dashboard-shoutouts-label" class="admin-section__label">Song requests &amp; messages</h2>
-    <div class="card mb-0">
+    <section class="card admin-dashboard-panel mb-0" aria-labelledby="dashboard-shoutouts-label">
+      <div class="admin-dashboard-panel__header">
+        <h2 id="dashboard-shoutouts-label" class="admin-dashboard-panel__title">Song requests &amp; messages</h2>
+      </div>
       <% if @guest_shoutouts.any? %>
-        <div class="table-container">
-          <table>
-            <thead>
-              <tr>
-                <th>Guest</th>
-                <th>Song request</th>
-                <th>Message</th>
-              </tr>
-            </thead>
-            <tbody>
-              <% @guest_shoutouts.each do |rsvp| %>
-                <tr>
-                  <td><%= rsvp.guest.full_name %></td>
-                  <td><%= rsvp.song_request.presence || "—" %></td>
-                  <td><%= rsvp.notes.presence || "—" %></td>
-                </tr>
+        <ul class="admin-shoutout-list">
+          <% @guest_shoutouts.limit(6).each do |rsvp| %>
+            <li class="admin-shoutout-list__item">
+              <p class="admin-shoutout-list__guest"><%= rsvp.guest.full_name %></p>
+              <% if rsvp.song_request.present? %>
+                <p class="admin-shoutout-list__line"><span>Song</span> <%= rsvp.song_request %></p>
               <% end %>
-            </tbody>
-          </table>
-        </div>
+              <% if rsvp.notes.present? %>
+                <p class="admin-shoutout-list__line"><span>Note</span> <%= rsvp.notes %></p>
+              <% end %>
+            </li>
+          <% end %>
+        </ul>
       <% else %>
         <%= render "admin/shared/empty_state", message: "No song requests or messages yet." %>
       <% end %>
-    </div>
-  </section>
+    </section>
+  </div>
 </div>

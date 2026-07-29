@@ -12,7 +12,7 @@
     subtitle: "Email RSVP links to guests who haven’t received one yet." %>
 
 <div class="card">
-  <div class="stats-grid stats-grid--compact mb-5">
+  <div class="stats-grid stats-grid--compact">
     <div class="stat-card">
       <div class="stat-value"><%= @invitation_stats[:total_guests] %></div>
       <div class="stat-label">Total guests</div>
@@ -34,11 +34,14 @@
     </div>
   </div>
 
+  <div class="admin-editor-divider my-5"></div>
+
   <%= form_with url: admin_invitations_path, method: :post,
                 data: {
                   controller: "bulk-checkboxes",
                   bulk_checkboxes_checkbox_selector_value: ".guest-checkbox"
                 } do |f| %>
+    <div class="table-container">
     <table>
       <thead>
         <tr>
@@ -74,10 +77,11 @@
         <% end %>
       </tbody>
     </table>
+    </div>
 
     <div class="mt-8">
       <%= f.submit "Send Invitations to Selected", class: "btn btn-primary",
-                   data: { turbo_confirm: "Send invitations to selected guests?" } %>
+                   data: { turbo_confirm: "Are you sure you want to send invitations to the selected guests?" } %>
     </div>
   <% end %>
 </div>

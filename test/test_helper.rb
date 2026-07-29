@@ -1,8 +1,11 @@
 ENV["RAILS_ENV"] ||= "test"
-ENV["APP_BASE_DOMAIN"] ||= "example.test"
+# Force after dotenv may have loaded `.env` (overwrite: false only skips unset keys).
+ENV["APP_BASE_DOMAIN"] = "example.test"
 ENV["APP_PORT"] ||= "3003"
 
 require_relative "../config/environment"
+ENV["APP_BASE_DOMAIN"] = "example.test"
+ENV["APP_PORT"] ||= "3003"
 require "rails/test_help"
 require "minitest/mock"
 
