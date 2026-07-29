@@ -1,18 +1,18 @@
 <div class="screen-only">
   <%= render "admin/guests/hub_nav" %>
 
-  <div class="flex gap-2 mb-6 border-b border-border pb-2">
-    <%= link_to "Send by Email", admin_invitations_path,
-        class: "px-4 py-2 rounded-md no-underline font-medium text-secondary hover:bg-neutral-100" %>
-    <%= link_to "Physical Invitations", physical_admin_invitations_path,
-        class: "px-4 py-2 rounded-md no-underline font-medium bg-secondary text-white" %>
-  </div>
+  <nav class="admin-hub-nav" aria-label="Invitation channels">
+    <%= link_to "Send by email", admin_invitations_path,
+        class: "admin-hub-nav-link" %>
+    <%= link_to "Physical", physical_admin_invitations_path,
+        class: "admin-hub-nav-link admin-hub-nav-link-active" %>
+  </nav>
+
+  <%= render "admin/shared/page_header",
+      title: "Physical invitations",
+      subtitle: "Preview and print fronts and backs for each household." %>
 
   <div class="card">
-    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
-      <h1>Physical Invitation Builder</h1>
-    </div>
-
     <% if @households.any? %>
       <%= form_with url: physical_admin_invitations_path, method: :get, class: "mb-8" do |f| %>
         <div class="grid gap-5 lg:grid-cols-[minmax(0,1.25fr)_minmax(0,1fr)_minmax(0,1fr)_auto] lg:items-end">

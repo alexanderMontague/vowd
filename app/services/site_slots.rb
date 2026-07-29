@@ -18,7 +18,7 @@ class SiteSlots
       key: "share_image",
       label: "Share image",
       description: "Shown when someone shares your site link. Leave empty to use the hero image.",
-      page: :homepage,
+      page: :site,
       max: 1,
       treatment: :share
     ),
@@ -74,6 +74,7 @@ class SiteSlots
 
   PAGE_LABELS = {
     homepage: "Homepage",
+    site: "Site",
     invitation: "Invitation",
     save_the_date: "Save the Date",
     rsvp: "RSVP"
@@ -104,10 +105,10 @@ class SiteSlots
       photo_slots.group_by(&:page)
     end
 
-    # Slots whose picker lives on the Photos tab. Homepage hero is chosen on the
-    # Hero tab (alongside the tagline) so it is excluded here.
+    # Slots whose picker lives on the Photos tab. Homepage hero and the global
+    # share image are chosen elsewhere (Home / Theme tab) so they are excluded.
     def page_placement_slots
-      photo_slots.reject { |slot| slot.page == :homepage }
+      photo_slots.reject { |slot| %i[homepage site].include?(slot.page) }
     end
 
     def page_placement_slots_by_page

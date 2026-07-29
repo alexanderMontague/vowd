@@ -1,0 +1,22 @@
+<%= render "admin/party/hub_nav" %>
+
+<%= render "admin/shared/page_header",
+    title: "Party planning",
+    subtitle: "Plan bachelor and bachelorette trips — people, ideas, itinerary, and polls." %>
+
+<div class="grid gap-4 sm:grid-cols-2">
+  <% @boards.each do |board| %>
+    <div class="card mb-0">
+      <div class="flex items-start justify-between gap-3">
+        <div>
+          <h2 class="card-header mb-1"><%= board.title %></h2>
+          <p class="text-sm text-neutral-500 mb-0">
+            <%= pluralize(board.members.size, "person") %>
+            · <%= pluralize(board.polls.open.size, "open poll") %>
+          </p>
+        </div>
+        <%= link_to "Open", admin_party_board_path(kind: board.kind), class: "btn btn-primary btn-sm" %>
+      </div>
+    </div>
+  <% end %>
+</div>

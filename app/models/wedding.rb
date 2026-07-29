@@ -126,6 +126,7 @@ class Wedding < ApplicationRecord
                        dependent: :destroy, inverse_of: false
   has_many :disposable_photos, foreign_key: :wedding_id, primary_key: :id, dependent: :destroy, inverse_of: false
   has_many :wedding_assets, foreign_key: :wedding_id, primary_key: :id, dependent: :destroy, inverse_of: :wedding
+  has_many :party_boards, foreign_key: :wedding_id, primary_key: :id, dependent: :destroy, inverse_of: false
 
   before_validation :normalize_id
   before_validation :normalize_custom_domain

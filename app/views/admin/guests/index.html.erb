@@ -1,28 +1,26 @@
 <%= render "admin/guests/hub_nav" %>
 
-<div class="card">
-  <div class="flex justify-between items-center mb-8">
-    <div>
-      <h1>Guests</h1>
-      <p class="text-sm text-neutral-500 mt-1">Guest list, households, and RSVP status.</p>
-    </div>
-    <div class="flex gap-4">
-      <%= link_to "Export CSV", export_admin_guests_path(format: :csv), class: "btn btn-secondary" %>
-      <%= link_to "Add household", new_admin_household_path, class: "btn btn-primary" %>
-    </div>
-  </div>
+<% actions = capture do %>
+  <%= link_to "Export CSV", export_admin_guests_path(format: :csv), class: "btn btn-secondary" %>
+  <%= link_to "Add household", new_admin_household_path, class: "btn btn-primary" %>
+<% end %>
+<%= render "admin/shared/page_header",
+    title: "Guests",
+    subtitle: "Guest list, households, and RSVP status.",
+    actions: actions %>
 
+<div class="card">
   <%= form_with url: admin_guests_path, method: :get, class: "filter-form",
                 data: { controller: "form-auto-submit" } do |f| %>
     <div class="form-group mb-0 min-w-[200px]">
-      <%= f.label :household_id, "Filter by Household" %>
+      <%= f.label :household_id, "Household" %>
       <%= f.collection_select :household_id, @households, :id, :display_name,
-                             { include_blank: "All Households" },
+                             { include_blank: "All households" },
                              { class: "form-control", data: { action: "change->form-auto-submit#submit" } } %>
     </div>
 
     <div class="form-group mb-0 min-w-[150px]">
-      <%= f.label :rsvp_status, "Filter by RSVP" %>
+      <%= f.label :rsvp_status, "RSVP" %>
       <%= f.select :rsvp_status,
                    [["All", ""], ["Pending", "pending"], ["Accepted", "accepted"], ["Declined", "declined"]],
                    {},
@@ -31,39 +29,41 @@
   <% end %>
 
   <% if @guests.any? %>
-    <table>
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Email</th>
-          <th>Household</th>
-          <th>RSVP Status</th>
-          <th>Invite Code</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% @guests.each do |guest| %>
+    <div class="table-container">
+      <table>
+        <thead>
           <tr>
-            <td><%= guest.full_name %></td>
-            <td><%= guest.email %></td>
-            <td><%= link_to guest.household.display_name, edit_admin_household_path(guest.household), class: "text-secondary underline" %></td>
-            <td>
-              <span class="<%= guest.rsvp.accepted? ? 'text-success' : guest.rsvp.declined? ? 'text-danger' : 'text-warning' %>">
-                <%= guest.rsvp.status.capitalize %>
-              </span>
-            </td>
-            <td><code><%= guest.invite_code %></code></td>
-            <td class="actions">
-              <%= link_to "Edit", edit_admin_guest_path(guest), class: "btn btn-secondary" %>
-              <%= button_to "Delete", admin_guest_path(guest), method: :delete,
-                            data: { turbo_confirm: "Are you sure?" }, class: "btn btn-danger" %>
-            </td>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Household</th>
+            <th>RSVP</th>
+            <th>Invite code</th>
+            <th></th>
           </tr>
-        <% end %>
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          <% @guests.each do |guest| %>
+            <tr>
+              <td><%= guest.full_name %></td>
+              <td><%= guest.email %></td>
+              <td><%= link_to guest.household.display_name, edit_admin_household_path(guest.household), class: "text-secondary underline" %></td>
+              <td>
+                <span class="<%= guest.rsvp.accepted? ? 'text-success' : guest.rsvp.declined? ? 'text-danger' : 'text-warning' %>">
+                  <%= guest.rsvp.status.capitalize %>
+                </span>
+              </td>
+              <td><code><%= guest.invite_code %></code></td>
+              <td class="actions">
+                <%= link_to "Edit", edit_admin_guest_path(guest), class: "btn btn-secondary btn-sm" %>
+                <%= button_to "Delete", admin_guest_path(guest), method: :delete,
+                              data: { turbo_confirm: "Are you sure?" }, class: "btn btn-danger btn-sm" %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
   <% else %>
-    <p>No guests yet. Add a household to get started.</p>
+    <%= render "admin/shared/empty_state", message: "No guests yet. Add a household to get started." %>
   <% end %>
 </div>

@@ -10,25 +10,52 @@
     <%= javascript_importmap_tags %>
   </head>
 
-  <body class="font-sans m-0 bg-neutral-50">
-    <div class="admin-shell">
-      <aside class="admin-side-nav print:hidden">
-        <div>
-          <%= link_to "Vowd", current_wedding&.configured? ? admin_root_path : admin_website_path, class: "admin-side-nav-brand" %>
-          <% if current_wedding %>
-            <p class="admin-side-nav-meta"><%= current_wedding.title %></p>
-          <% end %>
+  <body class="admin-app m-0">
+    <div class="admin-shell" data-controller="admin-nav">
+      <header class="admin-topbar print:hidden">
+        <button type="button"
+                class="admin-topbar-toggle"
+                data-action="admin-nav#open"
+                aria-label="Open menu">
+          <span class="admin-topbar-toggle__bars" aria-hidden="true"></span>
+        </button>
+        <%= link_to "Vowd", current_wedding&.configured? ? admin_root_path : admin_website_path, class: "admin-topbar-brand" %>
+        <% if current_wedding %>
+          <p class="admin-topbar-meta"><%= current_wedding.title %></p>
+        <% end %>
+      </header>
+
+      <div class="admin-nav-backdrop print:hidden"
+           data-admin-nav-target="backdrop"
+           data-action="click->admin-nav#close"
+           hidden></div>
+
+      <aside class="admin-side-nav print:hidden" data-admin-nav-target="panel">
+        <div class="admin-side-nav-header">
+          <div>
+            <%= link_to "Vowd", current_wedding&.configured? ? admin_root_path : admin_website_path, class: "admin-side-nav-brand" %>
+            <% if current_wedding %>
+              <p class="admin-side-nav-meta"><%= current_wedding.title %></p>
+            <% end %>
+          </div>
+          <button type="button"
+                  class="admin-side-nav-close"
+                  data-action="admin-nav#close"
+                  aria-label="Close menu">
+            &times;
+          </button>
         </div>
 
         <nav class="admin-side-nav-links">
-          <%= admin_nav_link(
-                "Wedding",
-                admin_website_path,
-                active_prefixes: ["/admin/website", admin_events_path]
-              ) %>
-
           <% if current_wedding&.configured? %>
             <%= admin_nav_link("Dashboard", admin_root_path, exact: true) %>
+
+            <%= admin_nav_section("Website") %>
+            <%= admin_nav_link(
+                  "Wedding",
+                  admin_website_path,
+                  active_prefixes: ["/admin/website", admin_events_path]
+                ) %>
             <%= admin_nav_link("Theme", admin_theme_section_path(section: ThemeSections::DEFAULT_KEY), active_prefixes: ["/admin/theme"]) %>
 
             <%= admin_nav_section("Guests") %>
@@ -43,6 +70,13 @@
                   ]
                 ) %>
 
+            <%= admin_nav_section("Planning") %>
+            <%= admin_nav_link(
+                  "Party planning",
+                  admin_party_path,
+                  active_prefixes: ["/admin/party"]
+                ) %>
+
             <%= admin_nav_section("Day of") %>
             <%= admin_nav_link(
                   "Disposable camera",
@@ -53,13 +87,18 @@
             <%= admin_nav_section("System") %>
             <%= admin_nav_link("Feature flags", admin_settings_path, exact: true) %>
           <% else %>
+            <%= admin_nav_link(
+                  "Wedding",
+                  admin_website_path,
+                  active_prefixes: ["/admin/website", admin_events_path]
+                ) %>
             <p class="admin-side-nav-hint">
               Add partners and a wedding date to unlock guests, invitations, and day-of tools.
             </p>
           <% end %>
         </nav>
 
-        <%= button_to "Log out", admin_logout_path, method: :delete, class: "btn btn-sm btn-danger w-full mt-8" %>
+        <%= button_to "Log out", admin_logout_path, method: :delete, class: "btn btn-sm btn-danger w-full mt-auto" %>
       </aside>
 
       <main class="admin-main <%= content_for(:admin_main_class) %>" data-controller="scroll-preservation">

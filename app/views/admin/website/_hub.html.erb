@@ -2,15 +2,15 @@
 <% subdomain_host = AppHost.subdomain_host(current_wedding.id) %>
 <div class="max-w-3xl">
   <div class="admin-page-header">
-    <h1>Wedding</h1>
-    <p>
-      Essentials and logistics for
-      <a href="<%= root_url(host: subdomain_host) %>" class="text-secondary underline" target="_blank" rel="noopener">
-        <%= subdomain_host %>
-      </a>.
-      Site pages and look are edited under
-      <%= link_to "Theme", admin_theme_section_path(section: ThemeSections::DEFAULT_KEY), class: "text-secondary underline" %>.
-    </p>
+    <div class="admin-page-header__title">
+      <h1>Wedding</h1>
+      <p>
+        Essentials and logistics for
+        <%= link_to subdomain_host, root_url(host: subdomain_host), class: "text-secondary underline", target: "_blank", rel: "noopener" %>.
+        Site pages and look are edited under
+        <%= link_to "Theme", admin_theme_section_path(section: ThemeSections::DEFAULT_KEY), class: "text-secondary underline" %>.
+      </p>
+    </div>
   </div>
 
   <div class="admin-editor">

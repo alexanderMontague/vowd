@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= @board&.title.presence || "Party planning" %> · Vowd</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <%= favicon_link_tag '/favicon.png', type: 'image/png' %>
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+  </head>
+
+  <body class="party-body m-0 min-h-screen bg-stone-100 text-secondary font-sans">
+    <main class="mx-auto w-full max-w-2xl px-4 py-8 sm:px-6">
+      <% if flash[:notice].present? %>
+        <p class="mb-4 rounded-md border border-success/20 bg-success-50 px-3 py-2 text-sm text-success-700"><%= flash[:notice] %></p>
+      <% end %>
+      <% if flash[:alert].present? %>
+        <p class="mb-4 rounded-md border border-danger/20 bg-danger-50 px-3 py-2 text-sm text-danger-700"><%= flash[:alert] %></p>
+      <% end %>
+      <%= yield %>
+    </main>
+  </body>
+</html>

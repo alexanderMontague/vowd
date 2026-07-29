@@ -1,129 +1,151 @@
-<div class="admin-page-header">
-  <h1>Dashboard</h1>
-  <% if current_wedding %>
-    <p>
-      <strong class="font-medium text-secondary"><%= current_wedding.title %></strong>
-      <% if current_wedding.date.present? %>
-        · <%= format_date_elegant(current_wedding.date) %>
-      <% else %>
-        · <span class="text-neutral-500">Set your wedding date under Website</span>
+<%= render "admin/shared/page_header",
+    title: "Dashboard",
+    subtitle: (
+      if current_wedding
+        parts = [content_tag(:strong, current_wedding.title, class: "font-medium text-[var(--admin-ink)]")]
+        parts << if current_wedding.date.present?
+                   format_date_elegant(current_wedding.date)
+                 else
+                   content_tag(:span, "Set your wedding date under Wedding")
+                 end
+        safe_join(parts, " · ")
+      else
+        "No wedding configured yet."
+      end
+    ) %>
+
+<div class="admin-stack">
+  <section class="admin-section" aria-labelledby="dashboard-rsvp-label">
+    <h2 id="dashboard-rsvp-label" class="admin-section__label">RSVPs</h2>
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-value"><%= @stats[:total_guests] %></div>
+        <div class="stat-label">Total guests</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value"><%= @stats[:accepted] %></div>
+        <div class="stat-label">Accepted</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value"><%= @stats[:declined] %></div>
+        <div class="stat-label">Declined</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value"><%= @stats[:pending] %></div>
+        <div class="stat-label">Pending</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value"><%= @stats[:acceptance_rate] %>%</div>
+        <div class="stat-label">Acceptance rate</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="admin-section" aria-labelledby="dashboard-outreach-label">
+    <h2 id="dashboard-outreach-label" class="admin-section__label">Outreach</h2>
+    <div class="stats-grid stats-grid--compact">
+      <div class="stat-card">
+        <div class="stat-value"><%= @stats[:invitations_sent] %></div>
+        <div class="stat-label">Invitations sent</div>
+      </div>
+      <%= link_to admin_save_the_date_signups_path, class: "stat-card stat-card--link" do %>
+        <div class="stat-value"><%= @stats[:save_the_date_responses] %></div>
+        <div class="stat-label">Save the Date</div>
       <% end %>
-    </p>
-  <% else %>
-    <p>No wedding configured yet.</p>
-  <% end %>
-</div>
+    </div>
+  </section>
 
-<div class="stats-grid">
-  <div class="stat-card">
-    <div class="stat-value"><%= @stats[:total_guests] %></div>
-    <div class="stat-label">Total Guests</div>
-  </div>
+  <section class="admin-section" aria-labelledby="dashboard-events-label">
+    <h2 id="dashboard-events-label" class="admin-section__label">Upcoming events</h2>
+    <div class="card mb-0">
+      <% if @upcoming_events.any? %>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Event</th>
+                <th>Date &amp; time</th>
+                <th>Location</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% @upcoming_events.each do |event| %>
+                <tr>
+                  <td><%= event.name %></td>
+                  <td><%= event.datetime&.strftime("%B %d, %Y at %I:%M %p") %></td>
+                  <td><%= event.location %></td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      <% else %>
+        <%= render "admin/shared/empty_state", message: "No upcoming events scheduled." %>
+      <% end %>
+    </div>
+  </section>
 
-  <div class="stat-card">
-    <div class="stat-value"><%= @stats[:accepted] %></div>
-    <div class="stat-label">Accepted</div>
-  </div>
+  <section class="admin-section" aria-labelledby="dashboard-recent-label">
+    <h2 id="dashboard-recent-label" class="admin-section__label">Recent RSVPs</h2>
+    <div class="card mb-0">
+      <% if @recent_rsvps.any? %>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Guest</th>
+                <th>Status</th>
+                <th>Updated</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% @recent_rsvps.each do |rsvp| %>
+                <tr>
+                  <td><%= rsvp.guest.full_name %></td>
+                  <td>
+                    <span class="<%= rsvp.accepted? ? 'text-success' : 'text-danger' %>">
+                      <%= rsvp.status.capitalize %>
+                    </span>
+                  </td>
+                  <td><%= time_ago_in_words(rsvp.updated_at) %> ago</td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      <% else %>
+        <%= render "admin/shared/empty_state", message: "No RSVPs yet." %>
+      <% end %>
+    </div>
+  </section>
 
-  <div class="stat-card">
-    <div class="stat-value"><%= @stats[:declined] %></div>
-    <div class="stat-label">Declined</div>
-  </div>
-
-  <div class="stat-card">
-    <div class="stat-value"><%= @stats[:pending] %></div>
-    <div class="stat-label">Pending</div>
-  </div>
-
-  <div class="stat-card">
-    <div class="stat-value"><%= @stats[:acceptance_rate] %>%</div>
-    <div class="stat-label">Acceptance Rate</div>
-  </div>
-
-  <div class="stat-card">
-    <div class="stat-value"><%= @stats[:invitations_sent] %></div>
-    <div class="stat-label">Invitations Sent</div>
-  </div>
-</div>
-
-<div class="card">
-  <h2 class="card-header">Upcoming Events</h2>
-  <% if @upcoming_events.any? %>
-    <table>
-      <thead>
-        <tr>
-          <th>Event</th>
-          <th>Date & Time</th>
-          <th>Location</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% @upcoming_events.each do |event| %>
-          <tr>
-            <td><%= event.name %></td>
-            <td><%= event.datetime&.strftime("%B %d, %Y at %I:%M %p") %></td>
-            <td><%= event.location %></td>
-          </tr>
-        <% end %>
-      </tbody>
-    </table>
-  <% else %>
-    <p class="text-neutral-500 mb-0">No upcoming events scheduled.</p>
-  <% end %>
-</div>
-
-<div class="card">
-  <h2 class="card-header">Recent RSVPs</h2>
-  <% if @recent_rsvps.any? %>
-    <table>
-      <thead>
-        <tr>
-          <th>Guest</th>
-          <th>Status</th>
-          <th>Updated</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% @recent_rsvps.each do |rsvp| %>
-          <tr>
-            <td><%= rsvp.guest.full_name %></td>
-            <td>
-              <span class="<%= rsvp.accepted? ? 'text-success' : 'text-danger' %>">
-                <%= rsvp.status.capitalize %>
-              </span>
-            </td>
-            <td><%= time_ago_in_words(rsvp.updated_at) %> ago</td>
-          </tr>
-        <% end %>
-      </tbody>
-    </table>
-  <% else %>
-    <p class="text-neutral-500 mb-0">No RSVPs yet.</p>
-  <% end %>
-</div>
-
-<div class="card">
-  <h2 class="card-header">Song Requests & Messages</h2>
-  <% if @guest_shoutouts.any? %>
-    <table>
-      <thead>
-        <tr>
-          <th>Guest</th>
-          <th>Song Request</th>
-          <th>Message to the Couple</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% @guest_shoutouts.each do |rsvp| %>
-          <tr>
-            <td><%= rsvp.guest.full_name %></td>
-            <td><%= rsvp.song_request.presence || "—" %></td>
-            <td><%= rsvp.notes.presence || "—" %></td>
-          </tr>
-        <% end %>
-      </tbody>
-    </table>
-  <% else %>
-    <p class="text-neutral-500 mb-0">No song requests or messages yet.</p>
-  <% end %>
+  <section class="admin-section" aria-labelledby="dashboard-shoutouts-label">
+    <h2 id="dashboard-shoutouts-label" class="admin-section__label">Song requests &amp; messages</h2>
+    <div class="card mb-0">
+      <% if @guest_shoutouts.any? %>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Guest</th>
+                <th>Song request</th>
+                <th>Message</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% @guest_shoutouts.each do |rsvp| %>
+                <tr>
+                  <td><%= rsvp.guest.full_name %></td>
+                  <td><%= rsvp.song_request.presence || "—" %></td>
+                  <td><%= rsvp.notes.presence || "—" %></td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      <% else %>
+        <%= render "admin/shared/empty_state", message: "No song requests or messages yet." %>
+      <% end %>
+    </div>
+  </section>
 </div>

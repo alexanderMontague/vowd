@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_07_28_021319) do
+ActiveRecord::Schema[7.1].define(version: 2026_07_29_002908) do
   create_table "admin_users", force: :cascade do |t|
     t.string "email", null: false
     t.string "password_digest", null: false
@@ -96,6 +96,103 @@ ActiveRecord::Schema[7.1].define(version: 2026_07_28_021319) do
     t.datetime "updated_at", null: false
     t.index ["guest_id", "wedding_id", "reminder_key", "channel"], name: "index_notification_deliveries_uniqueness", unique: true
     t.index ["guest_id"], name: "index_notification_deliveries_on_guest_id"
+  end
+
+  create_table "party_boards", id: :string, force: :cascade do |t|
+    t.string "wedding_id", null: false
+    t.string "kind", null: false
+    t.string "title", null: false
+    t.string "share_token", null: false
+    t.string "status", default: "active", null: false
+    t.text "notes"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["share_token"], name: "index_party_boards_on_share_token", unique: true
+    t.index ["wedding_id", "kind"], name: "index_party_boards_on_wedding_id_and_kind", unique: true
+    t.index ["wedding_id"], name: "index_party_boards_on_wedding_id"
+  end
+
+  create_table "party_ideas", id: :string, force: :cascade do |t|
+    t.string "party_board_id", null: false
+    t.string "wedding_id", null: false
+    t.string "title", null: false
+    t.text "body"
+    t.integer "position", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["party_board_id"], name: "index_party_ideas_on_party_board_id"
+    t.index ["wedding_id"], name: "index_party_ideas_on_wedding_id"
+  end
+
+  create_table "party_itinerary_items", id: :string, force: :cascade do |t|
+    t.string "party_board_id", null: false
+    t.string "wedding_id", null: false
+    t.date "occurs_on"
+    t.string "starts_at_text"
+    t.string "title", null: false
+    t.string "location"
+    t.text "notes"
+    t.integer "position", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["party_board_id"], name: "index_party_itinerary_items_on_party_board_id"
+    t.index ["wedding_id"], name: "index_party_itinerary_items_on_wedding_id"
+  end
+
+  create_table "party_members", id: :string, force: :cascade do |t|
+    t.string "party_board_id", null: false
+    t.string "wedding_id", null: false
+    t.string "name", null: false
+    t.string "role"
+    t.string "email"
+    t.string "phone_number"
+    t.string "source", default: "custom", null: false
+    t.string "wedding_party_key"
+    t.integer "position", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["party_board_id", "wedding_party_key"], name: "index_party_members_on_party_board_id_and_wedding_party_key", unique: true
+    t.index ["party_board_id"], name: "index_party_members_on_party_board_id"
+    t.index ["wedding_id"], name: "index_party_members_on_wedding_id"
+  end
+
+  create_table "party_poll_options", id: :string, force: :cascade do |t|
+    t.string "party_poll_id", null: false
+    t.string "wedding_id", null: false
+    t.string "title", null: false
+    t.string "price_text"
+    t.text "notes"
+    t.string "url"
+    t.integer "position", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["party_poll_id"], name: "index_party_poll_options_on_party_poll_id"
+    t.index ["wedding_id"], name: "index_party_poll_options_on_wedding_id"
+  end
+
+  create_table "party_poll_votes", id: :string, force: :cascade do |t|
+    t.string "party_poll_id", null: false
+    t.string "party_poll_option_id", null: false
+    t.string "party_member_id", null: false
+    t.string "wedding_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["party_poll_id", "party_member_id"], name: "index_party_poll_votes_on_party_poll_id_and_party_member_id", unique: true
+    t.index ["party_poll_option_id"], name: "index_party_poll_votes_on_party_poll_option_id"
+    t.index ["wedding_id"], name: "index_party_poll_votes_on_wedding_id"
+  end
+
+  create_table "party_polls", id: :string, force: :cascade do |t|
+    t.string "party_board_id", null: false
+    t.string "wedding_id", null: false
+    t.string "title", null: false
+    t.text "description"
+    t.string "status", default: "open", null: false
+    t.integer "position", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["party_board_id"], name: "index_party_polls_on_party_board_id"
+    t.index ["wedding_id"], name: "index_party_polls_on_wedding_id"
   end
 
   create_table "rsvps", force: :cascade do |t|

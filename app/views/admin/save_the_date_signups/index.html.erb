@@ -1,15 +1,10 @@
 <%= render "admin/guests/hub_nav" %>
 
-<div class="card">
-  <div class="flex justify-between items-center mb-8">
-    <div>
-      <h1>Save the Date Signups</h1>
-      <p class="text-sm text-neutral-500 mt-1">
-        Contact details collected from the save the date page.
-      </p>
-    </div>
-  </div>
+<%= render "admin/shared/page_header",
+    title: "Save the Date",
+    subtitle: "Contact details collected from the save the date page." %>
 
+<div class="card">
   <%= form_with url: admin_save_the_date_signups_path, method: :get, class: "filter-form",
                 data: { controller: "form-auto-submit" } do |f| %>
     <div class="form-group mb-0 min-w-[180px]">

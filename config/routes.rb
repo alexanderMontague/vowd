@@ -19,6 +19,12 @@ Rails.application.routes.draw do
       get "/gallery/:id/raw", to: "galleries#raw", as: :dispo_photo_raw
     end
 
+    scope :party, module: :party do
+      get "/:token", to: "boards#show", as: :party_board
+      post "/:token/identify", to: "boards#identify", as: :party_identify
+      post "/:token/polls/:poll_id/votes", to: "votes#create", as: :party_vote
+    end
+
     get "/save-the-date", to: "public/save_the_dates#show", as: :public_save_the_date
     post "/save-the-date", to: "public/save_the_dates#signup", as: :public_save_the_date_signup
     get "/calendar.ics", to: "public/save_the_dates#calendar", as: :public_calendar_ics
@@ -67,6 +73,20 @@ Rails.application.routes.draw do
       end
       resource :dispo_sign, only: :show, controller: "dispo_signs"
       resource :settings, only: %i[show update]
+      resource :party, only: :show, controller: "party"
+      resources :party_boards, path: "party", param: :kind, only: %i[show update],
+                constraints: { kind: /bachelor|bachelorette/ } do
+        member do
+          post :sync
+          post :regenerate_token
+        end
+        resources :members, controller: "party_members", only: %i[create update destroy]
+        resources :ideas, controller: "party_ideas", only: %i[create update destroy]
+        resources :itinerary_items, controller: "party_itinerary_items", only: %i[create update destroy]
+        resources :polls, controller: "party_polls", only: %i[create update destroy] do
+          resources :options, controller: "party_poll_options", only: %i[create update destroy]
+        end
+      end
 
       get "theme", to: "themes#show"
       # Preview must be declared before :section or PATCH /theme/preview is stolen.

@@ -1,10 +1,7 @@
 <div class="max-w-3xl">
-  <div class="admin-page-header">
-    <h1>Feature flags</h1>
-    <p>
-      Override time-based defaults. Choose <strong>Automatic</strong> to follow your wedding date and built-in schedules.
-    </p>
-  </div>
+  <%= render "admin/shared/page_header",
+      title: "Feature flags",
+      subtitle: "Override time-based defaults. Choose Automatic to follow your wedding date and built-in schedules." %>
 
   <%= form_with url: admin_settings_path, method: :patch,
       data: {

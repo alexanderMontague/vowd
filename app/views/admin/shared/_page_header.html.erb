@@ -1,0 +1,14 @@
+<%# locals: title:, subtitle: nil, actions: nil %>
+<div class="admin-page-header">
+  <div class="admin-page-header__title">
+    <h1><%= title %></h1>
+    <% if local_assigns[:subtitle].present? %>
+      <p><%= subtitle %></p>
+    <% end %>
+  </div>
+  <% if local_assigns[:actions].present? %>
+    <div class="admin-page-header__actions">
+      <%= actions %>
+    </div>
+  <% end %>
+</div>

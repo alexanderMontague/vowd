@@ -1,24 +1,26 @@
 <%= render "admin/guests/hub_nav" %>
 
-<div class="flex gap-2 mb-6 border-b border-border pb-2">
-  <%= link_to "Send by Email", admin_invitations_path,
-      class: "px-4 py-2 rounded-md no-underline font-medium #{request.path == admin_invitations_path ? 'bg-secondary text-white' : 'text-secondary hover:bg-neutral-100'}" %>
-  <%= link_to "Physical Invitations", physical_admin_invitations_path,
-      class: "px-4 py-2 rounded-md no-underline font-medium #{request.path == physical_admin_invitations_path ? 'bg-secondary text-white' : 'text-secondary hover:bg-neutral-100'}" %>
-</div>
+<nav class="admin-hub-nav" aria-label="Invitation channels">
+  <%= link_to "Send by email", admin_invitations_path,
+      class: class_names("admin-hub-nav-link", "admin-hub-nav-link-active" => request.path == admin_invitations_path) %>
+  <%= link_to "Physical", physical_admin_invitations_path,
+      class: class_names("admin-hub-nav-link", "admin-hub-nav-link-active" => request.path.start_with?(physical_admin_invitations_path)) %>
+</nav>
+
+<%= render "admin/shared/page_header",
+    title: "Send invitations",
+    subtitle: "Email RSVP links to guests who haven’t received one yet." %>
 
 <div class="card">
-  <h1>Send Invitations</h1>
-
-  <div class="stats-grid mb-8">
+  <div class="stats-grid stats-grid--compact mb-5">
     <div class="stat-card">
       <div class="stat-value"><%= @invitation_stats[:total_guests] %></div>
-      <div class="stat-label">Total Guests</div>
+      <div class="stat-label">Total guests</div>
     </div>
 
     <div class="stat-card">
       <div class="stat-value"><%= @invitation_stats[:sent] %></div>
-      <div class="stat-label">Invitations Sent</div>
+      <div class="stat-label">Invitations sent</div>
     </div>
 
     <div class="stat-card">

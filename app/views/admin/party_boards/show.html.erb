@@ -1,0 +1,304 @@
+<%= render "admin/party/hub_nav", section: @board.kind %>
+
+<% actions = capture do %>
+  <%= button_to "Sync wedding party", sync_admin_party_board_path(kind: @board.kind),
+        method: :post, class: "btn btn-secondary btn-sm" %>
+<% end %>
+<%= render "admin/shared/page_header",
+    title: @board.title,
+    subtitle: "Share one link with the party for ideas, itinerary, and polls.",
+    actions: actions %>
+
+<div class="admin-stack">
+<div class="card mb-0" data-controller="clipboard">
+  <h2 class="card-header">Share link</h2>
+  <div class="flex flex-wrap gap-2 items-center">
+    <input type="text"
+           readonly
+           class="form-control flex-1 min-w-[14rem]"
+           value="<%= @share_url %>"
+           data-clipboard-target="input">
+    <button type="button" class="btn btn-secondary" data-action="clipboard#copy">Copy</button>
+    <span class="text-xs text-success" data-clipboard-target="feedback" hidden></span>
+  </div>
+  <div class="mt-3">
+    <%= button_to "Regenerate link", regenerate_token_admin_party_board_path(kind: @board.kind),
+          method: :post,
+          class: "btn btn-ghost btn-sm",
+          data: { turbo_confirm: "Regenerate the share link? The old link will stop working." } %>
+  </div>
+</div>
+
+<div class="card">
+  <h2 class="card-header">Board details</h2>
+  <%= form_with model: @board, url: admin_party_board_path(kind: @board.kind), method: :patch do |f| %>
+    <div class="form-group">
+      <%= f.label :title %>
+      <%= f.text_field :title, class: "form-control" %>
+    </div>
+    <div class="form-group">
+      <%= f.label :notes, "Cover notes" %>
+      <%= f.text_area :notes, class: "form-control", rows: 3 %>
+    </div>
+    <%= f.submit "Save", class: "btn btn-primary" %>
+  <% end %>
+</div>
+
+<div class="card">
+  <h2 class="card-header">People</h2>
+  <% if @members.any? %>
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Role</th>
+            <th>Source</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @members.each do |member| %>
+            <tr>
+              <td><%= member.name %></td>
+              <td><%= member.role.presence || "—" %></td>
+              <td><%= member.source == "wedding_party" ? "Wedding party" : "Added here" %></td>
+              <td class="actions">
+                <%= button_to "Remove", admin_party_board_member_path(@board.kind, member),
+                      method: :delete,
+                      class: "btn btn-ghost btn-sm",
+                      data: { turbo_confirm: "Remove #{member.name}?" } %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% else %>
+    <%= render "admin/shared/empty_state", message: "No people yet. Sync from the wedding party or add someone below." %>
+  <% end %>
+
+  <h3 class="admin-section-title mt-6">Add person</h3>
+  <%= form_with model: PartyMember.new, url: admin_party_board_members_path(@board.kind) do |f| %>
+    <div class="grid gap-3 sm:grid-cols-2">
+      <div class="form-group mb-0">
+        <%= f.label :name %>
+        <%= f.text_field :name, class: "form-control", required: true %>
+      </div>
+      <div class="form-group mb-0">
+        <%= f.label :role %>
+        <%= f.text_field :role, class: "form-control", placeholder: "Best man" %>
+      </div>
+    </div>
+    <div class="mt-3">
+      <%= f.submit "Add", class: "btn btn-secondary" %>
+    </div>
+  <% end %>
+</div>
+
+<div class="card">
+  <h2 class="card-header">Ideas</h2>
+  <% if @ideas.any? %>
+    <ul class="m-0 mb-5 list-none grid gap-3 p-0">
+      <% @ideas.each do |idea| %>
+        <li class="admin-nested-row">
+          <div class="flex items-start justify-between gap-3">
+            <div>
+              <p class="m-0 font-medium text-secondary"><%= idea.title %></p>
+              <% if idea.body.present? %>
+                <p class="mt-1 mb-0 text-sm text-neutral-600 whitespace-pre-wrap"><%= idea.body %></p>
+              <% end %>
+            </div>
+            <%= button_to "Remove", admin_party_board_idea_path(@board.kind, idea),
+                  method: :delete,
+                  class: "btn btn-ghost btn-sm",
+                  data: { turbo_confirm: "Remove this idea?" } %>
+          </div>
+        </li>
+      <% end %>
+    </ul>
+  <% else %>
+    <%= render "admin/shared/empty_state", message: "Capture rough ideas the party can skim on the share link." %>
+  <% end %>
+
+  <h3 class="admin-section-title mt-6">Add idea</h3>
+  <%= form_with model: PartyIdea.new, url: admin_party_board_ideas_path(@board.kind) do |f| %>
+    <div class="form-group">
+      <%= f.label :title %>
+      <%= f.text_field :title, class: "form-control", required: true %>
+    </div>
+    <div class="form-group">
+      <%= f.label :body, "Notes" %>
+      <%= f.text_area :body, class: "form-control", rows: 2 %>
+    </div>
+    <%= f.submit "Add idea", class: "btn btn-secondary" %>
+  <% end %>
+</div>
+
+<div class="card">
+  <h2 class="card-header">Itinerary</h2>
+  <% if @itinerary_items.any? %>
+    <div class="table-container mb-5">
+      <table>
+        <thead>
+          <tr>
+            <th>When</th>
+            <th>Title</th>
+            <th>Location</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @itinerary_items.each do |item| %>
+            <tr>
+              <td>
+                <%= item.occurs_on&.strftime("%b %-d") || "—" %>
+                <% if item.starts_at_text.present? %>
+                  <span class="text-neutral-500"><%= item.starts_at_text %></span>
+                <% end %>
+              </td>
+              <td>
+                <div><%= item.title %></div>
+                <% if item.notes.present? %>
+                  <div class="text-xs text-neutral-500"><%= item.notes %></div>
+                <% end %>
+              </td>
+              <td><%= item.location.presence || "—" %></td>
+              <td class="actions">
+                <%= button_to "Remove", admin_party_board_itinerary_item_path(@board.kind, item),
+                      method: :delete,
+                      class: "btn btn-ghost btn-sm",
+                      data: { turbo_confirm: "Remove this stop?" } %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% else %>
+    <%= render "admin/shared/empty_state", message: "Build a rough day-by-day plan for the trip." %>
+  <% end %>
+
+  <h3 class="admin-section-title mt-6">Add stop</h3>
+  <%= form_with model: PartyItineraryItem.new, url: admin_party_board_itinerary_items_path(@board.kind) do |f| %>
+    <div class="grid gap-3 sm:grid-cols-2">
+      <div class="form-group mb-0">
+        <%= f.label :occurs_on, "Date" %>
+        <%= f.date_field :occurs_on, class: "form-control" %>
+      </div>
+      <div class="form-group mb-0">
+        <%= f.label :starts_at_text, "Time" %>
+        <%= f.text_field :starts_at_text, class: "form-control", placeholder: "7:00 PM" %>
+      </div>
+      <div class="form-group mb-0">
+        <%= f.label :title %>
+        <%= f.text_field :title, class: "form-control", required: true %>
+      </div>
+      <div class="form-group mb-0">
+        <%= f.label :location %>
+        <%= f.text_field :location, class: "form-control" %>
+      </div>
+    </div>
+    <div class="form-group mt-3">
+      <%= f.label :notes %>
+      <%= f.text_area :notes, class: "form-control", rows: 2 %>
+    </div>
+    <%= f.submit "Add stop", class: "btn btn-secondary" %>
+  <% end %>
+</div>
+
+<div class="card">
+  <h2 class="card-header">Polls</h2>
+
+  <% @polls.each do |poll| %>
+    <div class="admin-nested-row mb-4">
+      <div class="flex flex-wrap items-start justify-between gap-3 mb-3">
+        <div>
+          <p class="m-0 font-medium text-secondary"><%= poll.title %></p>
+          <% if poll.description.present? %>
+            <p class="mt-1 mb-0 text-sm text-neutral-600"><%= poll.description %></p>
+          <% end %>
+          <p class="mt-1 mb-0 text-xs uppercase tracking-widest text-neutral-400"><%= poll.status %></p>
+        </div>
+        <div class="actions">
+          <% if poll.open? %>
+            <%= button_to "Close", admin_party_board_poll_path(@board.kind, poll),
+                  method: :patch,
+                  params: { party_poll: { status: "closed" } },
+                  class: "btn btn-secondary btn-sm" %>
+          <% else %>
+            <%= button_to "Reopen", admin_party_board_poll_path(@board.kind, poll),
+                  method: :patch,
+                  params: { party_poll: { status: "open" } },
+                  class: "btn btn-secondary btn-sm" %>
+          <% end %>
+          <%= button_to "Delete", admin_party_board_poll_path(@board.kind, poll),
+                method: :delete,
+                class: "btn btn-ghost btn-sm",
+                data: { turbo_confirm: "Delete this poll and its votes?" } %>
+        </div>
+      </div>
+
+      <% if poll.options.any? %>
+        <ul class="m-0 mb-3 list-none grid gap-2 p-0">
+          <% poll.options.ordered.each do |option| %>
+            <li class="flex flex-wrap items-center justify-between gap-2 rounded-md border border-border bg-white px-3 py-2 text-sm">
+              <div>
+                <span class="font-medium"><%= option.title %></span>
+                <% if option.price_text.present? %>
+                  <span class="text-neutral-500"> · <%= option.price_text %></span>
+                <% end %>
+                <span class="text-neutral-400"> · <%= pluralize(option.votes.size, "vote") %></span>
+                <% if option.notes.present? %>
+                  <div class="text-xs text-neutral-500"><%= option.notes %></div>
+                <% end %>
+              </div>
+              <%= button_to "Remove", admin_party_board_poll_option_path(@board.kind, poll, option),
+                    method: :delete,
+                    class: "btn btn-ghost btn-sm",
+                    data: { turbo_confirm: "Remove this option?" } %>
+            </li>
+          <% end %>
+        </ul>
+      <% end %>
+
+      <%= form_with model: PartyPollOption.new,
+            url: admin_party_board_poll_options_path(@board.kind, poll),
+            class: "grid gap-2 sm:grid-cols-4 sm:items-end" do |f| %>
+        <div class="form-group mb-0 sm:col-span-1">
+          <%= f.label :title, "Option" %>
+          <%= f.text_field :title, class: "form-control", required: true, placeholder: "Nashville" %>
+        </div>
+        <div class="form-group mb-0">
+          <%= f.label :price_text, "Price" %>
+          <%= f.text_field :price_text, class: "form-control", placeholder: "~$400 / person" %>
+        </div>
+        <div class="form-group mb-0">
+          <%= f.label :notes %>
+          <%= f.text_field :notes, class: "form-control", placeholder: "Flights extra" %>
+        </div>
+        <div>
+          <%= f.submit "Add option", class: "btn btn-secondary w-full" %>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+
+  <% if @polls.empty? %>
+    <%= render "admin/shared/empty_state", message: "Create a destination poll with pricing so the party can vote." %>
+  <% end %>
+
+  <h3 class="admin-section-title mt-6">New poll</h3>
+  <%= form_with model: PartyPoll.new, url: admin_party_board_polls_path(@board.kind) do |f| %>
+    <div class="form-group">
+      <%= f.label :title %>
+      <%= f.text_field :title, class: "form-control", required: true, placeholder: "Where should we go?" %>
+    </div>
+    <div class="form-group">
+      <%= f.label :description %>
+      <%= f.text_area :description, class: "form-control", rows: 2 %>
+    </div>
+    <%= f.submit "Create poll", class: "btn btn-secondary" %>
+  <% end %>
+</div>
+</div>

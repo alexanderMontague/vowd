@@ -239,7 +239,11 @@ export default class extends Controller {
   }
 
   autosaveFormDebounced(event) {
-    if (event?.target?.closest("[data-panel='look']")) return
+    // Look & feel theme fields draft until Save; the share-image content form
+    // inside the Theme tab still autosaves like other page panels.
+    const form = event?.target?.closest("form")
+    if (form && this.hasLookFormTarget && form === this.lookFormTarget) return
+
     clearTimeout(this.autosaveTimer)
     this.autosaveTimer = setTimeout(() => this.autosaveForm(event), AUTOSAVE_DEBOUNCE_MS)
   }

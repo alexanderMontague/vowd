@@ -91,6 +91,14 @@ class Admin::ThemesControllerTest < ActionDispatch::IntegrationTest
     assert_select "form.theme-editor-form[data-action*='autosaveForm']"
   end
 
+  test "share image lives on the Theme tab look panel not Home page settings" do
+    get admin_theme_section_path(section: "home")
+
+    assert_response :success
+    assert_select "[data-panel='look'] input[name='wedding[placements][share_image][]']"
+    assert_select "[data-panel='home_settings'] input[name='wedding[placements][share_image][]']", count: 0
+  end
+
   test "skip intro toggle is visible on invitation page sections" do
     %w[save_the_date rsvp].each do |section|
       get admin_theme_section_path(section: section)

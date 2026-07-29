@@ -1,0 +1,128 @@
+<header class="mb-8">
+  <p class="m-0 text-[0.65rem] font-semibold uppercase tracking-[0.16em] text-neutral-400">
+    <%= @board.label %>
+  </p>
+  <h1 class="mt-2 mb-2 text-3xl tracking-tight text-secondary" style="font-family: var(--font-display)">
+    <%= @board.title %>
+  </h1>
+  <% if @board.notes.present? %>
+    <p class="m-0 text-sm text-neutral-600 whitespace-pre-wrap"><%= @board.notes %></p>
+  <% end %>
+</header>
+
+<section class="mb-8 rounded-xl border border-border bg-white p-5 shadow-sm">
+  <h2 class="m-0 mb-3 text-xs font-semibold uppercase tracking-[0.14em] text-neutral-400">Who are you?</h2>
+  <% if current_party_member %>
+    <p class="m-0 text-sm text-secondary">
+      Voting as <strong><%= current_party_member.name %></strong>.
+    </p>
+  <% end %>
+  <%= form_with url: party_identify_path(token: @board.share_token), method: :post, class: "mt-3 flex flex-wrap gap-2 items-end" do %>
+    <div class="form-group mb-0 flex-1 min-w-[12rem]">
+      <label for="member_id">Party member</label>
+      <select name="member_id" id="member_id" class="form-control" required>
+        <option value="">Select…</option>
+        <% @members.each do |member| %>
+          <option value="<%= member.id %>" <%= "selected" if current_party_member&.id == member.id %>>
+            <%= member.name %><%= " · #{member.role}" if member.role.present? %>
+          </option>
+        <% end %>
+      </select>
+    </div>
+    <button type="submit" class="btn btn-primary">Continue</button>
+  <% end %>
+  <% if @members.empty? %>
+    <p class="mt-3 mb-0 text-sm text-neutral-500">No party members yet — check back soon.</p>
+  <% end %>
+</section>
+
+<% if @ideas.any? %>
+  <section class="mb-8">
+    <h2 class="m-0 mb-3 text-xs font-semibold uppercase tracking-[0.14em] text-neutral-400">Ideas</h2>
+    <ul class="m-0 list-none grid gap-3 p-0">
+      <% @ideas.each do |idea| %>
+        <li class="rounded-xl border border-border bg-white p-4 shadow-sm">
+          <p class="m-0 font-medium text-secondary"><%= idea.title %></p>
+          <% if idea.body.present? %>
+            <p class="mt-1 mb-0 text-sm text-neutral-600 whitespace-pre-wrap"><%= idea.body %></p>
+          <% end %>
+        </li>
+      <% end %>
+    </ul>
+  </section>
+<% end %>
+
+<% if @itinerary_items.any? %>
+  <section class="mb-8">
+    <h2 class="m-0 mb-3 text-xs font-semibold uppercase tracking-[0.14em] text-neutral-400">Itinerary</h2>
+    <ol class="m-0 list-none grid gap-3 p-0">
+      <% @itinerary_items.each do |item| %>
+        <li class="rounded-xl border border-border bg-white p-4 shadow-sm">
+          <p class="m-0 text-xs uppercase tracking-widest text-neutral-400">
+            <%= [item.occurs_on&.strftime("%b %-d"), item.starts_at_text.presence].compact.join(" · ").presence || "TBD" %>
+          </p>
+          <p class="mt-1 mb-0 font-medium text-secondary"><%= item.title %></p>
+          <% if item.location.present? %>
+            <p class="mt-1 mb-0 text-sm text-neutral-600"><%= item.location %></p>
+          <% end %>
+          <% if item.notes.present? %>
+            <p class="mt-1 mb-0 text-sm text-neutral-500 whitespace-pre-wrap"><%= item.notes %></p>
+          <% end %>
+        </li>
+      <% end %>
+    </ol>
+  </section>
+<% end %>
+
+<% if @polls.any? %>
+  <section class="mb-8">
+    <h2 class="m-0 mb-3 text-xs font-semibold uppercase tracking-[0.14em] text-neutral-400">Polls</h2>
+    <div class="grid gap-4">
+      <% @polls.each do |poll| %>
+        <% current_vote = current_party_member && poll.votes.find { |v| v.party_member_id == current_party_member.id } %>
+        <article class="rounded-xl border border-border bg-white p-5 shadow-sm">
+          <h3 class="m-0 text-lg text-secondary" style="font-family: var(--font-display)"><%= poll.title %></h3>
+          <% if poll.description.present? %>
+            <p class="mt-1 mb-4 text-sm text-neutral-600"><%= poll.description %></p>
+          <% else %>
+            <div class="mb-4"></div>
+          <% end %>
+
+          <div class="grid gap-2">
+            <% poll.options.ordered.each do |option| %>
+              <div class="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-border px-3 py-2.5">
+                <div class="min-w-0">
+                  <p class="m-0 font-medium text-sm"><%= option.title %></p>
+                  <p class="m-0 text-xs text-neutral-500">
+                    <%= [option.price_text.presence, pluralize(option.votes.size, "vote")].compact.join(" · ") %>
+                  </p>
+                  <% if option.notes.present? %>
+                    <p class="m-0 mt-0.5 text-xs text-neutral-400"><%= option.notes %></p>
+                  <% end %>
+                </div>
+                <% if current_party_member %>
+                  <%= button_to current_vote&.party_poll_option_id == option.id ? "Voted" : "Vote",
+                        party_vote_path(token: @board.share_token, poll_id: poll.id),
+                        method: :post,
+                        params: { option_id: option.id },
+                        class: class_names("btn btn-sm", current_vote&.party_poll_option_id == option.id ? "btn-primary" : "btn-secondary"),
+                        disabled: current_vote&.party_poll_option_id == option.id %>
+                <% end %>
+              </div>
+            <% end %>
+          </div>
+
+          <% unless current_party_member %>
+            <p class="mt-3 mb-0 text-xs text-neutral-500">Select who you are above to vote.</p>
+          <% end %>
+        </article>
+      <% end %>
+    </div>
+  </section>
+<% end %>
+
+<% if @ideas.empty? && @itinerary_items.empty? && @polls.empty? %>
+  <p class="rounded-xl border border-dashed border-border bg-white/70 px-5 py-8 text-center text-sm text-neutral-500">
+    Planning details will show up here once they’re added.
+  </p>
+<% end %>

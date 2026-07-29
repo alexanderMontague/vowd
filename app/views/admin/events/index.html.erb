@@ -1,37 +1,43 @@
 <%= render layout: "admin/website/hub", locals: { active: "events" } do %>
   <div class="card">
-    <div class="flex justify-between items-center">
-      <h1>Events</h1>
-      <%= link_to "New Event", new_admin_event_path, class: "btn btn-primary" %>
+    <div class="admin-page-header mb-4">
+      <div class="admin-page-header__title">
+        <h2 class="card-header mb-0">Events</h2>
+      </div>
+      <div class="admin-page-header__actions">
+        <%= link_to "New event", new_admin_event_path, class: "btn btn-primary btn-sm" %>
+      </div>
     </div>
 
     <% if @events.any? %>
-      <table>
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Date & Time</th>
-            <th>Location</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <% @events.each do |event| %>
+      <div class="table-container">
+        <table>
+          <thead>
             <tr>
-              <td><%= event.name %></td>
-              <td><%= event.datetime&.strftime("%B %d, %Y at %I:%M %p") || "TBD" %></td>
-              <td><%= event.location %></td>
-              <td class="actions">
-                <%= link_to "Edit", edit_admin_event_path(event), class: "btn btn-secondary" %>
-                <%= button_to "Delete", admin_event_path(event), method: :delete,
-                              data: { confirm: "Are you sure?" }, class: "btn btn-danger" %>
-              </td>
+              <th>Name</th>
+              <th>Date &amp; time</th>
+              <th>Location</th>
+              <th></th>
             </tr>
-          <% end %>
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            <% @events.each do |event| %>
+              <tr>
+                <td><%= event.name %></td>
+                <td><%= event.datetime&.strftime("%B %d, %Y at %I:%M %p") || "TBD" %></td>
+                <td><%= event.location %></td>
+                <td class="actions">
+                  <%= link_to "Edit", edit_admin_event_path(event), class: "btn btn-secondary btn-sm" %>
+                  <%= button_to "Delete", admin_event_path(event), method: :delete,
+                                data: { turbo_confirm: "Are you sure?" }, class: "btn btn-danger btn-sm" %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
     <% else %>
-      <p>No events scheduled yet.</p>
+      <%= render "admin/shared/empty_state", message: "No events scheduled yet." %>
     <% end %>
   </div>
 <% end %>

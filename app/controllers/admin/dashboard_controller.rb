@@ -35,7 +35,8 @@ module Admin
         declined: rsvps.declined.count,
         pending: rsvps.pending.count,
         acceptance_rate: calculate_acceptance_rate(rsvps),
-        invitations_sent: Invitation.where(guest_id: guests.pluck(:id)).sent.count
+        invitations_sent: Invitation.where(guest_id: guests.pluck(:id)).sent.count,
+        save_the_date_responses: current_wedding.save_the_date_signups.count
       }
     end
 
@@ -53,7 +54,8 @@ module Admin
         declined: 0,
         pending: 0,
         acceptance_rate: 0,
-        invitations_sent: 0
+        invitations_sent: 0,
+        save_the_date_responses: 0
       }
     end
   end

@@ -93,6 +93,31 @@
           <%= render "admin/themes/color_fields", theme: @theme %>
           <%= render "admin/themes/page_toggles", theme: @theme %>
         <% end %>
+
+        <div class="admin-editor-divider"></div>
+
+        <%= form_with model: @wedding,
+                      url: admin_theme_section_path(section: "look"),
+                      method: :patch,
+                      class: "theme-editor-form",
+                      data: {
+                        theme_editor_target: "contentForm",
+                        action: "change->theme-editor#autosaveForm input->theme-editor#autosaveFormDebounced"
+                      } do |f| %>
+          <div class="form-group">
+            <label>Share image</label>
+            <p class="admin-field-hint">
+              Used for link previews (iMessage, Instagram, etc.). Leave empty to inherit the hero.
+            </p>
+            <%= render "admin/website/asset_picker",
+                field_name: "wedding[placements][share_image][]",
+                assets: @wedding.placements_for("share_image"),
+                max: 1,
+                usage_prefix: SiteSlots.page_label(:site),
+                usage_label: SiteSlots.find("share_image").label,
+                empty_text: "Uses hero image when empty." %>
+          </div>
+        <% end %>
       </div>
 
       <% ThemeSections.definitions.select { |section| section.group == :pages }.each do |section| %>

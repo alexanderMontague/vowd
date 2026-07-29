@@ -1,0 +1,11 @@
+<%
+  section = local_assigns.fetch(:section, nil)
+%>
+<nav class="admin-hub-nav" aria-label="Party planning">
+  <%= link_to "Overview", admin_party_path,
+      class: class_names("admin-hub-nav-link", "admin-hub-nav-link-active" => section.nil?) %>
+  <%= link_to "Bachelor", admin_party_board_path(kind: "bachelor"),
+      class: class_names("admin-hub-nav-link", "admin-hub-nav-link-active" => section == "bachelor") %>
+  <%= link_to "Bachelorette", admin_party_board_path(kind: "bachelorette"),
+      class: class_names("admin-hub-nav-link", "admin-hub-nav-link-active" => section == "bachelorette") %>
+</nav>

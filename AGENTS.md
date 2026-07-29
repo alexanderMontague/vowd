@@ -7,6 +7,7 @@ Conventions for this Rails app. Prefer matching existing patterns over introduci
 - **Rails 7.1** (`config.load_defaults 7.1`), **Ruby** as configured in the repo.
 - **Hotwire**: Turbo Drive + **Stimulus** only for client behavior. **Importmap** (`config/importmap.rb`) — no Webpack/Vite unless the project explicitly moves there.
 - **Tailwind CSS v4** via `@import "tailwindcss"` and **`@theme`** tokens in `app/assets/tailwind/application.css`.
+- **Admin design system** in [`app/assets/tailwind/admin.css`](app/assets/tailwind/admin.css), scoped under `.admin-app` (`--admin-*` tokens for color, type, spacing). Guest theme tokens stay separate.
 - **Minitest** for tests (`test/`), **fixtures** enabled in `test/test_helper.rb`.
 
 ## Wedding configuration (read this first)
@@ -68,7 +69,8 @@ Keep new features in the namespace that matches their audience and routing.
 
 ### Design tokens
 
-- **Theme variables** live under **`@theme`** in `app/assets/tailwind/application.css` (colors, radii, shadows, fonts, `--color-bg-admin`, `--color-border`, etc.).
+- **Guest theme variables** live under **`@theme`** in `app/assets/tailwind/application.css` (colors, radii, shadows, fonts, `--color-bg-admin`, `--color-border`, etc.).
+- **Admin product chrome** uses **`--admin-*`** tokens in `app/assets/tailwind/admin.css`, scoped to `body.admin-app`. Prefer those over guest primary/secondary/display-serif in admin views.
 - Prefer **semantic tokens** and existing CSS variables over hard-coded hex values in new markup.
 
 ### Component classes
