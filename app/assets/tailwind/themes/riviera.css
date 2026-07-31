@@ -1,0 +1,546 @@
+/* ==========================================================================
+   Theme — Riviera
+
+   Coastal Mediterranean calm: azure washes, citrus motifs, ceramic curves,
+   and postcard photography. Layouts are unique — not classic with a tint.
+   ========================================================================== */
+
+@layer components {
+  [data-theme="riviera"] {
+    --riviera-rule: color-mix(in srgb, var(--theme-primary) 22%, var(--theme-surface));
+    --riviera-azure: color-mix(in srgb, var(--theme-primary) 14%, var(--theme-surface));
+    --riviera-citrus: color-mix(in srgb, var(--theme-accent) 65%, var(--theme-primary));
+    --riviera-postcard-shadow:
+      0 1px 2px color-mix(in srgb, var(--theme-ink) 6%, transparent),
+      0 8px 24px color-mix(in srgb, var(--theme-ink) 8%, transparent),
+      0 0 0 4px var(--theme-surface);
+  }
+
+  [data-theme="riviera"] .wedding-nav {
+    @apply border-b bg-surface/95 shadow-none backdrop-blur-sm;
+    border-color: var(--riviera-rule);
+  }
+
+  [data-theme="riviera"] .wedding-nav-brand {
+    @apply font-theme-display text-2xl font-normal tracking-[0.14em];
+  }
+
+  [data-theme="riviera"] .botanical-accent,
+  [data-theme="riviera"] .invitation-frame-botanical,
+  [data-theme="riviera"] .wedding-divider,
+  [data-theme="riviera"] .botanical-ornament {
+    @apply hidden;
+  }
+
+  [data-theme="riviera"] .wedding-divider-horizontal {
+    @apply h-px border-0;
+    background: linear-gradient(90deg, transparent, var(--theme-primary), transparent);
+    opacity: 0.45;
+  }
+
+  [data-theme="riviera"] .wedding-band,
+  [data-theme="riviera"] .riviera-band {
+    background-image: none;
+    background-color: var(--theme-surface-alt);
+  }
+
+  [data-theme="riviera"] .wedding-hero-overlay {
+    background: linear-gradient(
+      185deg,
+      color-mix(in srgb, var(--theme-primary) 18%, transparent) 0%,
+      color-mix(in srgb, var(--theme-ink) 55%, transparent) 100%
+    );
+  }
+
+  /* —— Invitation frame —— */
+  .riviera-frame {
+    @apply relative border bg-surface px-8 py-12 sm:px-12;
+    border-color: var(--riviera-rule);
+    box-shadow:
+      inset 0 0 0 1px color-mix(in srgb, var(--theme-accent) 12%, transparent),
+      0 12px 40px color-mix(in srgb, var(--theme-primary) 8%, transparent);
+  }
+
+  .riviera-frame__corner {
+    @apply absolute size-14 text-accent opacity-85 sm:size-16;
+  }
+
+  .riviera-frame__corner svg {
+    @apply size-full;
+  }
+
+  .riviera-frame__corner--tl { @apply left-3 top-3; }
+  .riviera-frame__corner--tr { @apply right-3 top-3 scale-x-[-1]; }
+  .riviera-frame__corner--bl { @apply bottom-3 left-3 scale-y-[-1]; }
+  .riviera-frame__corner--br { @apply bottom-3 right-3 rotate-180; }
+
+  .riviera-frame__wave {
+    @apply mx-auto flex w-40 justify-center text-primary opacity-75 sm:w-52;
+  }
+
+  .riviera-frame__wave svg,
+  .riviera-ornament svg,
+  .riviera-motif svg {
+    @apply h-auto w-full;
+  }
+
+  .riviera-motif {
+    @apply pointer-events-none text-accent;
+  }
+
+  .riviera-ornament {
+    @apply mx-auto flex w-44 justify-center overflow-visible sm:w-56;
+  }
+
+  /* —— Ceramic portrait: photo behind scalloped frame —— */
+  .riviera-portrait {
+    @apply relative mx-auto my-0 w-full max-w-[18rem] sm:max-w-[20rem];
+  }
+
+  .riviera-portrait__image {
+    @apply absolute top-[12%] left-[16%] z-0 rounded-full object-cover;
+    width: 68%;
+    height: 76%;
+    max-width: none;
+  }
+
+  .riviera-portrait__frame {
+    @apply relative z-10 block w-full;
+  }
+
+  .riviera-portrait__caption {
+    @apply mt-4 text-center text-xs font-light uppercase tracking-[0.2em] text-ink-faint;
+  }
+
+  /* —— Amphora composition —— */
+  .riviera-amphora {
+    @apply relative mx-auto my-0 w-full max-w-sm;
+  }
+
+  .riviera-amphora__arch {
+    @apply ml-auto w-[84%] overflow-hidden bg-surface;
+    aspect-ratio: 4 / 5;
+    border-radius: 50% 50% 0 0 / 28% 28% 0 0;
+    box-shadow: var(--riviera-postcard-shadow);
+  }
+
+  .riviera-amphora__image {
+    @apply size-full object-cover;
+  }
+
+  .riviera-amphora__vessel {
+    @apply pointer-events-none absolute z-10 block h-auto w-[30%] max-w-[5.5rem]
+           sm:w-[38%] sm:max-w-[8rem] md:w-[44%] md:max-w-none;
+    left: -2%;
+    bottom: -4%;
+  }
+
+  .riviera-amphora__caption {
+    @apply mt-6 text-center text-xs font-light uppercase tracking-[0.2em] text-ink-faint;
+  }
+
+  .riviera-frame__corner img,
+  .riviera-frame__wave img,
+  .riviera-ornament img,
+  .riviera-motif img,
+  .riviera-page-header img,
+  .riviera-hero__garland img,
+  .riviera-rsvp__wave img,
+  .riviera-event__corner img,
+  .riviera-member__spray img,
+  .riviera-faq__divider img {
+    @apply block h-auto w-full max-w-full;
+  }
+
+  .riviera-frame__corner {
+    @apply absolute w-20 opacity-95 sm:w-28;
+  }
+
+  .riviera-frame__corner--tl { @apply -left-2 -top-2; }
+  .riviera-frame__corner--br { @apply -bottom-2 -right-2 rotate-180; }
+
+  .riviera-frame__wave {
+    @apply mx-auto flex w-48 justify-center overflow-visible sm:w-64;
+  }
+
+  /* Postcard floaters */
+  [data-theme="riviera"] .riviera-floater {
+    @apply border-4 border-surface bg-surface p-0.5;
+    box-shadow: var(--riviera-postcard-shadow);
+  }
+
+  [data-theme="riviera"] .riviera-floater img {
+    @apply block;
+  }
+
+  [data-theme="riviera"] .riviera-floater.floating-photo--1 {
+    @apply -rotate-3;
+  }
+
+  [data-theme="riviera"] .riviera-floater.floating-photo--2 {
+    @apply rotate-2;
+  }
+
+  [data-theme="riviera"] .riviera-floater.floating-photo--3 {
+    @apply -rotate-1;
+  }
+
+  /* —— Page header —— */
+  .riviera-page-header__garland {
+    @apply mx-auto flex w-44 justify-center text-accent sm:w-56;
+  }
+
+  .riviera-page-header__garland svg {
+    @apply w-full;
+  }
+
+  .riviera-page-header__wave {
+    @apply mx-auto flex w-36 justify-center text-primary opacity-70 sm:w-44;
+  }
+
+  .riviera-page-header__wave svg {
+    @apply w-full;
+  }
+
+  .riviera-page-title {
+    @apply font-theme-display text-4xl font-light tracking-[0.06em] text-ink md:text-5xl;
+  }
+
+  .riviera-page-subtitle {
+    @apply mx-auto mt-4 max-w-lg font-light leading-relaxed text-ink-soft;
+  }
+
+  /* —— Homepage —— */
+  .riviera-hero {
+    @apply relative flex min-h-[92svh] items-end justify-center overflow-hidden;
+  }
+
+  .riviera-hero__media,
+  .riviera-hero__image {
+    @apply absolute inset-0 size-full object-cover;
+  }
+
+  .riviera-hero__wash {
+    @apply absolute inset-0;
+    background:
+      linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--theme-primary) 22%, transparent) 0%,
+        color-mix(in srgb, var(--theme-ink) 48%, transparent) 100%
+      ),
+      radial-gradient(
+        ellipse at 50% 110%,
+        color-mix(in srgb, var(--theme-primary) 35%, transparent),
+        transparent 62%
+      );
+  }
+
+  .riviera-hero__content {
+    @apply relative z-10 mx-auto w-full max-w-4xl px-6 pb-20 pt-36 text-center text-white md:pb-28;
+  }
+
+  .riviera-hero__eyebrow {
+    @apply mb-5 text-xs font-light uppercase tracking-[0.32em] text-white/75;
+  }
+
+  .riviera-hero__title {
+    @apply mb-6 font-theme-display text-5xl font-light tracking-[0.04em] text-white md:text-6xl lg:text-7xl;
+  }
+
+  .riviera-hero__garland {
+    @apply relative mx-auto mb-7 flex w-44 shrink-0 justify-center overflow-visible text-white/80 sm:w-56;
+  }
+
+  .riviera-hero__tagline {
+    @apply mx-auto mb-10 max-w-lg text-base font-light leading-relaxed text-white/88 md:text-lg;
+  }
+
+  .riviera-hero__meta {
+    @apply space-y-2 text-sm font-light tracking-[0.18em] text-white/82;
+  }
+
+  .riviera-hero__meta p {
+    @apply text-white/82;
+  }
+
+  .riviera-story {
+    @apply px-4 py-28;
+  }
+
+  .riviera-story__band {
+    @apply mx-auto max-w-6xl rounded-sm px-6 py-16 md:px-12;
+    background: linear-gradient(
+      135deg,
+      var(--riviera-azure) 0%,
+      var(--theme-surface) 48%,
+      color-mix(in srgb, var(--theme-surface-alt) 80%, var(--theme-surface)) 100%
+    );
+  }
+
+  .riviera-story__grid {
+    @apply grid items-center gap-14 lg:grid-cols-[minmax(0,17rem)_1fr] lg:gap-20;
+  }
+
+  .riviera-story__portrait {
+    @apply mx-auto w-full max-w-xs lg:mx-0;
+  }
+
+  .riviera-story__copy {
+    @apply text-center lg:text-left;
+  }
+
+  .riviera-section-title {
+    @apply mb-8 font-theme-display text-4xl font-light tracking-wide text-ink md:text-5xl;
+  }
+
+  .riviera-story__body {
+    @apply space-y-6 text-lg font-light leading-loose text-ink-soft;
+  }
+
+  .riviera-story__closing {
+    @apply mt-8 text-base italic text-ink-soft;
+  }
+
+  .riviera-events {
+    @apply bg-surface-alt py-28;
+  }
+
+  .riviera-events__inner {
+    @apply mx-auto max-w-6xl px-4;
+  }
+
+  .riviera-events__grid {
+    @apply mt-16 grid gap-12 md:grid-cols-3 md:gap-16;
+  }
+
+  .riviera-event {
+    @apply relative;
+  }
+
+  .riviera-event__corner {
+    @apply pointer-events-none absolute -left-3 -top-3 size-10 text-accent opacity-75;
+  }
+
+  .riviera-event__corner svg {
+    @apply size-full;
+  }
+
+  .riviera-event__corner--br {
+    @apply left-auto right-0 top-auto -bottom-3 rotate-180;
+  }
+
+  /* Schedule postcards */
+  .riviera-schedule__row {
+    @apply mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-3;
+  }
+
+  .riviera-schedule__card {
+    @apply border bg-surface px-6 py-8 text-center;
+    border-color: var(--riviera-rule);
+    box-shadow: var(--riviera-postcard-shadow);
+    transform: rotate(-0.6deg);
+  }
+
+  .riviera-schedule__card:nth-child(even) {
+    transform: rotate(0.8deg);
+  }
+
+  .riviera-schedule__card:nth-child(3n) {
+    transform: rotate(-0.3deg);
+  }
+
+  .riviera-schedule__time {
+    @apply mb-3 text-xs font-light uppercase tracking-[0.24em] text-primary;
+  }
+
+  .riviera-schedule__name {
+    @apply mb-2 font-theme-display text-2xl text-ink;
+  }
+
+  /* Homepage gallery postcards */
+  .riviera-gallery {
+    @apply py-28;
+  }
+
+  .riviera-gallery__inner {
+    @apply mx-auto max-w-6xl px-4;
+  }
+
+  .riviera-gallery__postcards {
+    @apply mt-16 grid grid-cols-2 gap-5 md:grid-cols-3 md:gap-7;
+  }
+
+  .riviera-gallery__postcard {
+    @apply overflow-hidden border-4 border-surface bg-surface;
+    box-shadow: var(--riviera-postcard-shadow);
+  }
+
+  .riviera-gallery__postcard img {
+    @apply block size-full object-cover transition-transform duration-700;
+  }
+
+  .riviera-gallery__postcard:hover img {
+    @apply scale-105;
+  }
+
+  .riviera-gallery__postcard--1 {
+    @apply aspect-[4/5] -rotate-2 md:mt-6;
+  }
+
+  .riviera-gallery__postcard--2 {
+    @apply aspect-square rotate-1;
+  }
+
+  .riviera-gallery__postcard--3 {
+    @apply col-span-2 aspect-[16/10] -rotate-1 md:col-span-1 md:aspect-[3/4] md:rotate-2;
+  }
+
+  .riviera-gallery__postcard--4 {
+    @apply aspect-[5/4] rotate-2 md:-mt-4;
+  }
+
+  /* RSVP */
+  .riviera-rsvp {
+    @apply bg-surface-alt py-28;
+  }
+
+  .riviera-rsvp__inner {
+    @apply relative mx-auto max-w-xl px-4 text-center;
+  }
+
+  .riviera-rsvp__wave {
+    @apply mx-auto flex w-40 justify-center text-primary opacity-65 sm:w-48;
+  }
+
+  .riviera-rsvp__wave svg {
+    @apply w-full;
+  }
+
+  .riviera-rsvp__wave--top {
+    @apply mb-10;
+  }
+
+  .riviera-rsvp__wave--bottom {
+    @apply mt-10 rotate-180;
+  }
+
+  .riviera-rsvp__copy {
+    @apply mx-auto mb-10 max-w-md text-lg font-light leading-relaxed text-ink-soft;
+  }
+
+  .riviera-rsvp__hint {
+    @apply mt-8 text-sm font-light tracking-wider text-ink-faint;
+  }
+
+  /* —— Party —— */
+  .riviera-party__grid {
+    @apply mt-14 grid gap-12 sm:grid-cols-2 lg:grid-cols-4;
+  }
+
+  .riviera-member {
+    @apply text-center;
+  }
+
+  .riviera-member__frame {
+    @apply relative mx-auto mb-6 w-40;
+  }
+
+  .riviera-member__photo {
+    @apply aspect-[4/5] w-full object-cover;
+    border-radius: 1.25rem;
+    box-shadow:
+      0 0 0 1px var(--riviera-rule),
+      var(--riviera-postcard-shadow);
+  }
+
+  .riviera-member__spray {
+    @apply pointer-events-none absolute -bottom-2 -right-3 size-14 text-accent opacity-75;
+  }
+
+  .riviera-member__spray svg {
+    @apply size-full;
+  }
+
+  /* —— Photos page —— */
+  .riviera-photos__grid {
+    @apply mt-14 columns-2 gap-5 md:columns-3 md:gap-7;
+  }
+
+  .riviera-photos__postcard {
+    @apply mb-5 break-inside-avoid overflow-hidden border-4 border-surface bg-surface md:mb-7;
+    box-shadow: var(--riviera-postcard-shadow);
+  }
+
+  .riviera-photos__postcard img {
+    @apply block w-full;
+  }
+
+  .riviera-photos__postcard--1 {
+    @apply -rotate-1;
+  }
+
+  .riviera-photos__postcard--1 img {
+    @apply aspect-[4/5] object-cover;
+  }
+
+  .riviera-photos__postcard--2 {
+    @apply rotate-2;
+  }
+
+  .riviera-photos__postcard--2 img {
+    @apply aspect-square object-cover;
+  }
+
+  .riviera-photos__postcard--3 {
+    @apply -rotate-2;
+  }
+
+  .riviera-photos__postcard--3 img {
+    @apply aspect-[3/4] object-cover;
+  }
+
+  .riviera-photos__postcard--4 {
+    @apply rotate-1;
+  }
+
+  .riviera-photos__postcard--4 img {
+    @apply aspect-[5/4] object-cover;
+  }
+
+  .riviera-photos__postcard--5 {
+    @apply -rotate-1;
+  }
+
+  .riviera-photos__postcard--5 img {
+    @apply aspect-[4/5] object-cover;
+  }
+
+  /* —— FAQ —— */
+  .riviera-faq__list {
+    @apply space-y-0;
+  }
+
+  .riviera-faq__item {
+    @apply px-1;
+  }
+
+  .riviera-faq__question {
+    @apply flex cursor-pointer list-none items-center justify-between gap-6 py-7 font-theme-display text-xl font-light text-ink;
+  }
+
+  .riviera-faq__chevron {
+    @apply flex-shrink-0 text-ink-faint transition-transform duration-300 group-open:rotate-180;
+  }
+
+  .riviera-faq__answer {
+    @apply pb-7 text-base font-light leading-relaxed text-ink-soft;
+  }
+
+  .riviera-faq__divider {
+    @apply mx-auto flex w-32 justify-center text-primary opacity-45;
+  }
+
+  .riviera-faq__divider svg {
+    @apply w-full;
+  }
+}

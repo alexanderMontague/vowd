@@ -2,6 +2,18 @@ import { Controller } from "@hotwired/stimulus"
 
 const MESSAGE_SOURCE = "vowd-site-editor"
 
+const EDIT_STYLE_PROPS = [
+  "fontFamily",
+  "fontSize",
+  "fontWeight",
+  "fontStyle",
+  "letterSpacing",
+  "lineHeight",
+  "textTransform",
+  "color",
+  "textAlign"
+]
+
 // Runs inside the guest-site iframe when the Theme editor is active.
 export default class extends Controller {
   static targets = ["hotspot"]
@@ -55,7 +67,15 @@ export default class extends Controller {
   beginTextEdit(hotspot) {
     this.finishEdit(false)
     this.active = hotspot
-    this.original = hotspot.innerText
+    this.lockEditStyles(hotspot)
+
+    // Replace contents with a single text node. Never wrap controls (links /
+    // submits) inside text hotspots — use editor_link / editor_button so the
+    // hotspot IS the button-styled surface and chrome survives editing.
+    const trimmed = (hotspot.innerText || "").trim()
+    hotspot.replaceChildren(document.createTextNode(trimmed))
+    this.original = trimmed
+
     hotspot.classList.add("is-editing")
     hotspot.contentEditable = "plaintext-only"
     if (hotspot.contentEditable !== "plaintext-only") hotspot.contentEditable = "true"
@@ -70,7 +90,7 @@ export default class extends Controller {
     this.onBlur = () => this.finishEdit(true)
     this.onKey = (event) => {
       if (event.key === "Escape") {
-        hotspot.innerText = this.original
+        hotspot.replaceChildren(document.createTextNode(this.original))
         this.finishEdit(false)
       }
       if (event.key === "Enter" && hotspot.dataset.multiline !== "true") {
@@ -91,6 +111,7 @@ export default class extends Controller {
     hotspot.removeEventListener("keydown", this.onKey)
     hotspot.contentEditable = "false"
     hotspot.classList.remove("is-editing")
+    this.clearEditStyles(hotspot)
 
     const value = hotspot.innerText.trim()
     const field = hotspot.dataset.field
@@ -102,6 +123,19 @@ export default class extends Controller {
     if (save && field && value !== (this.original || "").trim()) {
       this.post({ type: "save-text", field, value })
     }
+  }
+
+  lockEditStyles(hotspot) {
+    const computed = window.getComputedStyle(hotspot)
+    EDIT_STYLE_PROPS.forEach((prop) => {
+      hotspot.style[prop] = computed[prop]
+    })
+  }
+
+  clearEditStyles(hotspot) {
+    EDIT_STYLE_PROPS.forEach((prop) => {
+      hotspot.style[prop] = ""
+    })
   }
 
   post(payload) {

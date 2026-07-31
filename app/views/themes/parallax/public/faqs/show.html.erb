@@ -22,23 +22,25 @@
     </div>
 
     <div class="parallax-stage__content max-w-3xl">
-      <div class="divide-y divide-hairline border-y border-hairline">
-        <% Array(faq["questions"]).each do |item| %>
-          <details class="group">
+      <%= editor_panel("faq", tag: :div, css_class: "divide-y divide-hairline border-y border-hairline") do %>
+        <% Array(faq["questions"]).each_with_index do |item, index| %>
+          <details class="group" <%= "open" if site_editor_active? %>>
             <summary class="flex cursor-pointer list-none items-center justify-between gap-6 py-7">
-              <span class="font-theme-display text-xl font-light text-ink">
+              <%= editor_text("faq.questions.#{index}.question", tag: :span, css_class: "font-theme-display text-xl font-light text-ink") do %>
                 <%= item["question"] %>
-              </span>
+              <% end %>
               <span class="shrink-0 text-accent transition-transform duration-300 group-open:rotate-45">
                 <svg class="size-5" fill="none" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
                   <path stroke-linecap="round" d="M12 4.5v15m7.5-7.5h-15"/>
                 </svg>
               </span>
             </summary>
-            <p class="parallax-lede pb-8"><%= item["answer"] %></p>
+            <%= editor_text("faq.questions.#{index}.answer", tag: :p, css_class: "parallax-lede pb-8", multiline: true) do %>
+              <%= item["answer"] %>
+            <% end %>
           </details>
         <% end %>
-      </div>
+      <% end %>
 
       <div class="mt-14 text-center">
         <%= link_to "← Return Home", root_path, class: "parallax-meta hover:text-ink" %>

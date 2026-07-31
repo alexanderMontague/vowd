@@ -1,0 +1,26 @@
+<%
+  asset = local_assigns[:asset]
+  caption = local_assigns[:caption]
+  wrapper_class = local_assigns.fetch(:wrapper_class, "")
+  slot_key = local_assigns[:slot]
+%>
+<% inner = capture do %>
+  <% if asset.present? %>
+    <figure class="riviera-amphora <%= wrapper_class %>">
+      <div class="riviera-amphora__arch">
+        <%= image_tag wedding_asset_url(asset),
+            class: "riviera-amphora__image",
+            alt: wedding_asset_alt(asset), loading: "lazy", decoding: "async" %>
+      </div>
+      <%= theme_ornament("riviera", "amphora", css_class: "riviera-amphora__vessel") %>
+      <% if caption.present? %>
+        <figcaption class="riviera-amphora__caption"><%= caption %></figcaption>
+      <% end %>
+    </figure>
+  <% end %>
+<% end %>
+<% if slot_key.present? %>
+  <%= editor_slot(slot_key, css_class: wrapper_class) { inner } %>
+<% else %>
+  <%= inner %>
+<% end %>

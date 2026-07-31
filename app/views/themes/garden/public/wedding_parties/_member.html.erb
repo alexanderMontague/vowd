@@ -1,0 +1,26 @@
+<% delay_class = ["", "animation-delay-200", "animation-delay-400", "animation-delay-400"][index % 4] %>
+<% group = local_assigns.fetch(:group, "bridesmaids") %>
+
+<div class="garden-member animate-on-scroll <%= delay_class %>" data-scroll-animate-target="item">
+  <%= editor_panel("wedding_party") do %>
+    <div class="garden-member__frame">
+      <% if (src = wedding_asset_url(current_wedding.party_member_image(person))).present? %>
+        <%= image_tag src, alt: person["name"], class: "garden-member__photo" %>
+      <% else %>
+        <div class="garden-member__photo bg-hairline"></div>
+      <% end %>
+      <div class="garden-member__leaf" aria-hidden="true">
+        <%= theme_ornament("garden", "fern-corner") %>
+      </div>
+    </div>
+    <%= editor_text("wedding_party.#{group}.#{index}.role", tag: :p, css_class: "wedding-meta mb-1") do %>
+      <%= person["role"] %>
+    <% end %>
+    <%= editor_text("wedding_party.#{group}.#{index}.name", tag: :h3, css_class: "font-theme-display text-2xl text-ink mb-1") do %>
+      <%= person["name"] %>
+    <% end %>
+    <%= editor_text("wedding_party.#{group}.#{index}.relation", tag: :p, css_class: "text-sm text-ink-soft font-light italic") do %>
+      <%= person["relation"] %>
+    <% end %>
+  <% end %>
+</div>

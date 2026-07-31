@@ -31,7 +31,7 @@ module Admin
 
     test "json update autosaves settings without redirect" do
       patch admin_settings_path,
-            params: { dispo_photo_style: "bw", flags: { "rsvp_visible" => "true" } },
+            params: { dispo_photo_style: "bw", flags: { "dispo_gallery_on_main_page" => "true" } },
             as: :json
 
       assert_response :success
@@ -49,12 +49,12 @@ module Admin
     test "updates photo style alongside feature flags" do
       patch admin_settings_path, params: {
         dispo_photo_style: "original",
-        flags: { "rsvp_visible" => "false" }
+        flags: { "dispo_gallery_on_main_page" => "false" }
       }
 
       assert_redirected_to admin_settings_path
       assert_equal "original", WeddingMetadata.find_by(wedding_id: @wedding.id, key: Wedding::PHOTO_STYLE_METADATA_KEY).value
-      assert_equal "false", WeddingMetadata.find_by(wedding_id: @wedding.id, key: "rsvp_visible").value
+      assert_equal "false", WeddingMetadata.find_by(wedding_id: @wedding.id, key: "dispo_gallery_on_main_page").value
     end
   end
 end

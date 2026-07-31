@@ -13,7 +13,7 @@
       <div class="max-w-7xl mx-auto">
         <%= render "public/shared/divider" %>
         <div class="mb-12"></div>
-        <%= render "public/shared/section_title", title: section["title"], centered: true %>
+        <%= render "public/shared/section_title", title: section["title"], centered: true, field: "photos_page.sections.#{section_index}.title" %>
         <div class="mb-16"></div>
         <div class="grid md:grid-cols-3 gap-6">
           <% section["images"]&.each_with_index do |image, index| %>

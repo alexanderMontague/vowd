@@ -1,0 +1,23 @@
+<% content_for :title, "Forgot password - Vowd" %>
+
+<div class="flex min-h-screen items-center justify-center px-4 py-28">
+  <div class="w-full max-w-form rounded-xl bg-bg-card p-10 shadow-2xl">
+    <h1 class="mb-2 text-center text-secondary">Forgot password</h1>
+    <p class="mb-card text-center text-sm text-neutral-500">
+      Enter your email and we will send a reset link if an account exists.
+    </p>
+
+    <%= form_with url: platform_forgot_password_path, method: :post, data: { turbo: false } do |f| %>
+      <div class="form-group">
+        <%= f.label :email %>
+        <%= f.email_field :email, class: "form-control", required: true, autofocus: true, autocomplete: "email" %>
+      </div>
+
+      <%= f.submit "Send reset link", class: "btn btn-primary w-full" %>
+    <% end %>
+
+    <p class="mb-0 mt-8 text-center text-neutral-500">
+      <%= link_to "Back to log in", platform_login_path, class: "font-medium text-primary no-underline hover:underline" %>
+    </p>
+  </div>
+</div>

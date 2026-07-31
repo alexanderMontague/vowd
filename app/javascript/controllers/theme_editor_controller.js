@@ -23,6 +23,7 @@ const PANEL_TITLES = {
 
 const FIELD_SECTION = {
   "hero.tagline": "home",
+  "hero.eyebrow": "home",
   "story.title": "home",
   "story.closing": "home",
   "story.paragraphs": "home",
@@ -50,6 +51,7 @@ const FIELD_SECTION = {
 
 const FIELD_INPUT_NAME = {
   "hero.tagline": "wedding[hero][tagline]",
+  "hero.eyebrow": "wedding[hero][eyebrow]",
   "story.title": "wedding[story][title]",
   "story.closing": "wedding[story][closing]",
   "story.paragraphs": "wedding[story][paragraphs_text]",
@@ -74,6 +76,12 @@ const FIELD_INPUT_NAME = {
   "wedding_party.bridesmaids_title": "wedding[wedding_party][bridesmaids_title]",
   "wedding_party.groomsmen_title": "wedding[wedding_party][groomsmen_title]"
 }
+
+const STORY_PARAGRAPH_FIELD = /^story\.paragraphs\.(\d+)$/
+const FAQ_ITEM_FIELD = /^faq\.questions\.(\d+)\.(question|answer)$/
+const PARTY_MEMBER_FIELD = /^wedding_party\.(bridesmaids|groomsmen)\.(\d+)\.(name|role|relation)$/
+const PHOTO_SECTION_TITLE_FIELD = /^photos_page\.sections\.(\d+)\.title$/
+const NESTED_FORM_PREFIX = /^(faq\.questions\.|wedding_party\.(bridesmaids|groomsmen)\.|photos_page\.sections\.)/
 
 const INVITATION_SECTIONS = new Set(["save_the_date", "rsvp"])
 const SKIP_VIDEO_STORAGE_KEY = "vowd-theme-editor-skip-video"
@@ -450,15 +458,29 @@ export default class extends Controller {
   }
 
   async saveTextField(field, value) {
+    this.syncFormField(field, value)
+
+    if (NESTED_FORM_PREFIX.test(field)) {
+      const body = this.serializeSectionForm(field)
+      if (!body) return
+      await this.patchWedding(body, { reload: true, toast: "Saved" })
+      return
+    }
+
     const body = this.fieldToFormData(field, value)
     if (!body) return
 
-    this.syncFormField(field, value)
     await this.patchWedding(body, { reload: true, toast: "Saved" })
   }
 
   syncFormField(field, value) {
-    const name = FIELD_INPUT_NAME[field]
+    const storyParagraph = field.match(STORY_PARAGRAPH_FIELD)
+    if (storyParagraph) {
+      this.syncStoryParagraph(+storyParagraph[1], value)
+      return
+    }
+
+    const name = this.inputNameForField(field)
     if (!name) return
 
     const form = this.contentFormForField(field)
@@ -467,6 +489,47 @@ export default class extends Controller {
     if (!input) return
 
     input.value = value
+  }
+
+  syncStoryParagraph(index, value) {
+    const form = this.contentFormForField("story.paragraphs")
+    const textarea = form?.querySelector("[name='wedding[story][paragraphs_text]']")
+    const paragraphs = (textarea?.value || "").split("\n")
+    while (paragraphs.length <= index) paragraphs.push("")
+    paragraphs[index] = value
+    const joined = paragraphs.join("\n")
+    if (textarea) textarea.value = joined
+  }
+
+  inputNameForField(field) {
+    if (FIELD_INPUT_NAME[field]) return FIELD_INPUT_NAME[field]
+
+    const faq = field.match(FAQ_ITEM_FIELD)
+    if (faq) return `wedding[faq][questions][${faq[1]}][${faq[2]}]`
+
+    const party = field.match(PARTY_MEMBER_FIELD)
+    if (party) return `wedding[wedding_party][${party[1]}][${party[2]}][${party[3]}]`
+
+    const photoSection = field.match(PHOTO_SECTION_TITLE_FIELD)
+    if (photoSection) return `wedding[photos_page][sections][${photoSection[1]}][title]`
+
+    return null
+  }
+
+  serializeSectionForm(field) {
+    const form = this.contentFormForField(field)
+    if (!form) return null
+
+    const body = new FormData()
+    Array.from(form.elements).forEach((element) => {
+      if (!element.name || element.disabled) return
+      if (element.type === "checkbox" || element.type === "radio") {
+        if (element.checked) body.append(element.name, element.value)
+        return
+      }
+      body.append(element.name, element.value)
+    })
+    return body
   }
 
   openSlotPicker(slotKey) {
@@ -543,7 +606,17 @@ export default class extends Controller {
       const enabled = form?.querySelector("[name='wedding[story][enabled]']")
       if (enabled?.checked) body.append("wedding[story][enabled]", "1")
       const title = field === "story.title" ? value : form?.querySelector("[name='wedding[story][title]']")?.value
-      const paragraphs = field === "story.paragraphs" ? value : form?.querySelector("[name='wedding[story][paragraphs_text]']")?.value
+      let paragraphs = form?.querySelector("[name='wedding[story][paragraphs_text]']")?.value
+      const storyParagraph = field.match(STORY_PARAGRAPH_FIELD)
+      if (field === "story.paragraphs") {
+        paragraphs = value
+      } else if (storyParagraph) {
+        const list = (paragraphs || "").split("\n")
+        const index = +storyParagraph[1]
+        while (list.length <= index) list.push("")
+        list[index] = value
+        paragraphs = list.join("\n")
+      }
       const closing = field === "story.closing" ? value : form?.querySelector("[name='wedding[story][closing]']")?.value
       if (title != null) body.append("wedding[story][title]", title)
       if (paragraphs != null) body.append("wedding[story][paragraphs_text]", paragraphs)
@@ -551,20 +624,29 @@ export default class extends Controller {
       return body
     }
 
-    const name = FIELD_INPUT_NAME[field]
+    const name = this.inputNameForField(field)
     if (!name) return null
     body.append(name, value)
     return body
   }
 
   contentFormForField(field) {
-    const section = FIELD_SECTION[field]
+    const section = this.sectionForField(field)
     if (!section) return this.activeContentForm
 
     const panel = this.defaultPanelFor(section)
     return this.panelTargets
       .find((element) => element.dataset.panel === panel)
       ?.querySelector("form")
+  }
+
+  sectionForField(field) {
+    if (FIELD_SECTION[field]) return FIELD_SECTION[field]
+    if (STORY_PARAGRAPH_FIELD.test(field)) return "home"
+    if (FAQ_ITEM_FIELD.test(field)) return "faq"
+    if (PARTY_MEMBER_FIELD.test(field)) return "wedding_party"
+    if (PHOTO_SECTION_TITLE_FIELD.test(field)) return "photos"
+    return null
   }
 
   get activeContentForm() {

@@ -2,5 +2,11 @@
     shared theme's ornamental divider. %>
 <div class="editorial-marker">
   <span class="editorial-marker__number"><%= format("%02d", number) %></span>
-  <span class="editorial-marker__label"><%= label %></span>
+  <% if local_assigns[:field].present? %>
+    <%= editor_text(field, tag: :span, css_class: "editorial-marker__label") do %>
+      <%= label %>
+    <% end %>
+  <% else %>
+    <span class="editorial-marker__label"><%= label %></span>
+  <% end %>
 </div>

@@ -25,7 +25,7 @@ export default class extends Controller {
       "--rp-leak-opacity": between(0.14, 0.28).toFixed(2),
       "--rp-grain-x": `${between(0, 100).toFixed(0)}%`,
       "--rp-grain-y": `${between(0, 100).toFixed(0)}%`,
-      "--rp-grain-opacity": between(0.26, 0.4).toFixed(2),
+      "--rp-grain-opacity": between(0.48, 0.72).toFixed(2),
       "--rp-vignette": between(0.52, 0.72).toFixed(2),
       "--rp-tilt": `${between(-0.8, 0.8).toFixed(2)}deg`,
       "--rp-sepia": between(0.22, 0.36).toFixed(2),

@@ -11,7 +11,11 @@
       </div>
 
       <div class="form-group">
-        <%= f.label :password %>
+        <div class="flex items-center justify-between gap-4">
+          <%= f.label :password %>
+          <%= link_to "Forgot password?", platform_forgot_password_path,
+                class: "text-sm font-medium text-primary no-underline hover:underline" %>
+        </div>
         <%= f.password_field :password, class: "form-control", required: true, autocomplete: "current-password" %>
       </div>
 

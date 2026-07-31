@@ -15,7 +15,10 @@
     <section class="editorial-shell editorial-section">
       <div class="editorial-grid">
         <div class="editorial-rail">
-          <%= render "public/shared/marker", number: index + 1, label: section["title"] %>
+          <%= render "public/shared/marker",
+              number: index + 1,
+              label: section["title"],
+              field: "photos_page.sections.#{index}.title" %>
         </div>
 
         <div class="editorial-filmstrip">

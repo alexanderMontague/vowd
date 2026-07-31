@@ -10,7 +10,18 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_07_29_002908) do
+ActiveRecord::Schema[7.1].define(version: 2026_07_30_210000) do
+  create_table "admin_notification_deliveries", force: :cascade do |t|
+    t.string "wedding_id", null: false
+    t.string "kind", null: false
+    t.string "status", default: "queued", null: false
+    t.datetime "sent_at"
+    t.text "error_message"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["wedding_id", "kind"], name: "index_admin_notification_deliveries_uniqueness", unique: true
+  end
+
   create_table "admin_users", force: :cascade do |t|
     t.string "email", null: false
     t.string "password_digest", null: false
@@ -276,9 +287,17 @@ ActiveRecord::Schema[7.1].define(version: 2026_07_29_002908) do
     t.json "theme", default: {}, null: false
     t.json "save_the_date_copy", default: {}, null: false
     t.string "venue_address"
+    t.string "billing_status", default: "trialing", null: false
+    t.datetime "trial_ends_at"
+    t.string "stripe_customer_id"
+    t.string "stripe_subscription_id"
+    t.datetime "billing_period_end"
     t.index ["custom_domain"], name: "index_weddings_on_custom_domain", unique: true
+    t.index ["stripe_customer_id"], name: "index_weddings_on_stripe_customer_id", unique: true
+    t.index ["stripe_subscription_id"], name: "index_weddings_on_stripe_subscription_id", unique: true
   end
 
+  add_foreign_key "admin_notification_deliveries", "weddings"
   add_foreign_key "admin_users", "weddings"
   add_foreign_key "disposable_photos", "guests"
   add_foreign_key "guests", "households"

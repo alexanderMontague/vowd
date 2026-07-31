@@ -76,7 +76,10 @@ class Admin::ThemesControllerTest < ActionDispatch::IntegrationTest
     get admin_theme_section_path(section: "home")
 
     assert_response :success
-    assert_select "[data-action='theme-editor#openSettings']", text: /Settings/
+    assert_select "[data-action='theme-editor#openSettings']", text: /Customize/
+    assert_select "a.theme-preview__device[href=?][target='_blank']",
+                  AppHost.wedding_public_url(@wedding),
+                  1
     assert_select "[data-action='theme-editor#toggleSkipVideo']"
     assert_select "[data-theme-editor-target='skipVideoControl'][hidden]"
     assert_select "[data-action='theme-editor#showPageTab']"

@@ -9,12 +9,15 @@ Conventions for this Rails app. Prefer matching existing patterns over introduci
 - **Tailwind CSS v4** via `@import "tailwindcss"` and **`@theme`** tokens in `app/assets/tailwind/application.css`.
 - **Admin design system** in [`app/assets/tailwind/admin.css`](app/assets/tailwind/admin.css), scoped under `.admin-app` (`--admin-*` tokens for color, type, spacing). Guest theme tokens stay separate.
 - **Minitest** for tests (`test/`), **fixtures** enabled in `test/test_helper.rb`.
+- **Stripe** for per-wedding billing (`Billing` + Checkout / Customer Portal / webhooks). Disabled when `STRIPE_SECRET_KEY` or `STRIPE_PRICE_ID` is unset.
 
 ## Wedding configuration (read this first)
 
 - **`Wedding`** is an **ActiveRecord** model (`app/models/wedding.rb`). The string primary key is the site **slug** (subdomain). Site copy and settings live in typed columns plus JSON fields (`story`, `hero`, `faq`, etc.).
 - **`TenantResolver`** + **`AppHost`** resolve the tenant from the request host: `{slug}.{APP_BASE_DOMAIN}` or a wedding’s `custom_domain`. Apex `APP_BASE_DOMAIN` is the platform (marketing, signup, login).
 - **`WeddingConcern`** exposes request-scoped **`current_wedding`** (never a process-global memo). One **`AdminUser`** owns exactly one wedding (`admin_users.wedding_id`).
+- **Billing** is per wedding (`billing_status`, `trial_ends_at`, Stripe customer/subscription ids). New signups start a **trial** (guest site live). After an unpaid trial expires, **`GuestSiteAvailability`** takes the public/dispo/party site down and **`BillingGate`** limits admin to Billing until checkout. A paid Wedding Pass keeps the guest site hosted indefinitely for that wedding. Schedule/venue fields lock **24 hours** before ceremony start (`Wedding#schedule_locked?`).
+- **Admin lifecycle emails** (`AdminLifecycleMailer`, platform/admin visual language): welcome on signup; trial ending (3d / 1d); schedule lock warning (~24h before ceremony); day-after congrats for paid sites. Idempotent via `admin_notification_deliveries`. Run `bin/rails admin:lifecycle_emails` on a daily cron alongside guest reminders.
 - Edit guest-facing content in admin **Theme** (full-bleed live preview with click-to-edit hotspots and slide-over drawers for Look & feel / complex controls). Feature flags remain under admin **Settings**. Essentials, meals, domain, and notifications stay under admin **Wedding**.
 
 ## Application structure
@@ -35,7 +38,9 @@ Keep new features in the namespace that matches their audience and routing.
 - Reuse **`WeddingConcern`** for anything that needs `current_wedding`.
 - Resolve hosts via **`AppHost`** / **`TenantResolver`** — do not hardcode product domains.
 - Follow existing auth patterns (platform signup/login + wedding-host admin session) instead of ad hoc checks in views.
+- Password reset is platform-only (`Platform::PasswordResetsController` + `PasswordResetMailer`); admin login links to the apex forgot-password URL.
 - Admin actions must enforce `current_admin.wedding_id == current_wedding.id`.
+- When Stripe is configured, admin actions must enforce wedding billing access (`BillingGate`), except the billing page itself.
 
 ### Models
 

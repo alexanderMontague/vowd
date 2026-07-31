@@ -53,7 +53,9 @@
 
     <div class="parallax-hero__content">
       <p class="parallax-meta mb-8">
-        <%= current_wedding.hero["eyebrow"].presence || "Together with our families" %>
+        <%= editor_text("hero.eyebrow", tag: :span) do %>
+          <%= current_wedding.hero["eyebrow"].presence || "Together with our families" %>
+        <% end %>
       </p>
       <%= editor_essentials(tag: :h1, css_class: "parallax-title mb-8") do %>
         <%= current_wedding.title %>
@@ -114,8 +116,10 @@
             <p class="parallax-meta mb-6">Our Story</p>
             <%= render "public/shared/section_title", title: story["title"], centered: false, field: "story.title" %>
             <div class="parallax-lede">
-              <% Array(story["paragraphs"]).each do |paragraph| %>
-                <p><%= paragraph %></p>
+              <% Array(story["paragraphs"]).each_with_index do |paragraph, index| %>
+                <%= editor_text("story.paragraphs.#{index}", tag: :p, multiline: true) do %>
+                  <%= paragraph %>
+                <% end %>
               <% end %>
               <%= editor_text("story.closing", tag: :p, css_class: "italic text-ink-soft") do %>
                 <%= story["closing"] %>
@@ -281,9 +285,10 @@
         <%= editor_text("rsvp_copy.description", tag: :p, css_class: "parallax-lede mx-auto mb-12 max-w-lg", multiline: true) do %>
           <%= current_wedding.rsvp["description"] %>
         <% end %>
-        <%= editor_text("rsvp_copy.button_text", tag: :span, css_class: "inline-block") do %>
-          <%= link_to current_wedding.rsvp["button_text"], public_rsvp_lookup_path,
-              class: "btn-wedding-primary" %>
+        <%= editor_link("rsvp_copy.button_text",
+            href: public_rsvp_lookup_path,
+            css_class: "btn-wedding-primary") do %>
+          <%= current_wedding.rsvp["button_text"] %>
         <% end %>
         <%= editor_text("rsvp_copy.lookup_hint", tag: :p, css_class: "parallax-meta mt-10") do %>
           <%= current_wedding.rsvp["lookup_hint"] %>

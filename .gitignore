@@ -85,3 +85,6 @@ vowd_development-shm
 vowd_development-wal
 # Disposable camera uploads written by the local storage backend (development/test)
 /public/uploads
+
+# k6 load test output
+/loadtest/results/

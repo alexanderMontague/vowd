@@ -68,6 +68,19 @@
         </svg>
       </button>
 
+      <a href="<%= AppHost.wedding_public_url(current_wedding) %>"
+         class="theme-preview__device"
+         target="_blank"
+         rel="noopener noreferrer"
+         aria-label="Open live site in a new tab"
+         title="Open live site">
+        <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.75">
+          <path d="M14 4h6v6"/>
+          <path d="M10 14L20 4"/>
+          <path d="M20 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h5"/>
+        </svg>
+      </a>
+
       <span class="theme-preview__tools-divider" aria-hidden="true"></span>
 
       <label class="theme-preview__skip-video"
@@ -82,9 +95,13 @@
       <button type="button"
               class="theme-preview__settings"
               data-action="theme-editor#openSettings"
-              aria-label="Settings"
-              title="Settings">
-        Settings
+              aria-label="Customize theme and pages"
+              title="Customize theme, colors, fonts, and which pages guests see">
+        <svg class="theme-preview__settings-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.75">
+          <circle cx="12" cy="12" r="3"/>
+          <path d="M12 3v2.5M12 18.5V21M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M3 12h2.5M18.5 12H21M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8"/>
+        </svg>
+        <span class="theme-preview__settings-label">Customize</span>
       </button>
     </div>
   </header>

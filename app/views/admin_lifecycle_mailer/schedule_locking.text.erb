@@ -1,0 +1,14 @@
+Date & venue lock soon
+
+In about 24 hours, the wedding date, ceremony time, and venue for <%= @wedding.title %> will lock so this Wedding Pass stays tied to your day.
+
+Theme, guest list, RSVPs, photos, and most other settings stay editable. Only schedule and venue details freeze.
+
+<% if @wedding.date.present? %>
+Ceremony: <%= format_date_elegant(@wedding.date) %><% if @wedding.ceremony_time.present? %> · <%= @wedding.ceremony_time %><% end %>
+<% end %>
+
+Review essentials:
+<%= @admin_url %>
+
+Lock begins around <%= l(@lock_at.in_time_zone(@wedding.timezone), format: :long) %>.

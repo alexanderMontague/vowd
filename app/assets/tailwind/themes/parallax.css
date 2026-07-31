@@ -377,4 +377,36 @@
       animation: none;
     }
   }
+
+  /* --------------------------------------------------------------------------
+     Vase composition — flower-vase ornament instead of the classic urn
+     -------------------------------------------------------------------------- */
+
+  .parallax-vase {
+    @apply relative mx-auto my-0 w-full max-w-sm;
+  }
+
+  .parallax-vase__arch {
+    @apply ml-auto w-[84%] overflow-hidden bg-surface-alt shadow-sm;
+    aspect-ratio: 4 / 5;
+    border-radius: 50% 50% 0 0 / 28% 28% 0 0;
+  }
+
+  .parallax-vase__image {
+    @apply size-full object-cover;
+  }
+
+  .parallax-vase__ornament {
+    @apply pointer-events-none absolute z-10 bg-contain bg-bottom bg-no-repeat
+           w-[30%] max-w-[5.5rem] sm:w-[38%] sm:max-w-[8rem] md:w-[46%] md:max-w-none;
+    left: -4%;
+    bottom: -6%;
+    aspect-ratio: 3 / 4;
+    background-image: var(--parallax-ornament-src);
+    opacity: 0.92;
+  }
+
+  .parallax-vase__caption {
+    @apply mt-6 text-center text-xs font-light uppercase tracking-[0.2em] text-ink-faint;
+  }
 }

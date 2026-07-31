@@ -1,0 +1,193 @@
+<%
+  hero_src = wedding_asset_url(current_wedding.hero_image)
+  story = current_wedding.story
+  venue = current_wedding.venue
+  story_portrait = current_wedding.placement("save_the_date_portrait")
+%>
+
+<div class="garden-home" data-controller="scroll-animate">
+  <section class="garden-hero">
+    <%= editor_slot("homepage_hero", css_class: "garden-hero__media") do %>
+      <% if hero_src.present? %>
+        <%= image_tag hero_src, alt: current_wedding.title, class: "garden-hero__image" %>
+      <% else %>
+        <div class="garden-hero__image bg-ink"></div>
+      <% end %>
+    <% end %>
+    <div class="garden-hero__wash"></div>
+    <div class="garden-hero__content">
+      <div class="garden-hero__vine" aria-hidden="true">
+        <%= theme_ornament("garden", "eucalyptus-garland") %>
+      </div>
+      <%= editor_text("hero.eyebrow", tag: :p, css_class: "garden-hero__eyebrow") do %>
+        <%= current_wedding.hero["eyebrow"].presence || "Together with our families" %>
+      <% end %>
+      <%= editor_essentials(tag: :h1, css_class: "garden-hero__title") do %>
+        <%= current_wedding.title %>
+      <% end %>
+      <%= editor_text("hero.tagline", tag: :p, css_class: "garden-hero__tagline") do %>
+        <%= current_wedding.hero["tagline"] %>
+      <% end %>
+      <div class="garden-hero__meta">
+        <% if current_wedding.date %>
+          <%= editor_essentials(tag: :p) do %>
+            <%= format_date_elegant(current_wedding.date) %>
+          <% end %>
+        <% end %>
+        <%= editor_essentials(tag: :p, css_class: "opacity-80") do %>
+          <%= full_venue_name(venue) %>
+        <% end %>
+      </div>
+    </div>
+  </section>
+
+  <% if story["enabled"] || site_editor_active? %>
+    <%= editor_panel("home_settings", tag: :section, css_class: "garden-story") do %>
+      <div class="garden-story__vine garden-story__vine--left" aria-hidden="true">
+        <%= theme_ornament("garden", "climbing-vine") %>
+      </div>
+      <div class="garden-story__vine garden-story__vine--right" aria-hidden="true">
+        <%= theme_ornament("garden", "climbing-vine") %>
+      </div>
+
+      <div class="garden-story__grid animate-on-scroll" data-scroll-animate-target="item">
+        <div class="garden-story__copy">
+          <div class="garden-ornament mb-8 text-accent" aria-hidden="true">
+            <%= theme_ornament("garden", "rose-swag") %>
+          </div>
+          <%= editor_text("story.title", tag: :h2, css_class: "garden-section-title") do %>
+            <%= story["title"] %>
+          <% end %>
+          <div class="garden-story__body">
+            <% Array(story["paragraphs"]).each_with_index do |paragraph, index| %>
+              <%= editor_text("story.paragraphs.#{index}", tag: :p, multiline: true) do %>
+                <%= paragraph %>
+              <% end %>
+            <% end %>
+          </div>
+          <%= editor_text("story.closing", tag: :p, css_class: "garden-story__closing") do %>
+            <%= story["closing"] %>
+          <% end %>
+        </div>
+
+        <% if story_portrait.present? || site_editor_active? %>
+          <div class="garden-story__portrait">
+            <%= render decor_partial("framed_photo"),
+                asset: story_portrait,
+                slot: "save_the_date_portrait" %>
+          </div>
+        <% end %>
+      </div>
+    <% end %>
+  <% end %>
+
+  <section class="garden-events" id="events">
+    <div class="garden-events__inner">
+      <div class="garden-ornament mb-10 mx-auto text-accent" aria-hidden="true">
+        <%= theme_ornament("garden", "olive-divider") %>
+      </div>
+      <%= render "public/shared/section_title", title: "Event Details", centered: true %>
+      <div class="garden-events__grid">
+        <%= render "public/shared/event_detail", icon: "calendar", title: "Date" do %>
+          <%= editor_essentials do %>
+            <% if current_wedding.date %>
+              <p class="wedding-prose"><%= current_wedding.date.strftime("%A") %></p>
+              <p class="wedding-prose"><%= format_date(current_wedding.date) %></p>
+            <% end %>
+          <% end %>
+        <% end %>
+        <%= render "public/shared/event_detail", icon: "clock", title: "Time", delay_class: "animation-delay-200" do %>
+          <%= editor_essentials do %>
+            <p class="wedding-prose">Ceremony at <%= current_wedding.ceremony_time %></p>
+            <p class="wedding-prose text-sm opacity-70">Reception to Follow</p>
+          <% end %>
+        <% end %>
+        <%= render "public/shared/event_detail", icon: "map_pin", title: "Venue", delay_class: "animation-delay-400" do %>
+          <%= editor_essentials do %>
+            <p class="wedding-prose"><%= venue["name"] %></p>
+            <p class="wedding-prose text-sm opacity-70"><%= full_venue_name(venue) %></p>
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+  </section>
+
+  <% if @events.any? %>
+    <section class="garden-schedule px-4 py-28">
+      <div class="mx-auto max-w-3xl">
+        <div class="garden-ornament mb-10 mx-auto text-accent" aria-hidden="true">
+          <%= theme_ornament("garden", "eucalyptus-garland") %>
+        </div>
+        <%= render "public/shared/section_title", title: "Schedule", centered: true %>
+        <ol class="garden-schedule__list">
+          <% @events.each do |event| %>
+            <li class="garden-schedule__item animate-on-scroll" data-scroll-animate-target="item">
+              <% if event.datetime %>
+                <p class="garden-schedule__time"><%= event.datetime.strftime("%I:%M %p") %></p>
+              <% end %>
+              <div>
+                <h3 class="garden-schedule__name"><%= event.name %></h3>
+                <% if event.location.present? %>
+                  <p class="wedding-prose"><%= event.location %></p>
+                <% end %>
+                <% if event.description.present? %>
+                  <p class="mt-2 text-ink-soft font-light"><%= event.description %></p>
+                <% end %>
+              </div>
+            </li>
+          <% end %>
+        </ol>
+      </div>
+    </section>
+  <% end %>
+
+  <% if current_wedding.homepage_gallery_visible? || site_editor_active? %>
+    <% homepage_images = current_wedding.homepage_gallery_images %>
+    <%= editor_panel("home_settings", tag: :section, css_class: "garden-gallery") do %>
+      <div class="garden-gallery__inner">
+        <div class="garden-ornament mb-10 mx-auto text-accent" aria-hidden="true">
+          <%= theme_ornament("garden", "rose-swag") %>
+        </div>
+        <%= render "public/shared/section_title",
+            title: current_wedding.gallery_content["homepage_title"],
+            centered: true,
+            field: "photos_page.homepage_title" %>
+        <div class="garden-gallery__mosaic">
+          <% homepage_images.each_with_index do |image, index| %>
+            <div class="garden-gallery__tile garden-gallery__tile--<%= (index % 3) + 1 %> animate-on-scroll"
+                 data-scroll-animate-target="item">
+              <%= image_tag wedding_asset_url(image), alt: wedding_asset_alt(image), loading: "lazy" %>
+            </div>
+          <% end %>
+        </div>
+        <% if site_navigation.visible?("gallery") %>
+          <div class="text-center mt-14">
+            <%= link_to "View All Photos", public_photos_path, class: "btn-wedding-primary" %>
+          </div>
+        <% end %>
+      </div>
+    <% end %>
+  <% end %>
+
+  <% if site_navigation.visible?("rsvp") %>
+    <section class="garden-rsvp" id="rsvp-section">
+      <div class="garden-rsvp__inner">
+        <div class="garden-ornament mb-10 mx-auto text-accent" aria-hidden="true">
+          <%= theme_ornament("garden", "olive-divider") %>
+        </div>
+        <%= render "public/shared/section_title", title: current_wedding.rsvp["title"], field: "rsvp_copy.title" %>
+        <%= editor_text("rsvp_copy.description", tag: :p, css_class: "garden-rsvp__copy", multiline: true) do %>
+          <%= current_wedding.rsvp["description"] %>
+        <% end %>
+        <%= editor_link("rsvp_copy.button_text",
+            href: public_rsvp_lookup_path,
+            css_class: "btn-wedding-primary") do %>
+          <%= current_wedding.rsvp["button_text"] %>
+        <% end %>
+        <%= editor_text("rsvp_copy.lookup_hint", tag: :p, css_class: "garden-rsvp__hint") do %>
+          <%= current_wedding.rsvp["lookup_hint"] %>
+        <% end %>
+      </div>
+    </section>
+  <% end %>
+</div>

@@ -9,7 +9,14 @@ Rails.application.routes.draw do
     get "/login", to: "platform/sessions#new", as: :platform_login
     post "/login", to: "platform/sessions#create"
     delete "/logout", to: "platform/sessions#destroy", as: :platform_logout
+
+    get "/forgot-password", to: "platform/password_resets#new", as: :platform_forgot_password
+    post "/forgot-password", to: "platform/password_resets#create", as: nil
+    get "/reset-password/:token", to: "platform/password_resets#edit", as: :platform_reset_password
+    patch "/reset-password/:token", to: "platform/password_resets#update", as: nil
   end
+
+  post "/webhooks/stripe", to: "webhooks/stripe#create"
 
   constraints WeddingHostConstraint do
     scope :dispo, module: :dispo do
@@ -73,6 +80,10 @@ Rails.application.routes.draw do
       end
       resource :dispo_sign, only: :show, controller: "dispo_signs"
       resource :settings, only: %i[show update]
+      resource :billing, only: :show, controller: "billing" do
+        post :checkout
+        post :portal
+      end
       resource :party, only: :show, controller: "party"
       resources :party_boards, path: "party", param: :kind, only: %i[show update],
                 constraints: { kind: /bachelor|bachelorette/ } do

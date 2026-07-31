@@ -76,12 +76,12 @@
 
         <div class="flex flex-col items-center gap-4 text-center">
           <% if current_wedding&.date %>
-            <%= editor_text("save_the_date_copy.calendar_button_text", tag: :div, css_class: "w-full") do %>
-              <%= link_to copy["calendar_button_text"].presence || "Add to Calendar",
-                  calendar_url,
-                  target: "_blank",
-                  rel: "noopener noreferrer",
-                  class: "btn-wedding-primary inline-block" %>
+            <%= editor_link("save_the_date_copy.calendar_button_text",
+                href: calendar_url,
+                target: "_blank",
+                rel: "noopener noreferrer",
+                css_class: "btn-wedding-primary inline-block") do %>
+              <%= copy["calendar_button_text"].presence || "Add to Calendar" %>
             <% end %>
           <% end %>
           <%= editor_text("save_the_date_copy.formal_note", tag: :p, css_class: "text-xs font-light text-ink-faint") do %>
@@ -130,8 +130,10 @@
             </div>
 
             <div class="pt-2 flex justify-center">
-              <%= editor_text("save_the_date_copy.submit_button_text", tag: :span, css_class: "inline-block") do %>
-                <%= f.submit copy["submit_button_text"].presence || "Share My Details", class: "btn-wedding-primary" %>
+              <%= editor_button("save_the_date_copy.submit_button_text",
+                  type: "submit",
+                  css_class: "btn-wedding-primary") do %>
+                <%= copy["submit_button_text"].presence || "Share My Details" %>
               <% end %>
             </div>
           <% end %>

@@ -54,7 +54,7 @@ class SitePages
       label: "RSVP",
       description: "Guest lookup and RSVP form.",
       path_helper: :public_rsvp_lookup_path,
-      feature_flag: "rsvp_visible",
+      feature_flag: nil,
       toggleable: true
     )
   ].freeze

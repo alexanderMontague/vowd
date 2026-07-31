@@ -71,8 +71,10 @@
             <%= story["title"] %>
           <% end %>
           <div class="editorial-body">
-            <% Array(story["paragraphs"]).each do |paragraph| %>
-              <p><%= paragraph %></p>
+            <% Array(story["paragraphs"]).each_with_index do |paragraph, index| %>
+              <%= editor_text("story.paragraphs.#{index}", tag: :p, multiline: true) do %>
+                <%= paragraph %>
+              <% end %>
             <% end %>
           </div>
           <%= editor_text("story.closing", tag: :p, css_class: "editorial-caption mt-10 border-t pt-6") do %>
@@ -204,11 +206,20 @@
           </div>
 
           <div>
-            <h2 class="editorial-title mb-8"><%= current_wedding.rsvp["title"] %></h2>
-            <p class="editorial-standfirst mb-12"><%= current_wedding.rsvp["description"] %></p>
-            <%= link_to current_wedding.rsvp["button_text"], public_rsvp_lookup_path,
-                class: "btn-wedding-primary" %>
-            <p class="editorial-caption mt-8"><%= current_wedding.rsvp["lookup_hint"] %></p>
+            <%= editor_text("rsvp_copy.title", tag: :h2, css_class: "editorial-title mb-8") do %>
+              <%= current_wedding.rsvp["title"] %>
+            <% end %>
+            <%= editor_text("rsvp_copy.description", tag: :p, css_class: "editorial-standfirst mb-12", multiline: true) do %>
+              <%= current_wedding.rsvp["description"] %>
+            <% end %>
+            <%= editor_link("rsvp_copy.button_text",
+                href: public_rsvp_lookup_path,
+                css_class: "btn-wedding-primary") do %>
+              <%= current_wedding.rsvp["button_text"] %>
+            <% end %>
+            <%= editor_text("rsvp_copy.lookup_hint", tag: :p, css_class: "editorial-caption mt-8") do %>
+              <%= current_wedding.rsvp["lookup_hint"] %>
+            <% end %>
           </div>
         </div>
       </div>

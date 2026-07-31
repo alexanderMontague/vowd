@@ -8,21 +8,21 @@
   <section class="px-4 pb-24">
     <div class="mx-auto max-w-3xl">
       <%= editor_panel("faq", tag: :div, css_class: "bg-surface-alt shadow-xl border border-hairline divide-y divide-hairline animate-fade-in-up") do %>
-        <% current_wedding.faq["questions"]&.each do |item| %>
-          <details class="group px-8 md:px-12">
+        <% Array(current_wedding.faq["questions"]).each_with_index do |item, index| %>
+          <details class="group px-8 md:px-12" <%= "open" if site_editor_active? %>>
             <summary class="flex items-center justify-between gap-6 py-7 cursor-pointer list-none">
-              <span class="font-theme-display text-xl font-light text-ink">
+              <%= editor_text("faq.questions.#{index}.question", tag: :span, css_class: "font-theme-display text-xl font-light text-ink") do %>
                 <%= item["question"] %>
-              </span>
+              <% end %>
               <span class="flex-shrink-0 text-ink-faint transition-transform duration-300 group-open:rotate-180">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"/>
                 </svg>
               </span>
             </summary>
-            <div class="pb-7 text-ink-soft font-light leading-relaxed text-base">
+            <%= editor_text("faq.questions.#{index}.answer", tag: :div, css_class: "pb-7 text-ink-soft font-light leading-relaxed text-base", multiline: true) do %>
               <%= item["answer"] %>
-            </div>
+            <% end %>
           </details>
         <% end %>
       <% end %>

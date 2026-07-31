@@ -32,7 +32,7 @@
       <div class="parallax-stage__content max-w-7xl">
         <div class="mb-16 text-center">
           <p class="parallax-details__label">Chapter <%= index + 1 %></p>
-          <%= render "public/shared/section_title", title: section["title"], centered: true %>
+          <%= render "public/shared/section_title", title: section["title"], centered: true, field: "photos_page.sections.#{index}.title" %>
         </div>
 
         <div class="parallax-gallery">

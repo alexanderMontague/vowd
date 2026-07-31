@@ -230,6 +230,43 @@ class Public::SiteThemeTest < ActionDispatch::IntegrationTest
     assert_select "[data-site-editor-target='hotspot'][data-kind='slot']"
   end
 
+  test "button label hotspots keep button chrome without nesting anchors" do
+    admin = create_admin_for(@wedding)
+    sign_in_admin(admin)
+    get admin_theme_section_path(section: "home")
+
+    get_iframe root_path
+
+    assert_response :success
+    assert_select "[data-site-editor-target='hotspot'][data-surface='button'][data-field='rsvp_copy.button_text']",
+                  text: @wedding.rsvp["button_text"]
+    assert_select "[data-site-editor-target='hotspot'][data-field='rsvp_copy.button_text'] a", count: 0
+    assert_select "[data-site-editor-target='hotspot'][data-field='rsvp_copy.button_text'].btn-wedding-primary"
+
+    get_iframe public_save_the_date_path
+
+    assert_response :success
+    assert_select "[data-site-editor-target='hotspot'][data-surface='button'][data-field='save_the_date_copy.calendar_button_text']"
+    assert_select "[data-site-editor-target='hotspot'][data-field='save_the_date_copy.calendar_button_text'] a", count: 0
+    assert_select "[data-site-editor-target='hotspot'][data-surface='button'][data-field='save_the_date_copy.submit_button_text']"
+    assert_select "[data-site-editor-target='hotspot'][data-field='save_the_date_copy.submit_button_text'] input", count: 0
+    assert_select "[data-site-editor-target='hotspot'][data-field='save_the_date_copy.submit_button_text'] button", count: 0
+  end
+
+  test "guests still get real links and submit buttons for CTA labels" do
+    get root_path
+
+    assert_select "a.btn-wedding-primary[href=?]", public_rsvp_lookup_path,
+                  text: @wedding.rsvp["button_text"]
+    assert_select "[data-surface='button']", count: 0
+
+    get public_save_the_date_path
+
+    assert_select "a.btn-wedding-primary", minimum: 1
+    assert_select "button.btn-wedding-primary[type='submit']", minimum: 1
+    assert_select "[data-surface='button']", count: 0
+  end
+
   test "editor mode annotates every guest page with the right hotspot kinds" do
     admin = create_admin_for(@wedding)
     sign_in_admin(admin)

@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 36" fill="none" aria-hidden="true">
+  <path d="M8 18h96" stroke="currentColor" stroke-width="1" opacity="0.45"/>
+  <path d="M216 18h96" stroke="currentColor" stroke-width="1" opacity="0.45"/>
+  <!-- Center diamond medallion -->
+  <path d="M160 6l12 12-12 12-12-12Z" stroke="currentColor" stroke-width="1.4" fill="none"/>
+  <path d="M160 10l8 8-8 8-8-8Z" fill="currentColor" opacity="0.75"/>
+  <path d="M128 18h16M176 18h16" stroke="currentColor" stroke-width="1.2"/>
+  <circle cx="120" cy="18" r="2" fill="currentColor" opacity="0.6"/>
+  <circle cx="200" cy="18" r="2" fill="currentColor" opacity="0.6"/>
+  <path d="M108 14v8M212 14v8" stroke="currentColor" stroke-width="1" opacity="0.4"/>
+</svg>

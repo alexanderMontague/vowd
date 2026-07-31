@@ -24,9 +24,17 @@
     <%= text_field_tag "wedding[wedding_party][groomsmen_title]", wedding_party["groomsmen_title"], class: "form-control", id: "wedding_wedding_party_groomsmen_title" %>
   </div>
 
-  <div class="mt-6" data-controller="nested-form">
-    <div class="flex justify-between items-center mb-3">
-      <p class="text-xs font-semibold uppercase tracking-widest text-neutral-400">Bridesmaids</p>
+  <div class="nested-form-section mt-6"
+       data-controller="nested-form"
+       data-nested-form-sortable-value="true"
+       data-nested-form-sticky-add-value="true"
+       data-action="nested-form:changed->theme-editor#autosaveForm">
+    <div class="nested-form-section__toolbar" data-nested-form-target="toolbar">
+      <p class="nested-form-section__label">Bridesmaids</p>
+      <button type="button" class="btn btn-sm btn-secondary" data-nested-form-target="addButton" data-action="nested-form#add">Add</button>
+    </div>
+    <div class="nested-form-section__sticky-add" data-nested-form-target="stickyAdd" hidden>
+      <p class="nested-form-section__label">Bridesmaids</p>
       <button type="button" class="btn btn-sm btn-secondary" data-action="nested-form#add">Add</button>
     </div>
     <div class="grid gap-3" data-nested-form-target="container">
@@ -43,9 +51,17 @@
     </template>
   </div>
 
-  <div class="mt-8" data-controller="nested-form">
-    <div class="flex justify-between items-center mb-3">
-      <p class="text-xs font-semibold uppercase tracking-widest text-neutral-400">Groomsmen</p>
+  <div class="nested-form-section mt-8"
+       data-controller="nested-form"
+       data-nested-form-sortable-value="true"
+       data-nested-form-sticky-add-value="true"
+       data-action="nested-form:changed->theme-editor#autosaveForm">
+    <div class="nested-form-section__toolbar" data-nested-form-target="toolbar">
+      <p class="nested-form-section__label">Groomsmen</p>
+      <button type="button" class="btn btn-sm btn-secondary" data-nested-form-target="addButton" data-action="nested-form#add">Add</button>
+    </div>
+    <div class="nested-form-section__sticky-add" data-nested-form-target="stickyAdd" hidden>
+      <p class="nested-form-section__label">Groomsmen</p>
       <button type="button" class="btn btn-sm btn-secondary" data-action="nested-form#add">Add</button>
     </div>
     <div class="grid gap-3" data-nested-form-target="container">

@@ -1,6 +1,7 @@
 module Party
   class BaseController < ApplicationController
     include WeddingConcern
+    include GuestSiteAvailability
 
     layout "party"
 

@@ -1,0 +1,39 @@
+<div class="min-h-screen riviera-faq">
+  <%= render "public/shared/page_header",
+      title: current_wedding.faq["title"],
+      subtitle: current_wedding.faq["subtitle"],
+      title_field: "faq.title",
+      subtitle_field: "faq.subtitle" %>
+
+  <section class="px-4 pb-28">
+    <div class="mx-auto max-w-2xl">
+      <%= editor_panel("faq", tag: :div, css_class: "riviera-faq__list") do %>
+        <% Array(current_wedding.faq["questions"]).each_with_index do |item, index| %>
+          <details class="riviera-faq__item group" <%= "open" if site_editor_active? %>>
+            <summary class="riviera-faq__question">
+              <%= editor_text("faq.questions.#{index}.question", tag: :span) do %>
+                <%= item["question"] %>
+              <% end %>
+              <span class="riviera-faq__chevron" aria-hidden="true">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"/>
+                </svg>
+              </span>
+            </summary>
+            <%= editor_text("faq.questions.#{index}.answer", tag: :div, css_class: "riviera-faq__answer", multiline: true) do %>
+              <%= item["answer"] %>
+            <% end %>
+          </details>
+          <% unless index == Array(current_wedding.faq["questions"]).length - 1 %>
+            <div class="riviera-faq__divider" aria-hidden="true">
+              <%= theme_ornament("riviera", "citrus-wave") %>
+            </div>
+          <% end %>
+        <% end %>
+      <% end %>
+      <div class="mt-10 text-center">
+        <%= link_to "← Return Home", root_path, class: "text-sm text-ink-faint font-light tracking-wider hover:text-ink-muted transition-colors" %>
+      </div>
+    </div>
+  </section>
+</div>

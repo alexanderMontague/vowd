@@ -1,0 +1,310 @@
+/* ==========================================================================
+   Theme — Atelier Deco
+
+   Midnight navy, burnished gold, geometric frames. Ballroom stationery online.
+   ========================================================================== */
+
+@layer components {
+  [data-theme="atelier"] {
+    --atelier-rule: color-mix(in srgb, var(--theme-accent) 65%, var(--theme-surface));
+    --atelier-navy: color-mix(in srgb, var(--theme-primary) 92%, black);
+  }
+
+  [data-theme="atelier"] .wedding-nav {
+    @apply border-b bg-surface shadow-none;
+    border-color: var(--atelier-rule);
+  }
+
+  [data-theme="atelier"] .wedding-nav-brand {
+    @apply font-theme-display text-xl font-normal uppercase tracking-[0.28em];
+  }
+
+  [data-theme="atelier"] .wedding-nav-link {
+    @apply text-[0.7rem] uppercase tracking-[0.22em];
+  }
+
+  [data-theme="atelier"] .botanical-accent,
+  [data-theme="atelier"] .invitation-frame-botanical,
+  [data-theme="atelier"] .wedding-divider,
+  [data-theme="atelier"] .botanical-ornament {
+    @apply hidden;
+  }
+
+  [data-theme="atelier"] .wedding-divider-horizontal {
+    @apply h-px border-0 bg-accent;
+  }
+
+  [data-theme="atelier"] .wedding-band,
+  [data-theme="atelier"] .atelier-band {
+    background-image: none;
+    background-color: color-mix(in srgb, var(--theme-primary) 6%, var(--theme-surface));
+  }
+
+  [data-theme="atelier"] .wedding-section-title,
+  [data-theme="atelier"] .wedding-hero-title {
+    @apply uppercase tracking-[0.12em];
+  }
+
+  [data-theme="atelier"] .wedding-hero-overlay {
+    background:
+      linear-gradient(180deg, rgba(10, 16, 32, 0.25) 0%, rgba(10, 16, 32, 0.72) 100%),
+      radial-gradient(ellipse at 50% 0%, rgba(198, 161, 91, 0.18), transparent 55%);
+  }
+
+  [data-theme="atelier"] .atelier-floater {
+    @apply border border-accent/35 bg-surface p-1 shadow-sm;
+    border-radius: 0;
+  }
+
+  [data-theme="atelier"] .atelier-floater img {
+    border-radius: 0;
+  }
+
+  /* Shared ornament sizing — imgs must shrink inside fixed-width flex shells */
+  .atelier-frame__corner svg,
+  .atelier-frame__rule svg,
+  .atelier-motif svg,
+  .atelier-ornament svg,
+  .atelier-page-header__fan svg,
+  .atelier-page-header__rule svg,
+  .atelier-hero__fan svg,
+  .atelier-rsvp__ornament svg {
+    @apply size-full h-auto w-full;
+  }
+
+  .atelier-frame__corner img,
+  .atelier-frame__rule img,
+  .atelier-ornament img,
+  .atelier-motif img,
+  .atelier-page-header__fan img,
+  .atelier-page-header__rule img,
+  .atelier-hero__fan img,
+  .atelier-story__medallion img,
+  .atelier-story__rule img,
+  .atelier-rsvp__ornament img,
+  .atelier-member__corner img {
+    @apply block h-auto w-full max-w-full;
+  }
+
+  /* Invitation frame */
+  .atelier-frame {
+    @apply relative bg-surface px-10 py-14 sm:px-14;
+    box-shadow:
+      inset 0 0 0 1px var(--atelier-rule),
+      inset 0 0 0 6px color-mix(in srgb, var(--theme-surface) 88%, var(--theme-accent));
+  }
+
+  .atelier-frame__corner { @apply absolute size-12 text-accent sm:size-14; }
+  .atelier-frame__corner--tl { @apply left-3 top-3; }
+  .atelier-frame__corner--tr { @apply right-3 top-3 scale-x-[-1]; }
+  .atelier-frame__corner--bl { @apply bottom-3 left-3 scale-y-[-1]; }
+  .atelier-frame__corner--br { @apply bottom-3 right-3 rotate-180; }
+  .atelier-frame__rule { @apply mx-auto flex w-48 justify-center text-accent sm:w-64; }
+
+  .atelier-ornament__fan,
+  .atelier-ornament__medallion { @apply flex justify-center; }
+
+  /* Decor: photo sits behind the gold frame so the stepped opening masks it.
+     Use width/height % (not bottom inset) — global img { height: auto } ignores
+     bottom when height is auto on absolutely positioned replaced elements. */
+  .atelier-portrait {
+    @apply relative mx-auto my-0 w-full max-w-[16rem] sm:max-w-[18rem];
+  }
+
+  .atelier-portrait__image {
+    @apply absolute top-[13%] left-[15.5%] z-0 object-cover;
+    width: 69%;
+    height: 73.5%;
+    max-width: none;
+    clip-path: polygon(7% 0, 93% 0, 100% 7%, 100% 93%, 93% 100%, 7% 100%, 0 93%, 0 7%);
+  }
+
+  .atelier-portrait__frame {
+    @apply relative z-10 block w-full;
+  }
+
+  .atelier-portrait__caption {
+    @apply mt-5 text-center text-[0.65rem] font-light uppercase tracking-[0.24em] text-ink-faint;
+  }
+
+  .atelier-column { @apply relative mx-auto my-0 w-full max-w-xs; }
+
+  .atelier-column__photo {
+    @apply overflow-hidden bg-surface;
+    aspect-ratio: 3 / 4;
+    border-radius: 0.375rem 0.375rem 0 0;
+    box-shadow: inset 0 0 0 1px var(--atelier-rule);
+  }
+
+  .atelier-column__photo img { @apply size-full object-cover; }
+
+  .atelier-column__pedestal {
+    @apply pointer-events-none relative z-10 -mt-2 mx-auto block h-auto
+           w-[52%] sm:w-[62%] md:w-[72%];
+  }
+
+  .atelier-column__caption {
+    @apply mt-4 text-center text-[0.65rem] font-light uppercase tracking-[0.24em] text-ink-faint;
+  }
+
+  .atelier-frame__corner {
+    @apply absolute w-16 opacity-95 sm:w-20;
+  }
+
+  .atelier-motif--fan {
+    @apply w-24 opacity-80 sm:w-28;
+  }
+
+  /* Inner page header */
+  .atelier-page-header__fan { @apply mx-auto flex w-14 justify-center text-accent sm:w-16; }
+  .atelier-page-header__rule { @apply mx-auto flex w-40 justify-center text-accent opacity-70 sm:w-52; }
+
+  .atelier-page-title {
+    @apply font-theme-display text-4xl font-normal uppercase tracking-[0.1em] text-ink md:text-5xl;
+  }
+
+  .atelier-page-subtitle {
+    @apply mx-auto mt-4 max-w-lg font-light leading-relaxed text-ink-soft;
+  }
+
+  /* Homepage */
+  .atelier-hero { @apply relative flex min-h-[92svh] items-end justify-center overflow-hidden; }
+  .atelier-hero__media, .atelier-hero__image { @apply absolute inset-0 size-full object-cover; }
+
+  .atelier-hero__steps {
+    @apply absolute inset-0;
+    background:
+      linear-gradient(180deg, color-mix(in srgb, var(--atelier-navy) 15%, transparent), color-mix(in srgb, var(--atelier-navy) 78%, transparent)),
+      repeating-linear-gradient(-45deg, transparent, transparent 24px, color-mix(in srgb, var(--theme-accent) 8%, transparent) 24px, color-mix(in srgb, var(--theme-accent) 8%, transparent) 25px);
+  }
+
+  .atelier-hero__content {
+    @apply relative z-10 mx-auto w-full max-w-4xl px-6 pb-20 pt-36 text-center text-white md:pb-28;
+  }
+
+  .atelier-hero__eyebrow { @apply mb-5 text-[0.65rem] font-light uppercase tracking-[0.32em] text-white/75; }
+  .atelier-hero__title {
+    @apply mb-6 font-theme-display text-4xl font-normal uppercase tracking-[0.14em] text-white md:text-6xl lg:text-7xl;
+  }
+  .atelier-hero__fan {
+    @apply relative mx-auto mb-6 flex w-16 shrink-0 justify-center overflow-hidden text-accent sm:w-20;
+  }
+  .atelier-hero__tagline { @apply mx-auto mb-8 max-w-md text-base font-light leading-relaxed text-white/85 md:text-lg; }
+  .atelier-hero__meta { @apply space-y-2 text-sm font-light uppercase tracking-[0.18em] text-white/80; }
+  .atelier-hero__meta p { @apply text-white/80; }
+
+  .atelier-story { @apply px-4 py-28; }
+  .atelier-story__grid { @apply mx-auto grid max-w-6xl items-start gap-12 lg:grid-cols-[10rem_1fr] lg:gap-x-16; }
+  .atelier-story__grid:has(.atelier-story__portrait) { @apply lg:grid-cols-[10rem_1fr_auto]; }
+  .atelier-story__rail { @apply flex flex-col items-center text-center; }
+  .atelier-story__medallion { @apply mb-4 w-12 text-accent sm:w-14; }
+  .atelier-story__label { @apply text-[0.65rem] font-light uppercase tracking-[0.28em] text-accent; }
+  .atelier-story__rule { @apply mt-6 hidden w-24 text-accent opacity-60 lg:flex; }
+
+  .atelier-section-title {
+    @apply mb-8 text-center font-theme-display text-3xl font-normal uppercase tracking-[0.08em] text-ink md:text-4xl lg:text-left;
+  }
+
+  .atelier-story__copy { @apply space-y-6 text-center text-lg font-light leading-loose text-ink-soft lg:text-left; }
+  .atelier-story__closing { @apply mt-8 text-center text-base italic text-ink-soft lg:text-left; }
+  .atelier-story__portrait { @apply mx-auto max-w-[14rem] lg:max-w-[16rem]; }
+
+  .atelier-events { @apply bg-surface-alt py-28; }
+  .atelier-events__inner { @apply mx-auto max-w-6xl px-4; }
+  .atelier-events__grid { @apply mt-16 grid gap-8 md:grid-cols-3 md:gap-6; }
+
+  .atelier-event-card {
+    @apply relative bg-surface px-8 py-10 text-center;
+    box-shadow:
+      inset 0 0 0 1px var(--atelier-rule),
+      inset 0 0 0 4px color-mix(in srgb, var(--theme-surface) 90%, var(--theme-accent));
+  }
+
+  .atelier-event-card__title { @apply mb-4 font-theme-display text-xl uppercase tracking-[0.12em] text-accent; }
+  .atelier-event-card__tick { @apply absolute size-3 border-accent; }
+  .atelier-event-card__tick--tl { @apply left-2 top-2 border-l border-t; }
+  .atelier-event-card__tick--tr { @apply right-2 top-2 border-r border-t; }
+  .atelier-event-card__tick--bl { @apply bottom-2 left-2 border-b border-l; }
+  .atelier-event-card__tick--br { @apply bottom-2 right-2 border-b border-r; }
+
+  .atelier-schedule__list {
+    @apply relative mt-14 space-y-0 pl-6;
+    border-left: 1px solid var(--atelier-rule);
+  }
+
+  .atelier-schedule__item { @apply relative py-8 pl-8; }
+
+  .atelier-schedule__diamond {
+    @apply absolute -left-[0.42rem] top-10 size-3 rotate-45 bg-accent;
+    box-shadow: 0 0 0 3px var(--theme-surface);
+  }
+
+  .atelier-schedule__time { @apply mb-2 text-[0.65rem] font-light uppercase tracking-[0.24em] text-accent; }
+  .atelier-schedule__name { @apply mb-1 font-theme-display text-2xl uppercase tracking-[0.06em] text-ink; }
+
+  .atelier-gallery { @apply py-28; }
+  .atelier-gallery__inner { @apply mx-auto max-w-5xl px-4; }
+  .atelier-gallery__grid { @apply mt-16 grid grid-cols-2 gap-3 md:gap-4; }
+
+  .atelier-gallery__cell {
+    @apply overflow-hidden bg-surface-alt;
+    box-shadow: inset 0 0 0 1px var(--atelier-rule);
+  }
+
+  .atelier-gallery__cell img { @apply size-full object-cover transition-transform duration-700; }
+  .atelier-gallery__cell:hover img { @apply scale-[1.03]; }
+  .atelier-gallery__cell--1 { @apply aspect-square; }
+  .atelier-gallery__cell--2 { @apply aspect-[4/5] md:mt-8; }
+  .atelier-gallery__cell--3 { @apply col-span-2 aspect-[16/9]; }
+  .atelier-gallery__cell--4 { @apply aspect-[3/4]; }
+
+  .atelier-rsvp { @apply bg-surface-alt py-28; }
+  .atelier-rsvp__inner { @apply mx-auto max-w-xl px-4 text-center; }
+  .atelier-rsvp__ornament { @apply mx-auto mb-10 flex w-48 justify-center text-accent sm:w-56; }
+  .atelier-rsvp__ornament--bottom { @apply mb-0 mt-12; }
+  .atelier-rsvp__copy { @apply mx-auto mb-10 max-w-md text-lg font-light leading-relaxed text-ink-soft; }
+  .atelier-rsvp__hint { @apply mt-8 text-sm font-light uppercase tracking-[0.18em] text-ink-faint; }
+
+  /* Party */
+  .atelier-party__grid { @apply mt-14 grid gap-12 sm:grid-cols-2 lg:grid-cols-4; }
+  .atelier-member { @apply text-center; }
+
+  .atelier-member__frame {
+    @apply relative mx-auto mb-6 size-40;
+    box-shadow:
+      inset 0 0 0 1px var(--atelier-rule),
+      inset 0 0 0 3px color-mix(in srgb, var(--theme-surface) 92%, var(--theme-accent));
+  }
+
+  .atelier-member__photo { @apply size-full object-cover; }
+  .atelier-member__corner { @apply pointer-events-none absolute -bottom-1 -right-1 size-8 text-accent; }
+  .atelier-member__corner svg { @apply size-full rotate-180; }
+
+  /* Photos page */
+  .atelier-photos__grid {
+    @apply mt-14 grid grid-cols-2 gap-3 md:gap-4;
+  }
+
+  .atelier-photos__cell {
+    @apply overflow-hidden bg-surface-alt;
+    box-shadow: inset 0 0 0 1px var(--atelier-rule);
+  }
+
+  .atelier-photos__cell img { @apply block w-full object-cover; }
+  .atelier-photos__cell--1 { grid-column: 1 / -1; }
+  .atelier-photos__cell--1 img { @apply aspect-[21/9] md:aspect-[16/7]; }
+  .atelier-photos__cell--2 img { @apply aspect-[4/5]; }
+  .atelier-photos__cell--3 img { @apply aspect-square; }
+
+  /* FAQ */
+  .atelier-faq__list { @apply border border-accent/30 bg-surface; }
+  .atelier-faq__item { @apply border-b border-accent/25 px-6 last:border-b-0; }
+
+  .atelier-faq__question {
+    @apply flex cursor-pointer list-none items-center justify-between gap-6 py-7 font-theme-display text-lg font-normal uppercase tracking-[0.06em] text-ink;
+  }
+
+  .atelier-faq__chevron { @apply flex-shrink-0 text-accent transition-transform duration-300 group-open:rotate-180; }
+  .atelier-faq__answer { @apply pb-7 text-base font-light leading-relaxed text-ink-soft; }
+  .atelier-faq__medallion { @apply mx-auto my-6 flex w-8 justify-center text-accent opacity-60; }
+}

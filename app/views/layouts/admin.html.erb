@@ -87,22 +87,40 @@
 
             <%= admin_nav_section("System") %>
             <%= admin_nav_link("Feature flags", admin_settings_path, exact: true) %>
+            <%= admin_nav_link("Billing", admin_billing_path, exact: true) %>
           <% else %>
             <%= admin_nav_link(
                   "Wedding",
                   admin_website_path,
                   active_prefixes: ["/admin/website", admin_events_path]
                 ) %>
+            <%= admin_nav_link("Billing", admin_billing_path, exact: true) %>
             <p class="admin-side-nav-hint">
               Add partners and a wedding date to unlock guests, invitations, and day-of tools.
             </p>
           <% end %>
+
         </nav>
 
         <%= button_to "Log out", admin_logout_path, method: :delete, class: "btn btn-sm btn-danger w-full mt-auto" %>
       </aside>
 
       <main class="admin-main <%= content_for(:admin_main_class) %>" data-controller="scroll-preservation">
+        <% if Billing.enabled? && current_wedding&.trial_active? && current_wedding.trial_ends_at.present? %>
+          <% days_left = [((current_wedding.trial_ends_at - Time.current) / 1.day).ceil, 0].max %>
+          <% if days_left <= 7 %>
+            <div class="alert alert-warning mb-6 print:hidden">
+              Trial ends in <%= days_left %> <%= "day".pluralize(days_left) %>.
+              <%= link_to "Choose a plan", admin_billing_path, class: "font-medium underline" %>
+            </div>
+          <% end %>
+        <% elsif Billing.enabled? && current_wedding&.billing_requires_payment? && !controller.is_a?(Admin::BillingController) %>
+          <div class="alert alert-warning mb-6 print:hidden">
+            Your trial has ended and the guest site is offline.
+            <%= link_to "Complete checkout", admin_billing_path, class: "font-medium underline" %>
+            to restore it.
+          </div>
+        <% end %>
         <%= yield %>
       </main>
     </div>

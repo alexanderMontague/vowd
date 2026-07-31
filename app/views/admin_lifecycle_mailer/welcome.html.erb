@@ -1,0 +1,21 @@
+<p class="platform-sans platform-display" style="margin:0; font-family:-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif; font-size:32px; font-weight:600; letter-spacing:-0.03em; line-height:1.15; color:#12151a;">
+  Welcome to Vowd
+</p>
+
+<p class="platform-sans" style="margin:16px 0 0; font-family:-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif; font-size:15px; font-weight:400; line-height:1.7; color:#737b8c;">
+  Your wedding site for <strong style="font-weight:600; color:#12151a;"><%= @wedding.title %></strong>
+  is live. You have <strong style="font-weight:600; color:#12151a;"><%= @trial_days %> days</strong>
+  to explore admin, theme the guest experience, and invite people in.
+</p>
+
+<p class="platform-sans" style="margin:20px 0 0; font-family:-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif; font-size:15px; font-weight:400; line-height:1.7; color:#3f4654;">
+  Start with the essentials — partners and date — then open the theme editor to shape
+  how guests see your day.
+</p>
+
+<%= render "mailer_shared/platform_button", url: @admin_url, label: "Open your admin" %>
+
+<p class="platform-sans" style="margin:28px 0 0; font-family:-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif; font-size:13px; font-weight:400; line-height:1.65; color:#9aa1b0;">
+  After your trial, a one-time Wedding Pass keeps this site hosted forever for
+  <%= @wedding.title %>.
+</p>

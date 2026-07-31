@@ -6,8 +6,25 @@
   group_label = group == "bridesmaids" ? "Bridesmaid" : "Groomsman"
 %>
 <div class="admin-nested-row" data-nested-form-target="item" data-usage-scope>
-  <div class="flex justify-between items-start mb-3">
-    <p class="text-sm font-medium text-neutral-700">Person</p>
+  <div class="flex justify-between items-start gap-3 mb-3">
+    <div class="flex min-w-0 items-center gap-2">
+      <button type="button"
+              class="nested-form-drag-handle"
+              data-nested-form-handle
+              draggable="true"
+              aria-label="Drag to reorder"
+              title="Drag to reorder">
+        <svg viewBox="0 0 16 16" aria-hidden="true" fill="currentColor">
+          <circle cx="5" cy="4" r="1.25"/>
+          <circle cx="11" cy="4" r="1.25"/>
+          <circle cx="5" cy="8" r="1.25"/>
+          <circle cx="11" cy="8" r="1.25"/>
+          <circle cx="5" cy="12" r="1.25"/>
+          <circle cx="11" cy="12" r="1.25"/>
+        </svg>
+      </button>
+      <p class="text-sm font-medium text-neutral-700 mb-0">Person</p>
+    </div>
     <button type="button" class="text-sm text-danger" data-action="nested-form#remove">Remove</button>
   </div>
 

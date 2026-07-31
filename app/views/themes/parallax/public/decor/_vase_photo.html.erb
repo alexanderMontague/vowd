@@ -1,0 +1,28 @@
+<%
+  asset = local_assigns[:asset]
+  caption = local_assigns[:caption]
+  wrapper_class = local_assigns.fetch(:wrapper_class, "")
+  slot_key = local_assigns[:slot]
+%>
+<% inner = capture do %>
+  <% if asset.present? %>
+    <figure class="parallax-vase <%= wrapper_class %>">
+      <div class="parallax-vase__arch">
+        <%= image_tag wedding_asset_url(asset),
+            class: "parallax-vase__image",
+            alt: wedding_asset_alt(asset), loading: "lazy", decoding: "async" %>
+      </div>
+      <div class="parallax-vase__ornament" aria-hidden="true"
+           style="--parallax-ornament-src: url('<%= asset_path("themes/parallax/flower-vase.webp") %>')">
+      </div>
+      <% if caption.present? %>
+        <figcaption class="parallax-vase__caption"><%= caption %></figcaption>
+      <% end %>
+    </figure>
+  <% end %>
+<% end %>
+<% if slot_key.present? %>
+  <%= editor_slot(slot_key, css_class: wrapper_class) { inner } %>
+<% else %>
+  <%= inner %>
+<% end %>

@@ -110,6 +110,24 @@ module Admin
       assert_equal [asset.id], @wedding.placements["rsvp_portrait"]
     end
 
+    test "essentials date fields are disabled when schedule is locked" do
+      travel_to Time.zone.parse("2027-07-10 12:00:00") do
+        @wedding.update!(
+          date: Date.new(2027, 7, 10),
+          ceremony_time: "4:00 PM",
+          timezone: "America/Toronto"
+        )
+
+        get admin_website_section_path(section: "essentials")
+
+        assert_response :success
+        assert_select "input[name='wedding[date]'][disabled]"
+        assert_select "input[name='wedding[venue_name]'][disabled]"
+        assert_select "input[name='wedding[title]']:not([disabled])"
+        assert_match(/locked within 24 hours/i, response.body)
+      end
+    end
+
     private
 
     def create_asset(attrs = {})

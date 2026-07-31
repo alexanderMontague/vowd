@@ -44,8 +44,10 @@
         <div class="mb-12"></div>
         <%= render "public/shared/section_title", title: current_wedding.story["title"], field: "story.title" %>
         <div class="space-y-8 leading-loose text-lg wedding-prose max-w-2xl mx-auto">
-          <% Array(current_wedding.story["paragraphs"]).each do |paragraph| %>
-            <p><%= paragraph %></p>
+          <% Array(current_wedding.story["paragraphs"]).each_with_index do |paragraph, index| %>
+            <%= editor_text("story.paragraphs.#{index}", tag: :p, multiline: true) do %>
+              <%= paragraph %>
+            <% end %>
           <% end %>
         </div>
         <% if current_wedding.story["closing"].present? || site_editor_active? %>
@@ -159,9 +161,10 @@
         <%= editor_text("rsvp_copy.description", tag: :p, css_class: "text-lg mb-12 max-w-lg mx-auto leading-relaxed wedding-prose", multiline: true) do %>
           <%= current_wedding.rsvp["description"] %>
         <% end %>
-        <%= editor_text("rsvp_copy.button_text", tag: :span, css_class: "inline-block") do %>
-          <%= link_to current_wedding.rsvp["button_text"], public_rsvp_lookup_path,
-              class: "btn-wedding-primary" %>
+        <%= editor_link("rsvp_copy.button_text",
+            href: public_rsvp_lookup_path,
+            css_class: "btn-wedding-primary") do %>
+          <%= current_wedding.rsvp["button_text"] %>
         <% end %>
         <%= editor_text("rsvp_copy.lookup_hint", tag: :p, css_class: "text-sm tracking-wider mt-8 text-ink-faint font-light") do %>
           <%= current_wedding.rsvp["lookup_hint"] %>

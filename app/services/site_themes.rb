@@ -88,6 +88,54 @@ class SiteThemes
       },
       default_font: "editorial",
       default_pages: SitePages.all_enabled
+    ),
+    Theme.new(
+      key: "garden",
+      name: "Sage Garden",
+      tagline: "Quiet foliage on soft green paper",
+      description: "Pressed-flower stationery: climbing vines, wreath portraits, terracotta " \
+                   "planters, and soft sage washes. Built for garden ceremonies.",
+      default_colors: {
+        "primary" => "#4F6B4E",
+        "accent" => "#8FA386",
+        "ink" => "#2A352A",
+        "surface" => "#F3F5F0",
+        "surface_alt" => "#E8EDE4"
+      },
+      default_font: "refined",
+      default_pages: SitePages.all_enabled
+    ),
+    Theme.new(
+      key: "atelier",
+      name: "Atelier Deco",
+      tagline: "Geometric gilding for evening weddings",
+      description: "Art deco ballroom: sunburst fans, diamond photo plates, geometric pedestals, " \
+                   "and gold-ruled pages. Formal without feeling stiff.",
+      default_colors: {
+        "primary" => "#1A2744",
+        "accent" => "#C6A15B",
+        "ink" => "#1A2744",
+        "surface" => "#F7F3EA",
+        "surface_alt" => "#FFFFFF"
+      },
+      default_font: "modern",
+      default_pages: SitePages.all_enabled
+    ),
+    Theme.new(
+      key: "riviera",
+      name: "Riviera",
+      tagline: "Sun-washed azure and citrus light",
+      description: "Amalfi-coast postcards: ceramic frames, citrus garlands, amphora photos, and " \
+                   "sun-washed azure. Bright Mediterranean calm.",
+      default_colors: {
+        "primary" => "#2F5D7A",
+        "accent" => "#D4A35C",
+        "ink" => "#243447",
+        "surface" => "#FBF8F2",
+        "surface_alt" => "#EEF4F7"
+      },
+      default_font: "airy",
+      default_pages: SitePages.all_enabled
     )
   ].freeze
 

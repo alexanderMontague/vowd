@@ -3,6 +3,7 @@ module Dispo
     layout "dispo"
 
     include WeddingConcern
+    include GuestSiteAvailability
     include SaveTheDateModeEnforcement
 
     before_action :require_wedding!

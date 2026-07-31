@@ -1,4 +1,5 @@
 <% delay_class = ["", "animation-delay-200", "animation-delay-400", "animation-delay-400"][index % 4] %>
+<% group = local_assigns.fetch(:group, "bridesmaids") %>
 
 <div class="text-center animate-on-scroll <%= delay_class %>" data-scroll-animate-target="item">
   <%= editor_panel("wedding_party") do %>
@@ -9,8 +10,14 @@
         <div class="w-full h-full bg-hairline"></div>
       <% end %>
     </div>
-    <p class="wedding-meta mb-1"><%= person["role"] %></p>
-    <h3 class="font-theme-display text-2xl text-ink mb-1"><%= person["name"] %></h3>
-    <p class="text-sm text-ink-soft font-light italic"><%= person["relation"] %></p>
+    <%= editor_text("wedding_party.#{group}.#{index}.role", tag: :p, css_class: "wedding-meta mb-1") do %>
+      <%= person["role"] %>
+    <% end %>
+    <%= editor_text("wedding_party.#{group}.#{index}.name", tag: :h3, css_class: "font-theme-display text-2xl text-ink mb-1") do %>
+      <%= person["name"] %>
+    <% end %>
+    <%= editor_text("wedding_party.#{group}.#{index}.relation", tag: :p, css_class: "text-sm text-ink-soft font-light italic") do %>
+      <%= person["relation"] %>
+    <% end %>
   <% end %>
 </div>

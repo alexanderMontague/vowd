@@ -1,0 +1,35 @@
+<%
+  floating_assets = Array(local_assigns[:floating_assets])
+  floating_slot = local_assigns[:floating_slot]
+%>
+<div class="invitation-frame-shell mx-auto max-w-2xl">
+  <%= render decor_partial("floating_photos"), assets: floating_assets, slot: floating_slot %>
+
+  <div class="pointer-events-none absolute -inset-4 hidden lg:block" aria-hidden="true">
+    <div class="garden-motif garden-motif--spray absolute -left-20 top-16 w-36 opacity-90">
+      <%= theme_ornament("garden", "fern-corner") %>
+    </div>
+    <div class="garden-motif garden-motif--spray absolute -right-16 bottom-24 w-36 rotate-180 opacity-85">
+      <%= theme_ornament("garden", "fern-corner") %>
+    </div>
+  </div>
+
+  <div class="invitation-frame garden-frame relative z-10">
+    <div class="garden-frame__corner garden-frame__corner--tl" aria-hidden="true">
+      <%= theme_ornament("garden", "fern-corner") %>
+    </div>
+    <div class="garden-frame__corner garden-frame__corner--br" aria-hidden="true">
+      <%= theme_ornament("garden", "fern-corner") %>
+    </div>
+
+    <div class="invitation-frame-content relative z-10">
+      <div class="garden-frame__vine mb-8" aria-hidden="true">
+        <%= theme_ornament("garden", "eucalyptus-garland") %>
+      </div>
+      <%= yield %>
+      <div class="garden-frame__vine mt-8" aria-hidden="true">
+        <%= theme_ornament("garden", "rose-swag") %>
+      </div>
+    </div>
+  </div>
+</div>

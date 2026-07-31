@@ -30,7 +30,9 @@ class WeddingRegistration
         id: @slug,
         title: @title,
         partner1: @partner1,
-        partner2: @partner2
+        partner2: @partner2,
+        billing_status: "trialing",
+        trial_ends_at: Billing.trial_days.days.from_now
       )
 
       admin_user = wedding.create_admin_user!(
@@ -39,6 +41,8 @@ class WeddingRegistration
         password_confirmation: @password_confirmation
       )
     end
+
+    AdminLifecycle::Sender.enqueue!(wedding: wedding, kind: "welcome")
 
     { success: true, wedding: wedding, admin_user: admin_user, errors: [] }
   rescue ActiveRecord::RecordInvalid => e

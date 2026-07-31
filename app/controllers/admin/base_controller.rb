@@ -4,6 +4,7 @@ module Admin
     include WeddingConcern
     include AdminCanonicalHost
     include SiteEditor
+    include BillingGate
 
     layout "admin"
 
@@ -21,7 +22,9 @@ module Admin
     end
 
     def skip_wedding_configured_gate?
-      is_a?(Admin::WebsiteController) || is_a?(Admin::Website::AssetsController)
+      is_a?(Admin::WebsiteController) ||
+        is_a?(Admin::Website::AssetsController) ||
+        is_a?(Admin::BillingController)
     end
 
     def clear_site_editor_outside_theme!

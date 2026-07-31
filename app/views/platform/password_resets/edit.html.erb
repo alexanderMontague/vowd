@@ -1,0 +1,25 @@
+<% content_for :title, "Reset password - Vowd" %>
+
+<div class="flex min-h-screen items-center justify-center px-4 py-28">
+  <div class="w-full max-w-form rounded-xl bg-bg-card p-10 shadow-2xl">
+    <h1 class="mb-2 text-center text-secondary">Choose a new password</h1>
+    <p class="mb-card text-center text-sm text-neutral-500">
+      For <%= @admin.email %>
+    </p>
+
+    <%= form_with url: platform_reset_password_path(token: params[:token]), method: :patch, data: { turbo: false } do |f| %>
+      <div class="form-group">
+        <%= f.label :password, "New password" %>
+        <%= f.password_field :password, class: "form-control", required: true, autofocus: true, autocomplete: "new-password", minlength: 6 %>
+        <p class="form-hint">At least 6 characters</p>
+      </div>
+
+      <div class="form-group">
+        <%= f.label :password_confirmation, "Confirm password" %>
+        <%= f.password_field :password_confirmation, class: "form-control", required: true, autocomplete: "new-password", minlength: 6 %>
+      </div>
+
+      <%= f.submit "Update password", class: "btn btn-primary w-full" %>
+    <% end %>
+  </div>
+</div>

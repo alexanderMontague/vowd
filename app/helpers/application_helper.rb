@@ -123,6 +123,28 @@ module ApplicationHelper
     svg.html_safe
   end
 
+  def theme_svg(theme_key, name, css_class: nil)
+    path = Rails.root.join("app/assets/images/themes/#{theme_key}/#{name}.svg")
+    return "".html_safe unless path.file?
+
+    svg = File.read(path)
+    svg = svg.sub("<svg ", %(<svg class="#{css_class}" )) if css_class.present?
+    svg.html_safe
+  end
+
+  # Illustrated WebP ornament for a theme (fern corners, ceramic frames, etc.).
+  # Falls back to the theme SVG when no raster asset exists.
+  def theme_ornament(theme_key, name, css_class: nil, alt: "")
+    relative = "themes/#{theme_key}/#{name}.webp"
+    absolute = Rails.root.join("app/assets/images", relative)
+    if absolute.file?
+      return image_tag(relative, class: css_class, alt: alt, aria: { hidden: alt.blank? },
+                       loading: "lazy", decoding: "async")
+    end
+
+    theme_svg(theme_key, name, css_class: css_class)
+  end
+
   def admin_nav_link(label, path, active_prefixes: [path], exact: false)
     active = if exact
                request.path == path
@@ -138,6 +160,16 @@ module ApplicationHelper
   def admin_nav_section(label)
     content_tag(:p, label, class: "admin-side-nav-section")
   end
+
+  def billing_status_badge_class(status)
+    case status.to_s
+    when "active" then "badge-success"
+    when "trialing" then "badge-neutral"
+    when "past_due" then "badge-warning"
+    else "badge-danger"
+    end
+  end
+
 
   # Resolves wedding content images: library assets and uploaded object keys via the
   # app proxy, or legacy absolute URLs.

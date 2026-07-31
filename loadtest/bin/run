@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
+SCENARIO="${SCENARIO:-mixed}"
+BASE_URL="${BASE_URL:?BASE_URL is required (e.g. https://loadtest.vowd.site)}"
+RUN_ID="${RUN_ID:-$(date -u +%Y%m%dT%H%M%SZ)-$RANDOM}"
+VUS="${VUS:-10}"
+DURATION="${DURATION:-30s}"
+RESULTS_DIR="${RESULTS_DIR:-$ROOT/loadtest/results/$RUN_ID}"
+SCRIPT="$ROOT/loadtest/k6/scenarios/${SCENARIO}.js"
+
+if [[ ! -f "$SCRIPT" ]]; then
+  echo "Unknown scenario: $SCENARIO (expected browse, dispo_upload, or mixed)" >&2
+  exit 1
+fi
+
+if ! command -v k6 >/dev/null 2>&1; then
+  echo "k6 is not installed. Install with: brew install k6" >&2
+  exit 1
+fi
+
+mkdir -p "$RESULTS_DIR"
+
+echo "run_id=$RUN_ID scenario=$SCENARIO base_url=$BASE_URL results=$RESULTS_DIR"
+
+k6 run \
+  --out "json=$RESULTS_DIR/raw.json" \
+  -e "BASE_URL=$BASE_URL" \
+  -e "RUN_ID=$RUN_ID" \
+  -e "VUS=$VUS" \
+  -e "DURATION=$DURATION" \
+  -e "RESULTS_DIR=$RESULTS_DIR" \
+  --vus "$VUS" \
+  --duration "$DURATION" \
+  "$SCRIPT"
+status=$?
+
+echo "Done. Results: $RESULTS_DIR"
+echo "Cleanup: LOADTEST_WEDDING_ID=… CONFIRM=yes bin/rails loadtest:cleanup RUN_ID=$RUN_ID"
+exit "$status"

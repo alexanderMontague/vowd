@@ -16,17 +16,21 @@
 
       <div>
         <% Array(faq["questions"]).each_with_index do |item, index| %>
-          <details class="editorial-question group">
+          <details class="editorial-question group" <%= "open" if site_editor_active? %>>
             <summary>
               <span class="editorial-question__number"><%= format("%02d", index + 1) %></span>
-              <span class="editorial-question__prompt"><%= item["question"] %></span>
+              <%= editor_text("faq.questions.#{index}.question", tag: :span, css_class: "editorial-question__prompt") do %>
+                <%= item["question"] %>
+              <% end %>
               <span class="editorial-label shrink-0 text-ink-faint">
                 <span class="group-open:hidden">Open</span>
                 <span class="hidden group-open:inline">Close</span>
               </span>
             </summary>
             <div class="editorial-body mt-5 pl-0 sm:pl-[3.25rem]">
-              <p><%= item["answer"] %></p>
+              <%= editor_text("faq.questions.#{index}.answer", tag: :p, multiline: true) do %>
+                <%= item["answer"] %>
+              <% end %>
             </div>
           </details>
         <% end %>

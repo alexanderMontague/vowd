@@ -21,23 +21,6 @@ class WeddingFeatureFlags
       scheduled_label: ->(_wedding) { "Off by default" }
     ),
     FlagDefinition.new(
-      key: "rsvp_visible",
-      label: "RSVP Section Visible",
-      description: "Show or hide the RSVP call-to-action section on the public wedding page.",
-      category: :rsvp,
-      scheduled_state: ->(wedding) {
-        deadline = wedding.try(:rsvp_deadline)
-        return true if deadline.blank?
-        Date.current <= Date.parse(deadline.to_s)
-      },
-      scheduled_label: ->(wedding) {
-        deadline = wedding.try(:rsvp_deadline)
-        return "Always on (no deadline configured)" if deadline.blank?
-        date = Date.parse(deadline.to_s)
-        Date.current <= date ? "On until #{date.strftime('%b %-d, %Y')}" : "Off (deadline #{date.strftime('%b %-d, %Y')} passed)"
-      }
-    ),
-    FlagDefinition.new(
       key: "dispo_accepting_photos",
       label: "Dispo Accepting Photos",
       description: "Allow guests to submit photos via the disposable camera.",
@@ -78,7 +61,6 @@ class WeddingFeatureFlags
 
   CATEGORY_LABELS = {
     site: "Site",
-    rsvp: "RSVP",
     dispo: "Disposable Camera"
   }.freeze
 

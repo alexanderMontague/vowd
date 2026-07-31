@@ -6,6 +6,11 @@
 
 <div data-panel="home_settings">
   <div class="form-group">
+    <%= label_tag "wedding_hero_eyebrow", "Hero eyebrow" %>
+    <%= text_field_tag "wedding[hero][eyebrow]", hero["eyebrow"], class: "form-control", id: "wedding_hero_eyebrow" %>
+  </div>
+
+  <div class="form-group">
     <%= label_tag "wedding_hero_tagline", "Hero tagline" %>
     <%= text_field_tag "wedding[hero][tagline]", hero["tagline"], class: "form-control", id: "wedding_hero_tagline" %>
   </div>

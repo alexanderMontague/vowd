@@ -4,21 +4,30 @@
   <div class="theme-choice-grid">
     <% SiteThemes.definitions.each do |candidate| %>
       <% selected = candidate.key == theme.key %>
+      <% colors = candidate.default_colors %>
       <label class="theme-choice <%= "is-selected" if selected %>"
-             data-theme-defaults="<%= { colors: candidate.default_colors, font: candidate.default_font }.to_json %>">
+             data-theme-defaults="<%= { colors: colors, font: candidate.default_font }.to_json %>">
         <%= radio_button_tag "theme[key]", candidate.key, selected,
               class: "theme-choice__input",
               data: { action: "change->theme-editor#selectTheme" } %>
 
-        <span class="theme-choice__swatches" aria-hidden="true">
-          <% SiteThemes::COLOR_KEYS.each do |role| %>
-            <span class="theme-choice__swatch" style="background: <%= candidate.color_default(role) %>"></span>
-          <% end %>
+        <span class="theme-choice__preview" aria-hidden="true">
+          <%= image_tag "themes/#{candidate.key}/preview.svg",
+                alt: "",
+                class: "theme-choice__preview-image" %>
         </span>
 
-        <span class="theme-choice__body">
-          <span class="theme-choice__name"><%= candidate.name %></span>
-          <span class="theme-choice__tagline"><%= candidate.tagline %></span>
+        <span class="theme-choice__meta">
+          <span class="theme-choice__swatches" aria-hidden="true">
+            <% SiteThemes::COLOR_KEYS.each do |role| %>
+              <span class="theme-choice__swatch" style="background: <%= candidate.color_default(role) %>"></span>
+            <% end %>
+          </span>
+
+          <span class="theme-choice__body">
+            <span class="theme-choice__name"><%= candidate.name %></span>
+            <span class="theme-choice__tagline"><%= candidate.tagline %></span>
+          </span>
         </span>
       </label>
     <% end %>

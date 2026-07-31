@@ -56,10 +56,67 @@ class SiteEditorHelperTest < ActionView::TestCase
     @site_editor_active = false
 
     slot_html = editor_slot("hero") { "<img src='/x.jpg'>".html_safe }
+    wrapped_html = editor_slot("hero", css_class: "wedding-hero-slot") { "<img src='/x.jpg'>".html_safe }
     panel_html = editor_panel("faq") { "<p>Question</p>".html_safe }
 
     assert_equal "<img src='/x.jpg'>", slot_html
+    assert_equal "<div class=\"wedding-hero-slot\"><img src='/x.jpg'></div>", wrapped_html
     assert_equal "<p>Question</p>", panel_html
+    assert_not_includes wrapped_html, "data-site-editor-target"
+  end
+
+  test "editor_text strips leading and trailing whitespace from ERB indentation" do
+    @site_editor_active = false
+
+    html = editor_text("hero.tagline", tag: :p, css_class: "wedding-hero-subtitle") do
+      "
+
+        Together forever
+
+      "
+    end
+
+    assert_includes html, ">Together forever<"
+    assert_not_includes html, ">Together forever\n"
+  end
+
+  test "editor_link renders a real anchor for guests" do
+    @site_editor_active = false
+
+    html = editor_link("rsvp_copy.button_text", href: "/rsvp", css_class: "btn-wedding-primary") { "RSVP Now" }
+
+    assert_includes html, '<a class="btn-wedding-primary" href="/rsvp">'
+    assert_includes html, "RSVP Now"
+    assert_not_includes html, "data-site-editor-target"
+    assert_not_includes html, "<span"
+  end
+
+  test "editor_link becomes a button-surface hotspot in the theme iframe" do
+    @site_editor_active = true
+
+    html = editor_link("rsvp_copy.button_text", href: "/rsvp", css_class: "btn-wedding-primary") { "RSVP Now" }
+
+    assert_includes html, 'class="btn-wedding-primary"'
+    assert_includes html, 'data-site-editor-target="hotspot"'
+    assert_includes html, 'data-kind="text"'
+    assert_includes html, 'data-field="rsvp_copy.button_text"'
+    assert_includes html, 'data-surface="button"'
+    assert_includes html, "RSVP Now"
+    assert_not_includes html, "<a "
+    assert_not_includes html, 'href="/rsvp"'
+  end
+
+  test "editor_button renders a submit control for guests and a hotspot while editing" do
+    @site_editor_active = false
+    guest = editor_button("save_the_date_copy.submit_button_text", css_class: "btn-wedding-primary") { "Share My Details" }
+    assert_includes guest, '<button name="button" type="submit" class="btn-wedding-primary">'
+    assert_includes guest, "Share My Details"
+
+    @site_editor_active = true
+    editing = editor_button("save_the_date_copy.submit_button_text", css_class: "btn-wedding-primary") { "Share My Details" }
+    assert_includes editing, 'data-surface="button"'
+    assert_includes editing, 'data-field="save_the_date_copy.submit_button_text"'
+    assert_not_includes editing, "<button"
   end
 
   private

@@ -939,6 +939,17 @@ html.admin-nav-locked {
   color: var(--admin-ink-soft);
 }
 
+/* Theme preview chrome — not a form field label; keep flex centering. */
+.admin-app .theme-preview__skip-video {
+  display: inline-flex;
+  align-items: center;
+  margin-bottom: 0;
+  font-size: 0.75rem;
+  font-weight: 500;
+  line-height: 1;
+  color: var(--admin-ink-soft, #404040);
+}
+
 .admin-app .form-control,
 .admin-app select.form-control,
 .admin-app textarea.form-control,
@@ -1205,6 +1216,77 @@ html.admin-nav-locked {
 .admin-app .theme-editor-drawer .form-control,
 .admin-app .theme-editor-drawer .btn {
   font-family: var(--admin-font);
+}
+
+.admin-app .nested-form-section {
+  position: relative;
+}
+
+.admin-app .nested-form-section__toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.admin-app .nested-form-section__label {
+  margin: 0;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #a3a3a3;
+}
+
+.admin-app .nested-form-section__sticky-add {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin: 0 0 0.75rem;
+  padding: 0.55rem 0.65rem;
+  border: 1px solid var(--admin-border, #e5e5e5);
+  border-radius: 0.375rem;
+  background: color-mix(in srgb, #fff 92%, transparent);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+}
+
+.admin-app .nested-form-section__sticky-add[hidden] {
+  display: none !important;
+}
+
+.admin-app .nested-form-drag-handle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0.25rem;
+  background: transparent;
+  color: #a3a3a3;
+  cursor: grab;
+}
+
+.admin-app .nested-form-drag-handle:active {
+  cursor: grabbing;
+}
+
+.admin-app .nested-form-drag-handle svg {
+  width: 0.9rem;
+  height: 0.9rem;
+}
+
+.admin-app .admin-nested-row.is-dragging {
+  opacity: 0.55;
+  border-color: var(--admin-accent, #3d5a4c);
 }
 
 .admin-app a.text-secondary {

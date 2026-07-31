@@ -35,7 +35,7 @@ module WeddingContentParams
       *CORE_FIELDS,
       :meal_options_text,
       story: %i[enabled title paragraphs_text closing],
-      hero: %i[tagline],
+      hero: %i[tagline eyebrow],
       rsvp_copy: %i[title description button_text lookup_hint],
       save_the_date_copy: %i[
         eyebrow announcement formal_note signup_eyebrow signup_prompt
@@ -92,7 +92,10 @@ module WeddingContentParams
   def build_hero(raw)
     data = nested_hash(raw)
     existing = current_wedding.hero.presence || Wedding::DEFAULT_HERO
-    { "tagline" => data.key?(:tagline) ? data[:tagline].to_s : existing["tagline"].to_s }
+    {
+      "tagline" => data.key?(:tagline) ? data[:tagline].to_s : existing["tagline"].to_s,
+      "eyebrow" => data.key?(:eyebrow) ? data[:eyebrow].to_s : existing["eyebrow"].to_s
+    }
   end
 
   def build_rsvp_copy(raw)

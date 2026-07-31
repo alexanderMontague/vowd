@@ -1,0 +1,26 @@
+<section class="atelier-page-header px-4 py-16 md:py-28">
+  <div class="mx-auto max-w-3xl text-center animate-fade-in-up">
+    <div class="atelier-page-header__fan mb-8" aria-hidden="true">
+      <%= theme_ornament("atelier", "deco-fan") %>
+    </div>
+    <% if local_assigns[:title_field].present? %>
+      <%= editor_text(title_field, tag: :h1, css_class: "atelier-page-title") do %>
+        <%= title %>
+      <% end %>
+    <% else %>
+      <h1 class="atelier-page-title"><%= title %></h1>
+    <% end %>
+    <% if local_assigns[:subtitle].present? || (site_editor_active? && local_assigns[:subtitle_field].present?) %>
+      <% if local_assigns[:subtitle_field].present? %>
+        <%= editor_text(subtitle_field, tag: :p, css_class: "atelier-page-subtitle") do %>
+          <%= subtitle %>
+        <% end %>
+      <% elsif local_assigns[:subtitle].present? %>
+        <p class="atelier-page-subtitle"><%= subtitle %></p>
+      <% end %>
+    <% end %>
+    <div class="atelier-page-header__rule mt-8" aria-hidden="true">
+      <%= theme_ornament("atelier", "sunburst-rule") %>
+    </div>
+  </div>
+</section>

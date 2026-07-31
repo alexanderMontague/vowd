@@ -8,6 +8,11 @@ class Wedding < ApplicationRecord
   DEFAULT_CEREMONY_TIME = "4:00 PM".freeze
 
   SLUG_FORMAT = /\A[a-z0-9]+(?:-[a-z0-9]+)*\z/
+  SCHEDULE_LOCK_LEAD_TIME = 24.hours
+  SCHEDULE_LOCKED_ATTRIBUTES = %w[
+    date ceremony_time wedding_duration_hours timezone rsvp_deadline
+    venue_name venue_address venue_city venue_region
+  ].freeze
 
   # Where a stored image entry can carry its source: a library asset's key, an
   # uploaded object key, or a legacy absolute url.
@@ -21,7 +26,8 @@ class Wedding < ApplicationRecord
   }.freeze
 
   DEFAULT_HERO = {
-    "tagline" => "Request the Honour of Your Presence"
+    "tagline" => "Request the Honour of Your Presence",
+    "eyebrow" => "Together with our families"
   }.freeze
 
   DEFAULT_GALLERY = {
@@ -137,7 +143,51 @@ class Wedding < ApplicationRecord
   validates :id, presence: true, uniqueness: true, format: { with: SLUG_FORMAT, message: "must be lowercase letters, numbers, and hyphens" }
   validates :title, presence: true
   validates :custom_domain, uniqueness: true, allow_nil: true
+  validates :billing_status, inclusion: { in: Billing::STATUSES }
   validate :custom_domain_must_look_like_hostname
+  validate :schedule_attributes_immutable_when_locked
+
+  def billing_access?
+    return true unless Billing.enabled?
+
+    case billing_status
+    when "active", "past_due"
+      true
+    when "trialing"
+      trial_ends_at.blank? || trial_ends_at.future?
+    else
+      false
+    end
+  end
+
+  # Guest site (and dispo/party) stay up during an active trial or after payment.
+  # Unpaid expired trials take the public site down until checkout completes.
+  def public_site_live?
+    billing_access?
+  end
+
+  def trial_active?
+    billing_status == "trialing" && (trial_ends_at.blank? || trial_ends_at.future?)
+  end
+
+  def trial_expired?
+    billing_status == "trialing" && trial_ends_at.present? && !trial_ends_at.future?
+  end
+
+  def billing_requires_payment?
+    Billing.enabled? && !billing_access?
+  end
+
+  # Date, venue, and schedule freeze 24 hours before ceremony start so a paid
+  # one-wedding pass cannot be quietly retargeted to another event.
+  def schedule_locked?
+    return false unless persisted?
+
+    start = persisted_event_starts_at
+    return false if start.blank?
+
+    Time.current >= start - SCHEDULE_LOCK_LEAD_TIME
+  end
 
   def couple
     {
@@ -276,10 +326,6 @@ class Wedding < ApplicationRecord
     feature_flag("save_the_date_mode")
   end
 
-  def rsvp_visible?
-    feature_flag("rsvp_visible")
-  end
-
   def dispo_accepting_photos?
     feature_flag("dispo_accepting_photos")
   end
@@ -407,6 +453,30 @@ class Wedding < ApplicationRecord
     return if custom_domain.match?(/\A[a-z0-9](?:[a-z0-9-]*[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]*[a-z0-9])?)+\z/)
 
     errors.add(:custom_domain, "must be a valid hostname")
+  end
+
+  def schedule_attributes_immutable_when_locked
+    return unless schedule_locked?
+
+    SCHEDULE_LOCKED_ATTRIBUTES.each do |attribute|
+      next unless will_save_change_to_attribute?(attribute)
+
+      errors.add(attribute, "can't be changed within 24 hours of the wedding")
+    end
+  end
+
+  # Lock decisions must use the saved ceremony time; otherwise changing `date`
+  # in-memory would move the lock window and bypass the restriction.
+  def persisted_event_starts_at
+    persisted_date = date_in_database
+    return if persisted_date.blank?
+
+    tz_name = timezone_in_database.presence || "America/Toronto"
+    tz = ActiveSupport::TimeZone[tz_name] || Time.zone
+    time_str = ceremony_time_in_database.presence || DEFAULT_CEREMONY_TIME
+    tz.parse("#{persisted_date} #{time_str}")
+  rescue ArgumentError, TypeError
+    nil
   end
 
   def fallback_dispo_closes_at(tz)

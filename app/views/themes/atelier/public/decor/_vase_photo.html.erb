@@ -1,0 +1,25 @@
+<%
+  asset = local_assigns[:asset]
+  caption = local_assigns[:caption]
+  wrapper_class = local_assigns.fetch(:wrapper_class, "")
+  slot_key = local_assigns[:slot]
+%>
+<% inner = capture do %>
+  <% if asset.present? %>
+    <figure class="atelier-column <%= wrapper_class %>">
+      <div class="atelier-column__photo">
+        <%= image_tag wedding_asset_url(asset),
+            alt: wedding_asset_alt(asset), loading: "lazy", decoding: "async" %>
+      </div>
+      <%= theme_ornament("atelier", "deco-pedestal", css_class: "atelier-column__pedestal") %>
+      <% if caption.present? %>
+        <figcaption class="atelier-column__caption"><%= caption %></figcaption>
+      <% end %>
+    </figure>
+  <% end %>
+<% end %>
+<% if slot_key.present? %>
+  <%= editor_slot(slot_key, css_class: wrapper_class) { inner } %>
+<% else %>
+  <%= inner %>
+<% end %>

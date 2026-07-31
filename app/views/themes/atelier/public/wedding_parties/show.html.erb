@@ -1,0 +1,28 @@
+<% party = current_wedding.wedding_party %>
+
+<div class="min-h-screen atelier-party" data-controller="scroll-animate">
+  <%= render "public/shared/page_header",
+      title: party["title"],
+      subtitle: party["subtitle"],
+      title_field: "wedding_party.title",
+      subtitle_field: "wedding_party.subtitle" %>
+
+  <% [["bridesmaids", "bridesmaids_title", false], ["groomsmen", "groomsmen_title", true]].each do |group, title_key, banded| %>
+    <% members = Array(party[group]) %>
+    <% next if members.empty? && !site_editor_active? %>
+
+    <section class="py-24 px-4 <%= "atelier-band" if banded %>">
+      <div class="mx-auto max-w-6xl">
+        <%= render "public/shared/section_title",
+            title: party[title_key],
+            centered: true,
+            field: "wedding_party.#{title_key}" %>
+        <div class="atelier-party__grid">
+          <% members.each_with_index do |person, index| %>
+            <%= render "public/wedding_parties/member", person: person, index: index, group: group %>
+          <% end %>
+        </div>
+      </div>
+    </section>
+  <% end %>
+</div>

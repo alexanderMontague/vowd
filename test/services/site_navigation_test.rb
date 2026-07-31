@@ -5,17 +5,10 @@ class SiteNavigationTest < ActiveSupport::TestCase
     @wedding = create_wedding(rsvp_deadline: Date.current + 30)
   end
 
-  test "a page needs both the theme toggle and the feature flag" do
-    force_flag("rsvp_visible", true)
-
+  test "a page answers to the theme toggle" do
     assert navigation(pages: { "rsvp" => true }).visible?("rsvp")
     assert_not navigation(pages: { "rsvp" => false }).visible?("rsvp"),
                "the theme toggle alone should be able to hide a page"
-
-    force_flag("rsvp_visible", false)
-
-    assert_not navigation(pages: { "rsvp" => true }).visible?("rsvp"),
-               "the feature flag alone should be able to hide a page"
   end
 
   test "pages without a feature flag answer to the theme toggle only" do
@@ -34,7 +27,6 @@ class SiteNavigationTest < ActiveSupport::TestCase
 
   test "previewing ignores the schedule but still honours the theme" do
     force_flag("save_the_date_mode", true)
-    force_flag("rsvp_visible", false)
 
     nav = navigation(pages: { "rsvp" => true, "faq" => false }, preview: true)
 

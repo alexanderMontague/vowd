@@ -1,0 +1,31 @@
+<p class="platform-sans platform-display" style="margin:0; font-family:-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif; font-size:32px; font-weight:600; letter-spacing:-0.03em; line-height:1.15; color:#12151a;">
+  Date &amp; venue lock soon
+</p>
+
+<p class="platform-sans" style="margin:16px 0 0; font-family:-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif; font-size:15px; font-weight:400; line-height:1.7; color:#737b8c;">
+  In about 24 hours, the wedding date, ceremony time, and venue for
+  <strong style="font-weight:600; color:#12151a;"><%= @wedding.title %></strong>
+  will lock so this Wedding Pass stays tied to your day.
+</p>
+
+<p class="platform-sans" style="margin:20px 0 0; font-family:-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif; font-size:15px; font-weight:400; line-height:1.7; color:#3f4654;">
+  Theme, guest list, RSVPs, photos, and most other settings stay editable.
+  Only schedule and venue details freeze.
+</p>
+
+<% if @wedding.date.present? %>
+  <p class="platform-sans" style="margin:20px 0 0; font-family:-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif; font-size:14px; font-weight:500; line-height:1.6; color:#12151a;">
+    Ceremony:
+    <%= format_date_elegant(@wedding.date) %>
+    <% if @wedding.ceremony_time.present? %>
+      · <%= @wedding.ceremony_time %>
+    <% end %>
+  </p>
+<% end %>
+
+<%= render "mailer_shared/platform_button", url: @admin_url, label: "Review essentials" %>
+
+<p class="platform-sans" style="margin:28px 0 0; font-family:-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif; font-size:13px; font-weight:400; line-height:1.65; color:#9aa1b0;">
+  Lock begins around
+  <%= l(@lock_at.in_time_zone(@wedding.timezone), format: :long) %>.
+</p>

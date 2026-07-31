@@ -1,0 +1,14 @@
+<% if @days_left <= 1 %>
+Your trial ends tomorrow
+<% else %>
+Your trial ends in <%= @days_left %> days
+<% end %>
+
+When the trial ends without a Wedding Pass, the guest site for <%= @wedding.title %> goes offline until you check out.
+
+<% if @trial_ends_at.present? %>
+Trial ends <%= l(@trial_ends_at.in_time_zone(@wedding.timezone), format: :long) %>.
+<% end %>
+
+Complete checkout:
+<%= @billing_url %>

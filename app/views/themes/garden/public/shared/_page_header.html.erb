@@ -1,0 +1,27 @@
+<%# Soft garden masthead — vine rules and quiet type, shared by inner pages. %>
+<section class="garden-page-header px-4 py-16 md:py-28">
+  <div class="mx-auto max-w-3xl text-center animate-fade-in-up">
+    <div class="garden-page-header__vine mb-8" aria-hidden="true">
+      <%= theme_ornament("garden", "eucalyptus-garland") %>
+    </div>
+    <% if local_assigns[:title_field].present? %>
+      <%= editor_text(title_field, tag: :h1, css_class: "garden-page-title") do %>
+        <%= title %>
+      <% end %>
+    <% else %>
+      <h1 class="garden-page-title"><%= title %></h1>
+    <% end %>
+    <% if local_assigns[:subtitle].present? || (site_editor_active? && local_assigns[:subtitle_field].present?) %>
+      <% if local_assigns[:subtitle_field].present? %>
+        <%= editor_text(subtitle_field, tag: :p, css_class: "garden-page-subtitle") do %>
+          <%= subtitle %>
+        <% end %>
+      <% elsif local_assigns[:subtitle].present? %>
+        <p class="garden-page-subtitle"><%= subtitle %></p>
+      <% end %>
+    <% end %>
+    <div class="garden-page-header__vine mt-8 opacity-60" aria-hidden="true">
+      <%= theme_ornament("garden", "rose-swag") %>
+    </div>
+  </div>
+</section>

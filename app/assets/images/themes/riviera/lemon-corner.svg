@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160" fill="none" aria-hidden="true">
+  <!-- Lemon with leaves -->
+  <ellipse cx="108" cy="52" rx="28" ry="34" transform="rotate(28 108 52)" fill="currentColor" opacity="0.55"/>
+  <ellipse cx="108" cy="52" rx="18" ry="24" transform="rotate(28 108 52)" fill="currentColor" opacity="0.25"/>
+  <path d="M96 28c8-4 16-4 22 2" stroke="currentColor" stroke-width="1.2" opacity="0.5"/>
+  <!-- Second smaller lemon -->
+  <ellipse cx="72" cy="78" rx="18" ry="22" transform="rotate(-18 72 78)" fill="currentColor" opacity="0.4"/>
+  <!-- Foliage spray -->
+  <path d="M48 120c16-14 28-36 32-58 14 16 32 28 54 32-16 12-28 30-30 52-12-16-30-28-56-26Z" fill="currentColor" opacity="0.7"/>
+  <path d="M58 108c8-20 22-36 42-44" stroke="currentColor" stroke-width="1.1" opacity="0.4"/>
+  <path d="M36 132c10-8 16-20 18-34 8 10 18 18 30 20" stroke="currentColor" stroke-width="1" opacity="0.35"/>
+  <ellipse cx="42" cy="96" rx="10" ry="6" transform="rotate(-40 42 96)" fill="currentColor" opacity="0.45"/>
+  <ellipse cx="88" cy="40" rx="9" ry="5" transform="rotate(20 88 40)" fill="currentColor" opacity="0.4"/>
+  <circle cx="124" cy="36" r="2.5" fill="currentColor" opacity="0.5"/>
+</svg>

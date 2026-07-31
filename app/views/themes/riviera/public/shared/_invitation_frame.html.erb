@@ -1,0 +1,35 @@
+<%
+  floating_assets = Array(local_assigns[:floating_assets])
+  floating_slot = local_assigns[:floating_slot]
+%>
+<div class="invitation-frame-shell mx-auto max-w-2xl">
+  <%= render decor_partial("floating_photos"), assets: floating_assets, slot: floating_slot %>
+
+  <div class="pointer-events-none absolute -inset-4 hidden lg:block" aria-hidden="true">
+    <div class="riviera-motif riviera-motif--spray absolute -left-20 top-20 w-36 opacity-95">
+      <%= theme_ornament("riviera", "lemon-corner") %>
+    </div>
+    <div class="riviera-motif riviera-motif--spray absolute -right-16 bottom-28 w-36 rotate-180 opacity-90">
+      <%= theme_ornament("riviera", "lemon-corner") %>
+    </div>
+  </div>
+
+  <div class="invitation-frame riviera-frame relative z-10">
+    <div class="riviera-frame__corner riviera-frame__corner--tl" aria-hidden="true">
+      <%= theme_ornament("riviera", "lemon-corner") %>
+    </div>
+    <div class="riviera-frame__corner riviera-frame__corner--br" aria-hidden="true">
+      <%= theme_ornament("riviera", "lemon-corner") %>
+    </div>
+
+    <div class="invitation-frame-content relative z-10">
+      <div class="riviera-frame__wave mb-8" aria-hidden="true">
+        <%= theme_ornament("riviera", "lemon-sprig") %>
+      </div>
+      <%= yield %>
+      <div class="riviera-frame__wave mt-8" aria-hidden="true">
+        <%= theme_ornament("riviera", "citrus-wave") %>
+      </div>
+    </div>
+  </div>
+</div>

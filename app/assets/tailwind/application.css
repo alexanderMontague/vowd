@@ -7,6 +7,9 @@
    on a guest site the wedding has switched to that theme. */
 @import "./themes/parallax.css";
 @import "./themes/editorial.css";
+@import "./themes/garden.css";
+@import "./themes/atelier.css";
+@import "./themes/riviera.css";
 @import "./admin.css";
 
 @theme {
@@ -800,9 +803,11 @@ html.admin-nav-locked {
   }
 
   /* Overlaps the arch's lower-left corner and breaks its bottom edge so the pedestal
-     reads as standing in front of the photo rather than inside it. */
+     reads as standing in front of the photo rather than inside it. Shrink on mobile
+     so the arched photo remains the hero. */
   .vase-photo__urn {
-    @apply pointer-events-none absolute z-10 w-[44%];
+    @apply pointer-events-none absolute z-10 block h-auto w-[30%] max-w-[5.5rem]
+           sm:w-[38%] sm:max-w-[8rem] md:w-[44%] md:max-w-none;
     left: -3%;
     bottom: -5%;
     opacity: var(--urn-opacity);
@@ -828,12 +833,24 @@ html.admin-nav-locked {
   .site-editor-active .floating-photos-editor-hit {
     @apply absolute inset-0 z-[25];
     pointer-events: none;
+    outline: none !important;
+  }
+
+  .site-editor-active .floating-photos-editor-hit:hover,
+  .site-editor-active .floating-photos-editor-hit.is-editing {
+    outline: none !important;
+    outline-color: transparent !important;
   }
 
   .site-editor-active .floating-photos-editor-hit.site-editor-slot--empty {
     @apply pointer-events-auto inset-x-auto bottom-auto left-auto right-2 top-2 z-[25]
            flex min-h-0 w-auto max-w-[12rem] items-center justify-center rounded-md
            border border-dashed border-neutral-300 bg-white/95 px-3 py-2 shadow-sm;
+  }
+
+  .site-editor-active .floating-photos-editor-hit.site-editor-slot--empty:hover {
+    outline: 2px solid color-mix(in oklab, var(--color-secondary, #3d5a4c) 70%, transparent) !important;
+    outline-offset: 2px;
   }
 
   /* Keep the inset container non-interactive; only the polaroid figures receive clicks. */
@@ -844,6 +861,13 @@ html.admin-nav-locked {
   .site-editor-active .floating-photos-editor-hit .floating-photo {
     pointer-events: auto;
     cursor: pointer;
+    outline: 2px solid transparent;
+    outline-offset: 3px;
+    transition: outline-color 120ms ease;
+  }
+
+  .site-editor-active .floating-photos-editor-hit .floating-photo:hover {
+    outline-color: color-mix(in oklab, var(--color-secondary, #3d5a4c) 70%, transparent);
   }
 
   .floating-photo {
@@ -1526,46 +1550,107 @@ html.admin-nav-locked {
     @apply mb-3 font-sans text-sm font-semibold normal-case tracking-normal text-neutral-800;
   }
 
-  /* Theme picker */
+  /* Theme picker — stacked preview + meta (drawer is narrow; side-by-side broke). */
   .theme-choice-grid {
-    @apply grid gap-3;
+    display: grid;
+    gap: 0.75rem;
   }
 
   .theme-choice {
-    @apply relative grid cursor-pointer grid-cols-[auto_minmax(0,1fr)] items-start gap-4 rounded-md
-           border border-border p-4 transition-colors hover:border-neutral-300;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    border: 1px solid var(--color-border, #e5e5e5);
+    border-radius: 0.375rem;
+    background: #fff;
+    cursor: pointer;
+    transition: border-color 120ms ease, background-color 120ms ease;
+  }
+
+  .theme-choice:hover {
+    border-color: #d4d4d4;
   }
 
   .theme-choice.is-selected {
-    @apply border-secondary bg-secondary-50/60;
+    border-color: var(--color-secondary, #3d5a4c);
+    background: color-mix(in srgb, var(--color-secondary, #3d5a4c) 8%, white);
   }
 
   .theme-choice__input {
-    @apply absolute right-4 top-4 m-0;
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    z-index: 2;
+    margin: 0;
+  }
+
+  .theme-choice__preview {
+    position: relative;
+    display: block;
+    width: 100%;
+    height: 7.5rem;
+    overflow: hidden;
+    border: 1px solid var(--color-border, #e5e5e5);
+    border-radius: 0.25rem;
+    background: #f5f5f4;
+  }
+
+  .theme-choice__preview-image {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center top;
+  }
+
+  .theme-choice__meta {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 0.75rem;
+    align-items: start;
+    padding-right: 1.5rem;
   }
 
   .theme-choice__swatches {
-    @apply flex w-5 flex-col overflow-hidden rounded-sm border border-border;
+    display: flex;
+    flex-direction: column;
+    width: 1.25rem;
+    overflow: hidden;
+    border: 1px solid var(--color-border, #e5e5e5);
+    border-radius: 0.125rem;
   }
 
   .theme-choice__swatch {
-    @apply block h-5 w-full;
+    display: block;
+    width: 100%;
+    height: 1.25rem;
   }
 
   .theme-choice__body {
-    @apply grid gap-1 pr-6;
+    display: grid;
+    gap: 0.2rem;
+    min-width: 0;
   }
 
   .theme-choice__name {
-    @apply text-sm font-semibold text-neutral-800;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #262626;
   }
 
   .theme-choice__tagline {
-    @apply text-xs italic text-neutral-500;
+    font-size: 0.75rem;
+    font-style: italic;
+    line-height: 1.35;
+    color: #737373;
   }
 
   .theme-choice__description {
-    @apply text-xs leading-relaxed text-neutral-500;
+    font-size: 0.75rem;
+    line-height: 1.4;
+    color: #737373;
   }
 
   /* Colour and page rows */
@@ -1624,12 +1709,12 @@ html.admin-nav-locked {
   }
 
   .theme-preview__bar {
-    @apply flex shrink-0 flex-nowrap items-center justify-between gap-3 border-b border-border bg-white px-4 py-2;
+    @apply flex shrink-0 flex-wrap items-center justify-between gap-x-3 gap-y-2 border-b border-border bg-white px-3 py-2 sm:flex-nowrap sm:px-4;
     min-height: 3rem;
   }
 
   .theme-preview__brand {
-    @apply min-w-0 flex-1;
+    @apply min-w-0 flex-1 basis-[min(100%,12rem)];
   }
 
   .theme-preview__title {
@@ -1637,7 +1722,7 @@ html.admin-nav-locked {
   }
 
   .theme-preview__hint {
-    @apply m-0 mt-0.5 truncate text-xs text-neutral-500;
+    @apply m-0 mt-0.5 hidden truncate text-xs text-neutral-500 sm:block;
   }
 
   .theme-preview__label {
@@ -1645,20 +1730,20 @@ html.admin-nav-locked {
   }
 
   .theme-preview__tools {
-    @apply flex shrink-0 flex-nowrap items-center gap-1;
+    @apply flex min-w-0 flex-1 flex-wrap items-center justify-end gap-0.5 sm:flex-nowrap sm:gap-1;
   }
 
   .theme-preview__status {
-    @apply max-w-[10rem] truncate text-xs text-neutral-500 sm:max-w-none;
+    @apply order-last w-full max-w-none truncate text-xs text-neutral-500 sm:order-none sm:mr-1 sm:w-auto sm:max-w-[10rem];
   }
 
   .theme-preview__tools-divider {
-    @apply mx-1 h-5 w-px shrink-0 self-center bg-border;
+    @apply mx-0.5 hidden h-5 w-px shrink-0 self-center bg-border sm:mx-1 sm:block;
   }
 
   .theme-preview__device {
-    @apply inline-flex size-9 shrink-0 items-center justify-center rounded-md border border-transparent text-neutral-600
-           transition-colors hover:bg-neutral-100;
+    @apply inline-flex size-8 shrink-0 items-center justify-center rounded-md border border-transparent text-neutral-600
+           transition-colors hover:bg-neutral-100 sm:size-9;
   }
 
   .theme-preview__device svg {
@@ -1670,13 +1755,21 @@ html.admin-nav-locked {
   }
 
   .theme-preview__settings {
-    @apply inline-flex h-9 shrink-0 items-center rounded-md border border-transparent px-2.5 text-xs font-medium
-           text-neutral-700 transition-colors hover:bg-neutral-100;
+    @apply inline-flex h-8 shrink-0 items-center gap-1.5 rounded-md border border-border bg-neutral-50 px-2.5 text-xs font-medium
+           text-neutral-800 transition-colors hover:bg-neutral-100 sm:h-9 sm:px-3;
+  }
+
+  .theme-preview__settings-icon {
+    @apply size-3.5 shrink-0 text-neutral-500;
+  }
+
+  .theme-preview__settings-label {
+    @apply whitespace-nowrap;
   }
 
   .theme-preview__skip-video {
-    @apply inline-flex h-9 shrink-0 cursor-pointer items-center gap-1.5 rounded-md px-2 text-xs font-medium text-neutral-700
-           hover:bg-neutral-100;
+    @apply h-8 shrink-0 cursor-pointer gap-1.5 rounded-md px-2 text-xs font-medium text-neutral-700
+           hover:bg-neutral-100 sm:h-9;
   }
 
   .theme-preview__skip-video[hidden] {
@@ -1685,7 +1778,6 @@ html.admin-nav-locked {
 
   .theme-preview__skip-video input {
     @apply m-0 size-3.5 shrink-0 accent-secondary;
-    vertical-align: middle;
   }
 
   .theme-preview__skip-video span {
@@ -1745,17 +1837,25 @@ html.admin-nav-locked {
   }
 
   /* Site editor hotspots (guest templates in the Theme iframe).
-     Do not set `font` here — it overrides display type classes on the same node. */
+     Lock computed type during edit via inline styles in JS — do not set `font`
+     here (it would inherit from the parent and wipe display classes). */
   [data-site-editor-target="hotspot"] {
     @apply relative cursor-pointer outline outline-2 outline-transparent outline-offset-2 transition-[outline-color];
   }
 
   [data-site-editor-target="hotspot"][contenteditable="true"],
   [data-site-editor-target="hotspot"][contenteditable="plaintext-only"] {
-    letter-spacing: inherit;
-    line-height: inherit;
-    text-transform: inherit;
-    color: inherit;
+    white-space: pre-wrap;
+    caret-color: currentColor;
+  }
+
+  /* Button-surface hotspots keep their chrome while the label is edited. */
+  [data-site-editor-target="hotspot"][data-surface="button"] {
+    @apply inline-block cursor-text;
+  }
+
+  [data-site-editor-target="hotspot"][data-surface="button"].is-editing {
+    outline-color: color-mix(in oklab, var(--color-secondary, #3d5a4c) 70%, transparent);
   }
 
   [data-site-editor-target="hotspot"]:hover,
@@ -3046,11 +3146,15 @@ html.admin-nav-locked {
     transition: opacity 0.3s ease;
   }
 
-  /* Fine organic grain — denser than digital noise */
+  /* Fine organic grain — denser than digital noise. Dual-layer turbulence for
+     visible film grain without crushing midtones. */
   .retro-photo__grain {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-    background-size: 140px 140px;
-    background-position: var(--rp-grain-x, 0%) var(--rp-grain-y, 0%);
+    background-image:
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.15' numOctaves='5' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"),
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.55' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-size: 96px 96px, 180px 180px;
+    background-position: var(--rp-grain-x, 0%) var(--rp-grain-y, 0%),
+      calc(var(--rp-grain-x, 0%) + 18%) calc(var(--rp-grain-y, 0%) + 12%);
     mix-blend-mode: overlay;
   }
 
@@ -3109,7 +3213,7 @@ html.admin-nav-locked {
   }
 
   [data-photo-style="retro"] .retro-photo__grain {
-    opacity: var(--rp-grain-opacity, 0.32);
+    opacity: var(--rp-grain-opacity, 0.55);
   }
 
   [data-photo-style="retro"] .retro-photo__leak,
@@ -3129,7 +3233,7 @@ html.admin-nav-locked {
   }
 
   [data-photo-style="bw"] .retro-photo__grain {
-    opacity: calc(var(--rp-grain-opacity, 0.32) * 1.15);
+    opacity: calc(var(--rp-grain-opacity, 0.55) * 1.2);
   }
 
   [data-photo-style="bw"] .retro-photo__vignette,

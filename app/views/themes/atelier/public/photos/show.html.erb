@@ -1,0 +1,55 @@
+<% gallery = current_wedding.gallery_content %>
+<% sections = current_wedding.gallery_sections %>
+
+<div class="min-h-screen atelier-photos" data-controller="scroll-animate">
+  <%= render "public/shared/page_header",
+      title: gallery["title"],
+      subtitle: gallery["subtitle"],
+      title_field: "photos_page.title",
+      subtitle_field: "photos_page.subtitle" %>
+
+  <% sections.each_with_index do |section, section_index| %>
+    <%= editor_panel("photos", tag: :section, css_class: "py-24 px-4 #{"atelier-band" if section_index.odd?}") do %>
+      <div class="mx-auto max-w-7xl">
+        <%= render "public/shared/section_title", title: section["title"], centered: true, field: "photos_page.sections.#{section_index}.title" %>
+        <div class="atelier-photos__grid">
+          <% section["images"]&.each_with_index do |image, index| %>
+            <div class="atelier-photos__cell atelier-photos__cell--<%= (index % 3) + 1 %> animate-on-scroll"
+                 data-scroll-animate-target="item">
+              <%= image_tag wedding_asset_url(image), alt: wedding_asset_alt(image), loading: "lazy" %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+  <% end %>
+
+  <% if current_wedding.dispo_gallery_visible? %>
+    <% dispo_section_index = sections.length %>
+    <section id="dispo-photos" class="py-24 px-4 <%= "atelier-band" if dispo_section_index.odd? %>">
+      <div class="mx-auto max-w-7xl">
+        <%= render "public/shared/section_title", title: "From the Disposable Camera", centered: true %>
+        <% if @dispo_total.to_i == 0 %>
+          <p class="text-center text-ink-faint font-light tracking-wider text-sm py-16">
+            Photos will appear here after the wedding.
+          </p>
+        <% else %>
+          <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"
+               data-photo-style="<%= current_wedding.dispo_photo_style %>">
+            <% @dispo_photos.each do |photo| %>
+              <div class="animate-on-scroll" data-scroll-animate-target="item">
+                <%= render "dispo/shared/photo", photo: photo %>
+              </div>
+            <% end %>
+          </div>
+          <div class="mt-16 flex flex-col items-center gap-4">
+            <% if @dispo_has_more %>
+              <p class="wedding-meta">Showing <%= @dispo_photos.size %> of <%= pluralize(@dispo_total, "photo") %></p>
+            <% end %>
+            <%= link_to "View the Full Gallery →", dispo_gallery_path, class: "btn-wedding-primary" %>
+          </div>
+        <% end %>
+      </div>
+    </section>
+  <% end %>
+</div>

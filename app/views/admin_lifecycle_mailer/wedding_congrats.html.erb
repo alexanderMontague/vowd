@@ -1,0 +1,22 @@
+<p class="platform-sans platform-display" style="margin:0; font-family:-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif; font-size:32px; font-weight:600; letter-spacing:-0.03em; line-height:1.15; color:#12151a;">
+  Congratulations
+</p>
+
+<p class="platform-sans" style="margin:16px 0 0; font-family:-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif; font-size:15px; font-weight:400; line-height:1.7; color:#737b8c;">
+  What a day.
+  <strong style="font-weight:600; color:#12151a;"><%= @wedding.title %></strong>
+  is behind you — and your Vowd site stays up for as long as you want it.
+</p>
+
+<p class="platform-sans" style="margin:20px 0 0; font-family:-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif; font-size:15px; font-weight:400; line-height:1.7; color:#3f4654;">
+  Your Wedding Pass is for this wedding only, hosted forever: guest pages, photos,
+  and memories remain online. No renewal needed to keep the site live.
+</p>
+
+<%= render "mailer_shared/platform_button", url: @site_url, label: "Visit your site" %>
+
+<p class="platform-sans" style="margin:20px 0 0; text-align:center; font-family:-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif; font-size:13px; font-weight:400; line-height:1.65; color:#9aa1b0;">
+  Or open
+  <a href="<%= @admin_url %>" style="color:#2b5f52; text-decoration:none; font-weight:600;">admin</a>
+  anytime.
+</p>
